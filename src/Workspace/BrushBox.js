@@ -1,14 +1,40 @@
-import Brush from "./Brush";
+import Brush from "./Brush.js";
 
-const basePen = new Brush({ size: 2 })
-const baseBrush = new Brush({ size: 50 })
+const defaultBrushes = {}
+const basePen = new Brush( 2, "pen")
+const baseBrush = new Brush( 50 )
 
-const brushDefaults  = {
-
-}
+defaultBrushes[basePen.name] = basePen;
+defaultBrushes[baseBrush.name] = baseBrush;
 
 class BrushBox {
-  constructor( brushes = {} ) {
-
+  constructor( name = "box", brushes = defaultBrushes ) {
+    this.name = name;
+    this._brushes = brushes;
   }
+
+  get brushes() {
+    return this._brushes
+  }
+
+  brush(name) {
+    if (!this.brushes[name]) throw `no brush in ${this.name} by that name`
+    return this.brushes[name]
+  }
+
+  addBrush(size, name, pressure) {
+    let nameSuffix = 0;
+
+    while(this.brushes[name]) {
+      name = `${name}_${nameSuffix}`
+      nameSuffix += 1
+    }
+
+    const newBrush = new Brush(size, name, pressure)
+    this.brushes[name] = newBrush
+  }
+
+  removeBrush()
 }
+
+export default BrushBox;
