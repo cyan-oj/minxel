@@ -1,11 +1,8 @@
 import Brush from "./Brush.js";
 
-const defaultBrushes = {}
-const basePen = new Brush( 2, "pen")
-const baseBrush = new Brush( 50 )
-
-defaultBrushes[basePen.name] = basePen;
-defaultBrushes[baseBrush.name] = baseBrush;
+const defaultBrushes = []
+defaultBrushes.push( new Brush( 2, "pen" ))
+defaultBrushes.push( new Brush( 50 ))
 
 class BrushBox {
   constructor( name = "box", brushes = defaultBrushes ) {
@@ -17,24 +14,27 @@ class BrushBox {
     return this._brushes
   }
 
-  brush(name) {
-    if (!this.brushes[name]) throw `no brush in ${this.name} by that name`
-    return this.brushes[name]
+  count () { // untested
+    return Object.keys(this._brushes.keys).length
+  }
+
+  brush(index) {
+    if (!this.brushes[index]) throw `no brush at index ${index}`
+    return this.brushes[index]
   }
 
   addBrush(size, name, pressure) {
-    let nameSuffix = 0;
-
-    while(this.brushes[name]) {
-      name = `${name}_${nameSuffix}`
-      nameSuffix += 1
-    }
-
     const newBrush = new Brush(size, name, pressure)
-    this.brushes[name] = newBrush
+    this.brushes.push(newBrush)
   }
 
-  removeBrush()
+  removeBrush(index) {
+    if (!this.brushes[index]) throw `no brush at index ${index}`
+    this.brushes.splice(index, 1)
+    return true;
+  }
+
+  //moveBrush
 }
 
 export default BrushBox;
