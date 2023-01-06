@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef } from "react"
 
-function Layer({ width, height, name = 'layer', fill, image, active }) {
+function Layer({ width, height, name = 'layer', fill, image, active, brush, color }) {
   const layer = useRef()
   const context = useRef()
   const position = { x: 0, y: 0 }
 
-
   useEffect(() => {
+    console.log("fill", fill)
     context.current = layer.current.getContext('2d')
     console.log(context.current)
 
@@ -32,7 +32,7 @@ function Layer({ width, height, name = 'layer', fill, image, active }) {
       layer.current.removeEventListener( 'mousedown', setPosition )
       layer.current.removeEventListener( 'mousemove', draw )
     })
-  }, [ active ])
+  }, [ active, brush, color ])
   
   const setPosition = e => {
     const box = e.target.getBoundingClientRect();
@@ -40,15 +40,16 @@ function Layer({ width, height, name = 'layer', fill, image, active }) {
     position.y = e.clientY - box.top;
   }
 
-  const draw = ( event, brush = { size: 1 }, color = "black" ) => {
+  const draw = ( event ) => {
     if ( event.buttons !== 1 ) return;
+    console.log("color", color)
 
     context.current.imageSmoothingEnabled = false;
 
     context.current.beginPath();
     context.current.lineWidth = brush.size;
-    context.current.linecap = "round"
-    context.current.strokestyle = color;
+    context.current.lineCap = "round"
+    context.current.strokeStyle = color;
 
     context.current.moveTo(position.x, position.y)
     setPosition(event);
