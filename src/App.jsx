@@ -1,12 +1,13 @@
 import './App.css'
 import Layer from './Workspace/Layer'
+import Workspace from './Workspace/Workspace'
 
 function App() {
 
   return (
     <div className="App">
       <h1>minxel</h1>
-      <Layer width="100" height="100" name="test" fill="red"/>
+      <Workspace />
     </div>
   )
 }

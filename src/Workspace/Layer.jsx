@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
-function Layer({ width, height, name = 'layer', fill, image }) {
+function Layer({ width, height, name = 'layer', fill, image, active }) {
   const layer = useRef()
   const context = useRef()
   const position = { x: 0, y: 0 }
+
 
   useEffect(() => {
     context.current = layer.current.getContext('2d')
@@ -13,8 +14,26 @@ function Layer({ width, height, name = 'layer', fill, image }) {
       context.current.fillStyle = fill
       context.current.fillRect(0, 0, width, height)
     }
-  })
+  }, [])
 
+  useEffect(() => {
+    console.log("togglin'", active)
+    if (active) {
+      console.log("add listeners")
+      layer.current.addEventListener( 'mousedown', setPosition )
+      layer.current.addEventListener( 'mousemove', draw )
+    } else {
+      console.log("remove listeners")
+      removeEventListener( 'mousedown', layer.current )
+      removeEventListener( 'mousemove', layer.current )
+    }
+    
+    return(() => {
+      layer.current.removeEventListener( 'mousedown', setPosition )
+      layer.current.removeEventListener( 'mousemove', draw )
+    })
+  }, [ active ])
+  
   const setPosition = e => {
     const box = e.target.getBoundingClientRect();
     position.x = e.clientX - box.left;
@@ -22,10 +41,9 @@ function Layer({ width, height, name = 'layer', fill, image }) {
   }
 
   const draw = ( event, brush = { size: 1 }, color = "black" ) => {
-    if (event.buttons !== 1) return;
+    if ( event.buttons !== 1 ) return;
 
     context.current.imageSmoothingEnabled = false;
-    context.current.globalAlpha = 1; // not needed?
 
     context.current.beginPath();
     context.current.lineWidth = brush.size;
@@ -39,10 +57,7 @@ function Layer({ width, height, name = 'layer', fill, image }) {
   }
 
   return (
-    <canvas ref={layer} id={name} width={width} height={height} 
-      onMouseDown={ setPosition }
-      onMouseMove={ draw }
-    />
+    <canvas ref={ layer } id={ name } width={ width } height={ height } />
   )
 }
 
