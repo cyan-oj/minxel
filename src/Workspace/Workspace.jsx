@@ -1,5 +1,5 @@
 import BrushBox from "./BrushBox.js";
-import Layer from "./Layer.js";
+import Layer from "./Layer";
 
 // const options = {
   //   name: 'test',
@@ -23,17 +23,6 @@ class Workspace {
     this.activeBrush = this.brushes[0]
   }
 
-  get brushes() {
-    return this.brushBox.brushes
-  }
-
-  addBrush(...options) {
-    this.brushBox.addBrush(...options)
-  }
-
-  removeBrush(index) {
-    this.brushBox.removeBrush(index)
-  }
 
 }
 

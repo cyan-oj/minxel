@@ -15,32 +15,34 @@ function Layer({ width, height, name = 'layer', fill, image }) {
     }
   })
 
-
   const setPosition = e => {
     const box = e.target.getBoundingClientRect();
     position.x = e.clientX - box.left;
     position.y = e.clientY - box.top;
   }
 
-  const draw = ( event, brush, color ) => {
-    if (e.buttons !== 1) return;
+  const draw = ( event, brush = { size: 1 }, color = "black" ) => {
+    if (event.buttons !== 1) return;
 
-    context.imageSmoothingEnabled = false;
-    context.globalAlpha = 1; // not needed?
+    context.current.imageSmoothingEnabled = false;
+    context.current.globalAlpha = 1; // not needed?
 
-    context.beginPath();
-    context.lineWidth = brush.size;
-    context.linecap = "round"
-    context.strokestyle = color;
+    context.current.beginPath();
+    context.current.lineWidth = brush.size;
+    context.current.linecap = "round"
+    context.current.strokestyle = color;
 
-    context.moveTo(position.x, position.y)
-    setPosition(e);
-    context.lineTo(position.x, position.y);
-    context.stroke();
+    context.current.moveTo(position.x, position.y)
+    setPosition(event);
+    context.current.lineTo(position.x, position.y);
+    context.current.stroke();
   }
 
   return (
-    <canvas ref={layer} id={name} width={width} height={height}></canvas>
+    <canvas ref={layer} id={name} width={width} height={height} 
+      onMouseDown={ setPosition }
+      onMouseMove={ draw }
+    />
   )
 }
 
