@@ -14,10 +14,6 @@ class BrushBox {
     return this._brushes
   }
 
-  count () { // untested
-    return Object.keys(this._brushes.keys).length
-  }
-
   brush(index) {
     if (!this.brushes[index]) throw `no brush at index ${index}`
     return this.brushes[index]

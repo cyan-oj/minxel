@@ -1,4 +1,5 @@
 import BrushBox from "./BrushBox.js";
+import Layer from "./Layer.js";
 
 // const options = {
   //   name: 'test',
@@ -15,7 +16,8 @@ class Workspace {
       name: 'untitled',
       height: 256,
       width: 256,
-      brushBox: new BrushBox()
+      brushBox: new BrushBox(),
+      layers: [new Layer()]
     }, options)
 
     this.activeBrush = this.brushes[0]
@@ -35,13 +37,4 @@ class Workspace {
 
 }
 
-const w = new Workspace(options)
-
-console.log(w)
-console.log(w.brushes)
-
-w.addBrush(78)
-console.log(w.brushes)
-
-w.removeBrush(0)
-console.log(w.brushes)
+export default Workspace;
