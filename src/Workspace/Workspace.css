@@ -1,0 +1,12 @@
+.layer {
+  position: absolute;
+}
+
+.layers {
+  position: absolute;
+}
+
+.layer-controls {
+  display: flex;
+  flex-direction: column;
+}

@@ -58,7 +58,7 @@ function Layer({ width, height, name = 'layer', fill, image, active, brush, colo
   }
 
   return (
-    <canvas ref={ layer } id={ name } width={ width } height={ height } />
+    <canvas ref={ layer } className="layer" id={ name } width={ width } height={ height } />
   )
 }
 
