@@ -29,7 +29,7 @@ class BrushBox {
     this.brushes.splice(index, 1)
     return true;
   }
-
+  
   //moveBrush
 }
 
