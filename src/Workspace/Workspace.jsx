@@ -15,23 +15,25 @@ function Workspace({
   const color = "blue"
 
   const [layers, setLayers] = useState([]);
-  const [activeLayer, setActiveLayer] = useState()
+  const [activeLayer, setActiveLayer] = useState();
 
-  const context = useRef();
+  const onScreenContext = useRef();
+
   const position = { x: 0, y: 0 }
 
   useEffect(() => {
     addLayer();
     console.log(layers)
-    const activeLayer = document.getElementById("render")
-    context.current = activeLayer.getContext('2d')
-    console.log(context.current)
-    context.current.fillStyle = "red"
-    context.current.fillRect(0, 0, width, height)
+    const testLayer = document.getElementById("render")
+    onScreenContext.current = testLayer.getContext('2d')
+    console.log(onScreenContext.current)
+    onScreenContext.current.fillStyle = "red"
+    onScreenContext.current.fillRect(0, 0, width, height)
   }, [])
 
   useEffect(() => {
     console.log(layers)
+    attachLayers();
   }, [layers])
   
   const setPosition = e => {
@@ -42,23 +44,25 @@ function Workspace({
 
   const draw = ( event, context ) => { // take context and event, to draw in specific layer
     if ( event.buttons !== 1 ) return;
-    console.log("color", color)
+    console.log("context", context)
 
-    context.current.imageSmoothingEnabled = false;
+    context.imageSmoothingEnabled = false;
 
-    context.current.beginPath();
-    context.current.lineWidth = brush.size;
-    context.current.lineCap = "round"
-    context.current.strokeStyle = color;
+    context.beginPath();
+    context.lineWidth = brush.size;
+    context.lineCap = "round"
+    context.strokeStyle = color;
 
-    context.current.moveTo(position.x, position.y)
+    context.moveTo(position.x, position.y)
     setPosition(event);
-    context.current.lineTo(position.x, position.y);
-    context.current.stroke();
+    context.lineTo(position.x, position.y);
+    context.stroke();
   }
 
   const addLayer = () => {
-    const newCanvas = new OffscreenCanvas(width, height)
+    const newCanvas = document.createElement('CANVAS')
+    newCanvas.width = width;
+    newCanvas.height = height;
     const newContext = newCanvas.getContext('2d')
     const layerName = `Layer ${layers.length + 1}`
     setLayers([...layers, {name: layerName, canvas: newCanvas, context: newContext}])
@@ -74,17 +78,24 @@ function Workspace({
     console.log(activeLayer)
   }
 
-  const layersList = layers.map((layer, i) => 
+  const layerControls = layers.map((layer, i) => 
     <button key={layer.name} id={i}>{layer.name}</button>
   );
+
+  const attachLayers = () => {
+    const layerParent = document.getElementById("layers")
+    layers.forEach(layer => {
+      layerParent.appendChild(layer.canvas);
+    })
+  }
   
   return (
     <div className="workspace" id={name}>
       <div className="layer-controls" onClick={ e => setActive(e.target) }>
-        {layersList}
+        {layerControls}
       </div>
-      <div className="layers" onMouseDown={ setPosition } onMouseMove={ e => draw(e) }>
-        <canvas id="render" height={ height } width={ width }/>
+      <div className="layers" id="layers" onMouseDown={ setPosition } onMouseMove={ e => draw(e, activeLayer.context) }>
+        <canvas id="render" ref={onScreenContext} height={ height } width={ width }/>
       </div>
       <button onClick={ addLayer }>add canvas</button>
       <button onClick={ showActiveLayer }>active layer</button>
