@@ -1,5 +1,5 @@
 import './App.css'
-import Layer from './Workspace/Layer'
+// import Layer from './Workspace/Layer'
 import Workspace from './Workspace/Workspace'
 
 function App() {
@@ -12,4 +12,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

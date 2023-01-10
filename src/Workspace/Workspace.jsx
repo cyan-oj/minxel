@@ -14,16 +14,16 @@ function Workspace({
   const brush = new Brush(5);
   const color = "blue"
 
-  const [active, toggleActive] = useState(false);
   const [layers, setLayers] = useState([]);
+  const [activeLayer, setActiveLayer] = useState()
 
-  const context = useRef()
+  const context = useRef();
   const position = { x: 0, y: 0 }
 
   useEffect(() => {
     addLayer();
     console.log(layers)
-    const activeLayer = document.getElementById("activeLayer")
+    const activeLayer = document.getElementById("render")
     context.current = activeLayer.getContext('2d')
     console.log(context.current)
     context.current.fillStyle = "red"
@@ -40,7 +40,7 @@ function Workspace({
     position.y = e.clientY - box.top;
   }
 
-  const draw = ( event ) => { // take context and event, to draw in specific layer
+  const draw = ( event, context ) => { // take context and event, to draw in specific layer
     if ( event.buttons !== 1 ) return;
     console.log("color", color)
 
@@ -58,24 +58,36 @@ function Workspace({
   }
 
   const addLayer = () => {
-    // const prevList = layers
     const newCanvas = new OffscreenCanvas(width, height)
     const newContext = newCanvas.getContext('2d')
-    setLayers([...layers, {name: "layer", canvas: newCanvas, context: newContext}])
+    const layerName = `Layer ${layers.length + 1}`
+    setLayers([...layers, {name: layerName, canvas: newCanvas, context: newContext}])
   }
+
+  const setActive = (target) => {
+    const layerId = Number(target.id)
+    console.log(layerId)
+    setActiveLayer(layers[layerId])
+  }
+
+  const showActiveLayer = () => {
+    console.log(activeLayer)
+  }
+
+  const layersList = layers.map((layer, i) => 
+    <button key={layer.name} id={i}>{layer.name}</button>
+  );
   
   return (
     <div className="workspace" id={name}>
-      <div className="layer-controls">
-        <label htmlFor="layer1">Layer 1
-          <input type="checkbox" value={ active } onChange={ e => toggleActive(!active) } />
-        </label>
+      <div className="layer-controls" onClick={ e => setActive(e.target) }>
+        {layersList}
       </div>
-      <div className="layers" onMouseDown={ setPosition } onMouseMove={ draw }>
-        <canvas id="activeLayer" height={ height } width={ width }/>
+      <div className="layers" onMouseDown={ setPosition } onMouseMove={ e => draw(e) }>
+        <canvas id="render" height={ height } width={ width }/>
       </div>
-      <canvas id="render" width={ width } height={ height } />
       <button onClick={ addLayer }>add canvas</button>
+      <button onClick={ showActiveLayer }>active layer</button>
     </div>
   )
 }

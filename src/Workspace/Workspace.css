@@ -1,12 +1,16 @@
-.layer {
+/* .layer {
   position: absolute;
-}
+} */
 
-.layers {
+/* .layers {
   position: absolute;
-}
+} */
 
 .layer-controls {
   display: flex;
   flex-direction: column;
+}
+
+.workspace {
+  display: flex;
 }
