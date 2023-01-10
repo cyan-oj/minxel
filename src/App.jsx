@@ -6,7 +6,6 @@ function App() {
 
   return (
     <div className="App">
-      <h1>minxel</h1>
       <Workspace />
     </div>
   )
