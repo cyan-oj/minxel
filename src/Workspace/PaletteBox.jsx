@@ -15,7 +15,7 @@ function PaletteBox({ colors, setColor }) {
 
   return (
     <>
-      <div className="palette" onClick={ e => setColor(e.target.value) }>
+      <div className="toolbox" onClick={ e => setColor(e.target.value) }>
         { colorsList }
         <button className="swatch" id="addColor">+</button>
       </div>

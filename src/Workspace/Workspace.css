@@ -20,14 +20,19 @@ canvas {
 }
 
 .tools {
-  background-color: var(--base);
-  padding: 16px;
   position: absolute;
   left: 42px;
   top: 42px;
+  text-align: center;
+}
+
+.toolbox{
+  display: flex;
+  background-color: var(--base);
   border: solid 1px var(--border);
   border-radius: 4px;
-  text-align: center;
+  padding: 12px;
+  margin: 8px;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 
@@ -42,19 +47,8 @@ canvas {
 .layers > * {
   position: absolute;
 }
-
-.layer-controls {
-  display: flex;
+.toolbox#layer-controls {
   flex-direction: column-reverse;
-}
-
-.palette {
-  display: flex;
-  margin: 8px 0px;
-}
-
-.brushes {
-  display: flex;
 }
 
 .swatch {
@@ -64,14 +58,12 @@ canvas {
   padding: 0;
   border: none;
 }
-
 .swatch:hover {
   border: none;
   width: 48px;
   height: 48px;
   margin: -4px;
 }
-
 .swatch#addcolor {
   border: solid 1px var(--base);
 }
@@ -82,14 +74,12 @@ canvas {
   margin: 2px;
   border: none;
 }
-
 .brush:hover {
   border: none;
   width: 44px;
   height: 44px;
   margin: -2px;
 }
-
 .brush#addcolor {
   border: solid 1px var(--base);
 }

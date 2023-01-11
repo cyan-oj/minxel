@@ -18,7 +18,7 @@ function Workspace({
   const [layers, setLayers] = useState([]);
   const [activeLayer, setActiveLayer] = useState();
   const [activeColor, setActiveColor] = useState(palette.colors[0]);
-  const [activeBrush, setActiveBrush] = useState(brushBox.brush[0]);
+  const [activeBrush, setActiveBrush] = useState(brushBox.brushes[0]);
 
   const position = { x: 0, y: 0 }
 
@@ -94,10 +94,10 @@ function Workspace({
         <h1>minxel</h1>
         <PaletteBox colors={ palette.colors } setColor={setColor} />
         <Brushes brushes={ brushBox.brushes } setBrush={setBrush}/>
-        <h3>Layers</h3>
-        <div className="layer-controls" onClick={ e => setLayer(e.target.id) }>
+        <div className="toolbox" id="layer-controls" onClick={ e => setLayer(e.target.id) }>
           {layerControls}
           <button onClick={ addLayer }>add canvas</button>
+          <h4>Layers</h4>
         </div>
       </div>
       <div className="layers" id="layers" style={{width: width, height: height}}

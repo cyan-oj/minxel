@@ -11,7 +11,7 @@ function Brushes({ brushes, setBrush }) {
 
   return (
     <>
-      <div className="brushes" onClick={ e => setBrush(e.target.value)}>
+      <div className="toolbox" onClick={ e => setBrush(e.target.value)}>
         { brushList }
         <button className="brush" id="addBrush">+</button>
       </div>
