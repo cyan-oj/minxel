@@ -15,7 +15,6 @@ function Colors( { colors, setColor }) {
 
   return (
     <>
-      <h3>Palette</h3>
       <div className="palette" onClick={ e => setColor(e.target.value) }>
         { colorsList }
         <button className="swatch" id="addColor">+</button>

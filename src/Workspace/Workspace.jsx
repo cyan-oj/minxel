@@ -102,7 +102,7 @@ function Workspace({
           <button onClick={ addLayer }>add canvas</button>
         </div>
       </div>
-      <div className="layers" id="layers" 
+      <div className="layers" id="layers" style={{width: width, height: height}}
         onMouseDown={ setPosition } 
         onMouseMove={ e => draw(e, activeLayer.context) }>
       </div>
