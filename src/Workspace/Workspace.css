@@ -1,5 +1,6 @@
 canvas {
-  border: solid 1px black
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .workspace {
@@ -28,18 +29,19 @@ canvas {
   border: 1px solid var(--base);
   border-radius: 4px;
   text-align: center;
-  filter: drop-shadow(0 1mm 1.2mm rgb(0, 0, 0, .4));
+  filter: drop-shadow(0 1mm 1.2mm var(--shadow));
 }
 
 .layers {
+  box-sizing: border-box;
   position: relative;
+  background-color: var(--base);
+  border: solid 1px var(--base);
+  filter: drop-shadow(0 1mm 1.2mm var(--shadow));
 }
 
 .layers > * {
   position: absolute;
-  /* margin: auto; */
-  /* max-width: vw;
-  max-height: vh; */
 }
 
 .layer-controls {

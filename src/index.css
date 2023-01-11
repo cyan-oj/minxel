@@ -3,6 +3,7 @@
   --button: rgb(240, 240, 240);
   --button-active: rgb( 255, 255, 255 );
   --text: rgb(15, 15, 15);
+  --shadow: rgba(0, 0, 0, .4);
 
   --grid-light: rgb(255, 255, 255);
   --grid-dark: rgb(220, 220, 220);
