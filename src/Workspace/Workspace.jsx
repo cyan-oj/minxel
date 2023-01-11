@@ -2,8 +2,9 @@ import BrushBox from "./BrushBox.js";
 import Brush from "./Brush.js";
 import Palette from "./Palette.js";
 import "./Workspace.css"
-import { useState, useEffect, useRef } from "react";
-import Colors from "./Colors.jsx";
+import { useState, useEffect } from "react";
+import PaletteBox from "./PaletteBox.jsx";
+import Brushes from "./Brushes.jsx";
 
 function Workspace({ 
   name = 'untitled', 
@@ -17,12 +18,13 @@ function Workspace({
   const [layers, setLayers] = useState([]);
   const [activeLayer, setActiveLayer] = useState();
   const [activeColor, setActiveColor] = useState(palette.colors[0]);
+  const [activeBrush, setActiveBrush] = useState(brushBox.brush[0]);
 
   const position = { x: 0, y: 0 }
 
   useEffect(() => {
     addLayer();
-    console.log(layers)
+    console.log(brushBox)
   }, [])
   
   useEffect(() => {
@@ -42,7 +44,7 @@ function Workspace({
     context.imageSmoothingEnabled = false;
 
     context.beginPath();
-    context.lineWidth = brush.size;
+    context.lineWidth = activeBrush.size;
     context.lineCap = "round"
     context.strokeStyle = activeColor;
 
@@ -70,6 +72,11 @@ function Workspace({
     setActiveColor(color)
   }
 
+  const setBrush = idx => {
+    console.log("brush", idx)
+    setActiveBrush(brushBox.brushes[idx])
+  }
+
   const layerControls = layers.map((layer, i) => 
     <button key={layer.name} id={i}>{layer.name}</button>
   );
@@ -85,7 +92,8 @@ function Workspace({
     <div className="workspace" id={name}>
       <div className="tools">
         <h1>minxel</h1>
-        <Colors colors={ palette.colors } setColor={setColor} />
+        <PaletteBox colors={ palette.colors } setColor={setColor} />
+        <Brushes brushes={ brushBox.brushes } setBrush={setBrush}/>
         <h3>Layers</h3>
         <div className="layer-controls" onClick={ e => setLayer(e.target.id) }>
           {layerControls}

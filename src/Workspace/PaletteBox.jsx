@@ -4,7 +4,7 @@ export function colorString (color) {
   return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
 }
 
-function Colors( { colors, setColor }) {
+function PaletteBox({ colors, setColor }) {
 
   useEffect(() => {
   }, [colors])
@@ -23,4 +23,4 @@ function Colors( { colors, setColor }) {
   )
 }
 
-export default Colors;  
+export default PaletteBox;  
