@@ -4,7 +4,6 @@ canvas {
 }
 
 .workspace {
-  /* background-color: rgba(130, 130, 130, .2); */
   position: absolute;
   width: 100%;
   height: 100%;
@@ -26,18 +25,18 @@ canvas {
   position: absolute;
   left: 42px;
   top: 42px;
-  border: 1px solid var(--base);
+  border: solid 1px var(--border);
   border-radius: 4px;
   text-align: center;
-  filter: drop-shadow(0 1mm 1.2mm var(--shadow));
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 
 .layers {
   box-sizing: border-box;
   position: relative;
   background-color: var(--base);
-  border: solid 1px var(--base);
-  filter: drop-shadow(0 1mm 1.2mm var(--shadow));
+  border: solid 1px var(--border);
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 
 .layers > * {
@@ -70,5 +69,5 @@ canvas {
 }
 
 .swatch#addcolor {
-  border: solid 1px white;
+  border: solid 1px var(--base);
 }

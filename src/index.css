@@ -1,8 +1,9 @@
 :root {
   --base: rgba(255, 255, 255, .70);
-  --button: rgb(240, 240, 240);
+  --border: rgb(255, 255, 255);
   --button-active: rgb( 255, 255, 255 );
   --text: rgb(15, 15, 15);
+
   --shadow: rgba(0, 0, 0, .4);
 
   --grid-light: rgb(255, 255, 255);
@@ -28,6 +29,7 @@ body {
   margin: 0;
   display: flex;
 }
+
 h1 {
   font-size: 3.2em;
   margin: -.5em .1em .2em;
@@ -38,7 +40,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: var(--base);
-  border: solid 1px white;
+  border: solid 1px var(--border);
   cursor: pointer;
   margin: 4px;
   padding: 2px;
@@ -47,12 +49,18 @@ button:hover {
   z-index: 50;
   padding: 5px;
   margin: 1px;
-  background-color: white;
+  background-color: var(--button-active);
   border-radius: 3px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    color: #213547;
+    --base: rgba(0, 0, 0, .4);
+    --border: rgb(0, 0, 0);
+    --button-active: rgb( 0, 0, 0 );
+    --text: rgb(200, 200, 200);
+  
+    --grid-light: rgb(75, 75, 75);
+    --grid-dark: rgb(40, 40, 40);
   }
 }

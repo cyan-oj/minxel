@@ -13,24 +13,15 @@ function Workspace({
   palette = new Palette(), image }) {
 
   const brush = new Brush(5);
-  const color = "blue"
 
   const [layers, setLayers] = useState([]);
   const [activeLayer, setActiveLayer] = useState();
   const [activeColor, setActiveColor] = useState(palette.colors[0]);
 
-  const onScreenContext = useRef();
-
   const position = { x: 0, y: 0 }
 
   useEffect(() => {
     addLayer();
-    // console.log(layers)
-    // const testLayer = document.getElementById("render")
-    // onScreenContext.current = testLayer.getContext('2d')
-    // console.log(onScreenContext.current)
-    // onScreenContext.current.fillStyle = "red"
-    // onScreenContext.current.fillRect(0, 0, width, height)
     console.log(layers)
   }, [])
   
@@ -46,9 +37,8 @@ function Workspace({
     position.y = e.clientY - box.top;
   }
 
-  const draw = ( event, context ) => { // take context and event, to draw in specific layer
+  const draw = ( event, context ) => {
     if ( event.buttons !== 1 ) return;
-    // console.log("context", context)
     context.imageSmoothingEnabled = false;
 
     context.beginPath();
