@@ -3,26 +3,24 @@
   --border: rgb(255, 255, 255);
   --button-active: rgb( 255, 255, 255 );
   --text: rgb(15, 15, 15);
-
   --shadow: rgba(0, 0, 0, .4);
-
   --grid-light: rgb(255, 255, 255);
   --grid-dark: rgb(220, 220, 220);
 
   font-family: 'Courier New', Courier, monospace;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 24px;
-  font-weight: 400;
+  font-weight: 500;
 
   color-scheme: light dark;
   color: var(--text);
   background-color: var(--base);
 
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  /* text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale; */
+  /* -webkit-text-size-adjust: 100%; */
 }
 
 body {
@@ -32,7 +30,7 @@ body {
 
 h1 {
   font-size: 3.2em;
-  margin: -.5em .1em .2em;
+  margin: -.5em .1em .4em;
 }
 
 button {
@@ -59,7 +57,6 @@ button:hover {
     --border: rgb(0, 0, 0);
     --button-active: rgb( 0, 0, 0 );
     --text: rgb(200, 200, 200);
-  
     --grid-light: rgb(75, 75, 75);
     --grid-dark: rgb(40, 40, 40);
   }
