@@ -1,7 +1,8 @@
 import Brush from "./Brush.js";
 
 const defaultBrushes = []
-defaultBrushes.push( new Brush( 2, "pen" ))
+defaultBrushes.push( new Brush( 1, "pen" ))
+defaultBrushes.push( new Brush( 5, "sharpie" ))
 defaultBrushes.push( new Brush( 50 ))
 
 class BrushBox {

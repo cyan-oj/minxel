@@ -68,6 +68,7 @@ function Workspace({
     newCanvas.width = width;
     newCanvas.height = height;
     const newContext = newCanvas.getContext('2d')
+    newContext.translate(0.5, 0.5)
     const layerName = `layer ${layers.length + 1}`
     setLayers([...layers, {name: layerName, canvas: newCanvas, context: newContext}])
   }
@@ -76,11 +77,9 @@ function Workspace({
     const layerId = Number(id)
     setActiveLayer(layers[layerId])
   }
-
   const setColor = color => {
     setActiveColor(color)
   }
-
   const setBrush = idx => {
     console.log("brush", idx)
     setActiveBrush(brushBox.brushes[idx])
