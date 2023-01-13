@@ -21,7 +21,7 @@ canvas {
 
 .tools {
   position: absolute;
-  left: 42px;
+  left: 10px;
   top: 42px;
   text-align: center;
 }
@@ -46,6 +46,7 @@ canvas {
 
 .layers > * {
   position: absolute;
+  
 }
 .toolbox#layer-controls {
   flex-direction: column-reverse;

@@ -13,8 +13,6 @@ function Workspace({
   brushBox = new BrushBox(), 
   palette = new Palette(), image }) {
 
-  const brush = new Brush(5);
-
   const [layers, setLayers] = useState([]);
   const [activeLayer, setActiveLayer] = useState();
   const [activeColor, setActiveColor] = useState(palette.colors[0]);
