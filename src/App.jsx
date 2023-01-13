@@ -3,7 +3,7 @@ import Workspace from './Workspace/Workspace'
 function App() {
 
   return (
-      <Workspace width={ 256 } height={ 256 } />
+      <Workspace width={ 512 } height={ 512 } />
   )
 }
 

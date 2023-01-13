@@ -35,21 +35,32 @@ function Workspace({
     const box = e.target.getBoundingClientRect();
     position.x = e.clientX - box.left;
     position.y = e.clientY - box.top;
+    return position;
+  }
+
+  const getStroke = (point1, point2) => { 
+    const distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+    const angle = Math.atan2( point2.x - point1.x, point2.y - point1.y );
+    return [distance, angle]
   }
 
   const draw = ( event, context ) => {
     if ( event.buttons !== 1 ) return;
     context.imageSmoothingEnabled = false;
+    context.fillStyle = activeColor;
 
-    context.beginPath();
-    context.lineWidth = activeBrush.size;
-    context.lineCap = "round"
-    context.strokeStyle = activeColor;
+    const lastPoint = JSON.parse(JSON.stringify(position));
+    const currentPoint = setPosition(event);
 
-    context.moveTo(position.x, position.y)
-    setPosition(event);
-    context.lineTo(position.x, position.y);
-    context.stroke();
+    const [dist, angle] = getStroke(lastPoint, currentPoint)
+
+    for ( let i = 0; i < dist; i += activeBrush.spacing ) {
+      const x = lastPoint.x + ( Math.sin(angle) * i ) - activeBrush.size/2;
+      const y = lastPoint.y + ( Math.cos(angle) * i ) - activeBrush.size/2;      
+      context.beginPath();
+      context.rect(x, y, activeBrush.size, activeBrush.size);
+      context.fill();
+    }
   }
 
   const addLayer = () => {
