@@ -2,7 +2,6 @@ import { useEffect } from "react";
 
 function Brushes({ brushes, setBrush }) {
   useEffect(() => {
-    console.log(brushes)
   }, [brushes])
 
   const brushList = brushes.map( (brush, i) => 

@@ -6,7 +6,6 @@ import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
 import Brushes from "./Brushes.jsx";
 import { initShaders } from "../WebGLUtils/cuon-utils.js";
 
-
 function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), palette = new Palette(), image }) {
 
   const [layers, setLayers] = useState([]);
@@ -18,8 +17,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
   const points = [];
   const position = { x: 0, y: 0 }
-  // let brush = brushBox.brushes[0]
-  // let color = rgbToGL(palette.colors[0])
 
   const VSHADER_SOURCE = `
     attribute vec4 a_Position;
@@ -40,11 +37,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
   useEffect(() => {
     addLayer();
-    console.log(brushBox)
   }, [])
   
   useEffect(() => {
-    console.log(layers)
     attachLayers();
     setLayer("0")
   }, [layers])
@@ -73,17 +68,21 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     const currentPoint = setPosition(event);
     const [dist, angle] = getStroke(lastPoint, currentPoint)
 
-    for ( let i = 0; i < dist; i += 0.01 ) {
+    const drawPoint = (position, size, color) => {
+      gl.vertexAttrib3f(a_Position, position[0], position[1], 0.0);
+      gl.vertexAttrib1f(a_PointSize, size);
+      gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3])
+      gl.drawArrays(gl.points, 0, 1)
+    }
+
+    for ( let i = 0; i < dist; i += 0.001 ) {
       const x = lastPoint.x + ( Math.sin(angle) * i );
       const y = lastPoint.y + ( Math.cos(angle) * i );
       points.push([x,y])
     }
 
     for (let i = 0; i < points.length; i+= 1) {
-      gl.vertexAttrib3f(a_Position, points[i][0], points[i][1], 0.0);
-      gl.vertexAttrib1f(a_PointSize, activeBrush.size);
-      gl.uniform4f(u_FragColor, activeColor[0], activeColor[1], activeColor[2], activeColor[3])
-      gl.drawArrays(gl.points, 0, 1)
+      drawPoint([points[i][0], points[i][1]], activeBrush.size, activeColor)
     }
   }
 
@@ -91,12 +90,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     const newCanvas = document.createElement('CANVAS')
     newCanvas.width = width;
     newCanvas.height = height;
-    const gl = newCanvas.getContext('webgl', { antialias: false })
+    const gl = newCanvas.getContext('webgl', { antialias: false, preserveDrawingBuffer: true })
 
     if (!gl) alert('Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox')
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) console.error('failed to initialize shaders')
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
 
     const layerName = `layer ${layers.length + 1}`
     setLayers([...layers, {name: layerName, canvas: newCanvas, context: gl}])
@@ -115,13 +112,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   }
 
   const saveStroke = ( points, brush, color, gl ) => {
-    setStrokeHistory([...strokeHistory, {
-      points: points,
-      brush: brush,
-      color: color,
-      context: gl
-    }])
-    console.log("strokes", strokeHistory)
+    if (points.length > 0) {
+      setStrokeHistory([...strokeHistory, {
+        points: points,
+        brush: brush,
+        color: color,
+        context: gl
+      }])
+    }
   }
 
   const layerControls = layers.map((layer, i) => 
@@ -135,6 +133,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     })
   }
   
+  const logProps = () => {
+    console.log(strokeHistory)
+  }
+
   return (
     <div className="workspace" id={name}>
       <div className="tools">
@@ -144,6 +146,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         <div className="toolbox" id="layer-controls" onClick={ e => setLayer(e.target.id) }>
           {layerControls}
           <button onClick={ addLayer }>add canvas</button>
+          <button onClick={ logProps }>log props</button>
           <h4>Layers</h4>
         </div>
       </div>
@@ -151,6 +154,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         onMouseDown={ setPosition } 
         onMouseMove={ e => draw(e, activeLayer.context) }
         onMouseUp={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
+        onMouseLeave={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
       />
     </div>
   )
