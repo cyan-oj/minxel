@@ -2,7 +2,7 @@ import BrushBox from "./BrushBox.js";
 import Palette from "./Palette.js";
 import "./Workspace.css"
 import { useState, useEffect } from "react";
-import PaletteBox from "./PaletteBox.jsx";
+import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
 import Brushes from "./Brushes.jsx";
 import { initShaders } from "../WebGLUtils/cuon-utils.js";
 
@@ -11,12 +11,15 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
   const [layers, setLayers] = useState([]);
   const [activeLayer, setActiveLayer] = useState();
-  const [activeColor, setActiveColor] = useState(palette.colors[0]);
+  const [activeColor, setActiveColor] = useState(rgbToGL(palette.colors[0]));
   const [activeBrush, setActiveBrush] = useState(brushBox.brushes[0]);
 
-  const points = []
+  const [strokeHistory, setStrokeHistory] = useState([]);
 
+  const points = [];
   const position = { x: 0, y: 0 }
+  // let brush = brushBox.brushes[0]
+  // let color = rgbToGL(palette.colors[0])
 
   const VSHADER_SOURCE = `
     attribute vec4 a_Position;
@@ -28,8 +31,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   `
 
   const FSHADER_SOURCE = `
+    precision mediump float;
+    uniform vec4 u_FragColor;
     void main() {
-      gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+      gl_FragColor = u_FragColor;
     }
   `
 
@@ -62,6 +67,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
     const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     const a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
+    const u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
 
     const lastPoint = JSON.parse(JSON.stringify(position));
     const currentPoint = setPosition(event);
@@ -70,12 +76,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     for ( let i = 0; i < dist; i += 0.01 ) {
       const x = lastPoint.x + ( Math.sin(angle) * i );
       const y = lastPoint.y + ( Math.cos(angle) * i );
-      points.push([x, y])
+      points.push([x,y])
     }
 
     for (let i = 0; i < points.length; i+= 1) {
       gl.vertexAttrib3f(a_Position, points[i][0], points[i][1], 0.0);
       gl.vertexAttrib1f(a_PointSize, activeBrush.size);
+      gl.uniform4f(u_FragColor, activeColor[0], activeColor[1], activeColor[2], activeColor[3])
       gl.drawArrays(gl.points, 0, 1)
     }
   }
@@ -99,12 +106,22 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     const layerId = Number(id)
     setActiveLayer(layers[layerId])
   }
-  const setColor = color => {
-    setActiveColor(color)
-  }
+
   const setBrush = idx => {
-    console.log("brush", idx)
-    setActiveBrush(brushBox.brushes[idx])
+    setActiveBrush(brushBox.brushes[idx]);
+  }
+  const setColor = color => {
+    setActiveColor(rgbToGL(color))
+  }
+
+  const saveStroke = ( points, brush, color, gl ) => {
+    setStrokeHistory([...strokeHistory, {
+      points: points,
+      brush: brush,
+      color: color,
+      context: gl
+    }])
+    console.log("strokes", strokeHistory)
   }
 
   const layerControls = layers.map((layer, i) => 
@@ -122,8 +139,8 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     <div className="workspace" id={name}>
       <div className="tools">
         <h1>minxel</h1>
-        <PaletteBox colors={ palette.colors } setColor={setColor} />
-        <Brushes brushes={ brushBox.brushes } setBrush={setBrush}/>
+        <PaletteBox colors={ palette.colors } setColor={ setColor } />
+        <Brushes brushes={ brushBox.brushes } setBrush={ setBrush }/>
         <div className="toolbox" id="layer-controls" onClick={ e => setLayer(e.target.id) }>
           {layerControls}
           <button onClick={ addLayer }>add canvas</button>
@@ -132,8 +149,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
       </div>
       <div className="layers" id="layers" style={{width: width, height: height}}
         onMouseDown={ setPosition } 
-        onMouseMove={ e => draw(e, activeLayer.context) }>
-      </div>
+        onMouseMove={ e => draw(e, activeLayer.context) }
+        onMouseUp={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
+      />
     </div>
   )
 }
