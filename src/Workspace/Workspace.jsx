@@ -45,6 +45,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   }, [layers])
   
   const setPosition = e => {
+    console.log("position event", e)
     const rect = e.target.getBoundingClientRect();
     position.x = ((e.clientX - rect.left) - width/2)/(width/2);
     position.y = (height/2 - (e.clientY - rect.top))/(height/2);
@@ -58,7 +59,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   }
 
   const draw = ( event, gl ) => {
-    if ( event.buttons !== 1 ) return;
+    if ( event.buttons !== 1 ) {
+      setPosition(event);
+      return;
+    }
 
     const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     const a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
@@ -78,15 +82,22 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     for ( let i = 0; i < dist; i += 0.001 ) {
       const x = lastPoint.x + ( Math.sin(angle) * i );
       const y = lastPoint.y + ( Math.cos(angle) * i );
-      points.push([x,y])
+
+      const point = {
+        position: [x, y],
+        size: activeBrush.size * event.pressure,
+        color: activeColor
+      }
+      drawPoint([x, y], point.size, point.color)
+      points.push(point)
     }
 
     for (let i = 0; i < points.length; i+= 1) {
-      drawPoint([points[i][0], points[i][1]], activeBrush.size, activeColor)
     }
   }
 
   const addLayer = () => {
+    const layerName = `layer ${layers.length + 1}`
     const newCanvas = document.createElement('CANVAS')
     newCanvas.width = width;
     newCanvas.height = height;
@@ -95,8 +106,11 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     if (!gl) alert('Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox')
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) console.error('failed to initialize shaders')
 
-    const layerName = `layer ${layers.length + 1}`
     setLayers([...layers, {name: layerName, canvas: newCanvas, context: gl}])
+  }
+
+  const removeLayer = () => { // todo
+    // brush stroke history will get fuckin complex here oh god
   }
 
   const setLayer = id => {
@@ -111,12 +125,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     setActiveColor(rgbToGL(color))
   }
 
-  const saveStroke = ( points, brush, color, gl ) => {
+  const saveStroke = ( points, gl ) => {
     if (points.length > 0) {
       setStrokeHistory([...strokeHistory, {
         points: points,
-        brush: brush,
-        color: color,
         context: gl
       }])
     }
@@ -151,10 +163,16 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         </div>
       </div>
       <div className="layers" id="layers" style={{width: width, height: height}}
-        onMouseDown={ setPosition } 
-        onMouseMove={ e => draw(e, activeLayer.context) }
-        onMouseUp={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
-        onMouseLeave={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
+        // onMouseDown={ setPosition } 
+        // onMouseEnter={ setPosition }
+        // onMouseMove={ e => draw(e, activeLayer.context) }
+        // onMouseUp={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
+        // onMouseLeave={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
+        onPointerDown={ setPosition } 
+        onPointerEnter={ setPosition }
+        onPointerMove={ e => draw(e, activeLayer.context) }
+        onPointerUp={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
+        onPointerLeave={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
       />
     </div>
   )
