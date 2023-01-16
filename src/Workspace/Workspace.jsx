@@ -1,10 +1,11 @@
+import { useState, useEffect } from "react";
+import { initShaders } from "../WebGLUtils/cuon-utils.js";
+import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
 import BrushBox from "./BrushBox.js";
 import Palette from "./Palette.js";
-import "./Workspace.css"
-import { useState, useEffect } from "react";
-import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
 import Brushes from "./Brushes.jsx";
-import { initShaders } from "../WebGLUtils/cuon-utils.js";
+import "./Workspace.css"
+import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
 
 function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), palette = new Palette(), image }) {
 
@@ -18,34 +19,15 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   const points = [];
   const position = { x: 0, y: 0 }
 
-  const VSHADER_SOURCE = `
-    attribute vec4 a_Position;
-    attribute float a_PointSize;
-    void main() {
-      gl_Position = a_Position;
-      gl_PointSize = a_PointSize;
-    }
-  `
-
-  const FSHADER_SOURCE = `
-    precision mediump float;
-    uniform vec4 u_FragColor;
-    void main() {
-      gl_FragColor = u_FragColor;
-    }
-  `
-
   useEffect(() => {
     addLayer();
   }, [])
-  
   useEffect(() => {
     attachLayers();
     setLayer("0")
   }, [layers])
   
   const setPosition = e => {
-    console.log("position event", e)
     const rect = e.target.getBoundingClientRect();
     position.x = ((e.clientX - rect.left) - width/2)/(width/2);
     position.y = (height/2 - (e.clientY - rect.top))/(height/2);
@@ -72,12 +54,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     const currentPoint = setPosition(event);
     const [dist, angle] = getStroke(lastPoint, currentPoint)
 
-    const drawPoint = (position, size, color) => {
+    const drawPoint = (gl, position, size, color) => {
       gl.vertexAttrib3f(a_Position, position[0], position[1], 0.0);
       gl.vertexAttrib1f(a_PointSize, size);
       gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3])
       gl.drawArrays(gl.points, 0, 1)
     }
+
+    console.log(event.pressure)
 
     for ( let i = 0; i < dist; i += 0.001 ) {
       const x = lastPoint.x + ( Math.sin(angle) * i );
@@ -88,11 +72,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         size: activeBrush.size * event.pressure,
         color: activeColor
       }
-      drawPoint([x, y], point.size, point.color)
-      points.push(point)
-    }
 
-    for (let i = 0; i < points.length; i+= 1) {
+      drawPoint(gl, point.position, point.size, point.color)
+      points.push(point)
     }
   }
 
@@ -108,7 +90,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
     setLayers([...layers, {name: layerName, canvas: newCanvas, context: gl}])
   }
-
   const removeLayer = () => { // todo
     // brush stroke history will get fuckin complex here oh god
   }
@@ -117,7 +98,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     const layerId = Number(id)
     setActiveLayer(layers[layerId])
   }
-
   const setBrush = idx => {
     setActiveBrush(brushBox.brushes[idx]);
   }
@@ -144,10 +124,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
       layerParent.appendChild(layer.canvas);
     })
   }
-  
-  const logProps = () => {
-    console.log(strokeHistory)
-  }
 
   return (
     <div className="workspace" id={name}>
@@ -158,16 +134,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         <div className="toolbox" id="layer-controls" onClick={ e => setLayer(e.target.id) }>
           {layerControls}
           <button onClick={ addLayer }>add canvas</button>
-          <button onClick={ logProps }>log props</button>
           <h4>Layers</h4>
         </div>
       </div>
       <div className="layers" id="layers" style={{width: width, height: height}}
-        // onMouseDown={ setPosition } 
-        // onMouseEnter={ setPosition }
-        // onMouseMove={ e => draw(e, activeLayer.context) }
-        // onMouseUp={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
-        // onMouseLeave={ e => saveStroke( points, activeBrush, activeColor, activeLayer.context ) }
         onPointerDown={ setPosition } 
         onPointerEnter={ setPosition }
         onPointerMove={ e => draw(e, activeLayer.context) }
