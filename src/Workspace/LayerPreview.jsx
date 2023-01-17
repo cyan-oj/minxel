@@ -6,12 +6,12 @@ function LayerPreview( { layer, id, points } ) {
 
   useEffect(() => {
     const ctx = preview.current.getContext('2d')
-    ctx.drawImage(layer.canvas, 0, 0)
+    ctx.drawImage(layer.canvas, 0, 0, 50, 50)
   }, [points])
 
   return (
     <div className="layer-preview" id={id} >
-      <canvas ref={ preview } width={50} height={50}></canvas>
+      <canvas ref={ preview } className="layer-thumbnail" width={50} height={50}></canvas>
       <p>{ layer.name }</p>
     </div>
   )

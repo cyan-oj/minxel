@@ -57,8 +57,18 @@ canvas {
   flex-direction: column-reverse;
 }
 
+.layer-preview{
+  display: flex;
+  margin-top: .2em
+}
 .layer-preview:hover {
   background-color: var(--button-active);
+}
+.layer-thumbnail {
+  border: solid 1px var(--border)
+}
+.layer-preview>p{
+  margin-left: .5em
 }
 
 .swatch {
