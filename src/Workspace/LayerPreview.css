@@ -6,9 +6,11 @@
   padding-right: .4em;
   border-radius: 2px;
 }
+
 .layer-preview:hover {
   background-color: var(--button-active);
 }
+
 .layer-thumbnail {
   border: solid 1px var(--border);
 }

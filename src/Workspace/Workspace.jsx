@@ -19,7 +19,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
   const [strokeHistory, setStrokeHistory] = useState([]);
 
-
   const points = [];
   const position = { x: 0, y: 0 }
 
