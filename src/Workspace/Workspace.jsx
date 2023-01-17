@@ -6,6 +6,8 @@ import Palette from "./Palette.js";
 import Brushes from "./Brushes.jsx";
 import "./Workspace.css"
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
+import { getStroke } from "../utils/glHelpers.js";
+import LayerPreview from "./LayerPreview.jsx";
 
 function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), palette = new Palette(), image }) {
 
@@ -32,12 +34,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     position.x = ((e.clientX - rect.left) - width/2)/(width/2);
     position.y = (height/2 - (e.clientY - rect.top))/(height/2);
     return position;
-  }
-
-  const getStroke = (point1, point2) => { 
-    const distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
-    const angle = Math.atan2( point2.x - point1.x, point2.y - point1.y );
-    return [distance, angle]
   }
 
   const draw = ( event, gl ) => {
@@ -97,6 +93,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   const setLayer = id => {
     const layerId = Number(id)
     setActiveLayer(layers[layerId])
+    console.log(id)
   }
   const setBrush = idx => {
     setActiveBrush(brushBox.brushes[idx]);
@@ -115,7 +112,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   }
 
   const layerControls = layers.map((layer, i) => 
-    <button key={layer.name} id={i}>{layer.name}</button>
+    <LayerPreview key={layer.name} id={i} layer={layer} points={ points }/>
   );
 
   const attachLayers = () => {

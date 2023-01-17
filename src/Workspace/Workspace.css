@@ -57,6 +57,10 @@ canvas {
   flex-direction: column-reverse;
 }
 
+.layer-preview:hover {
+  background-color: var(--button-active);
+}
+
 .swatch {
   height: 40px;
   width: 40px;
