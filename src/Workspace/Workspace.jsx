@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { initShaders } from "../WebGLUtils/cuon-utils.js";
 import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
 import BrushBox from "./BrushBox.js";
@@ -8,6 +8,7 @@ import "./Workspace.css"
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
 import { getStroke } from "../utils/glHelpers.js";
 import LayerPreview from "./LayerPreview.jsx";
+import DnDDemo from "./DnDDemo.jsx";
 
 function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), palette = new Palette(), image }) {
 
@@ -17,6 +18,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   const [activeBrush, setActiveBrush] = useState(brushBox.brushes[0]);
 
   const [strokeHistory, setStrokeHistory] = useState([]);
+
 
   const points = [];
   const position = { x: 0, y: 0 }
@@ -112,7 +114,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   }
 
   const layerControls = layers.map((layer, i) => 
-    <LayerPreview key={layer.name} id={i} layer={layer} points={ points }/>
+    <LayerPreview key={layer.name} id={i} layer={layer} points={ points } />
   );
 
   const attachLayers = () => {
@@ -133,6 +135,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
           <button onClick={ addLayer }>add canvas</button>
           <h4>Layers</h4>
         </div>
+        <DnDDemo />
       </div>
       <div className="layers" id="layers" style={{width: width, height: height}}
         onPointerDown={ setPosition } 

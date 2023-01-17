@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import "./LayerPreview.css"
 
 function LayerPreview( { layer, id, points } ) {
 
@@ -11,8 +12,8 @@ function LayerPreview( { layer, id, points } ) {
 
   return (
     <div className="layer-preview" id={id} >
-      <canvas ref={ preview } className="layer-thumbnail" width={50} height={50}></canvas>
-      <p>{ layer.name }</p>
+      <canvas ref={ preview } id={id} className="layer-thumbnail" width={50} height={50}></canvas>
+      <p id={id} >{ layer.name }</p>
     </div>
   )
 }
