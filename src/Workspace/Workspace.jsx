@@ -59,7 +59,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
     console.log(event.pressure)
 
-    for ( let i = 0; i < dist; i += 0.001 ) {
+    for ( let i = 0; i < dist; i += 0.001) {
       const x = lastPoint.x + ( Math.sin(angle) * i );
       const y = lastPoint.y + ( Math.cos(angle) * i );
 
