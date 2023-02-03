@@ -8,22 +8,43 @@ import "./Workspace.css"
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
 import { getStroke } from "../utils/glHelpers.js";
 import LayerPreview from "./LayerPreview.jsx";
+import { useRef } from "react";
 
 function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), palette = new Palette(), image }) {
 
-  const [layers, setLayers] = useState([]);
-  const [activeLayer, setActiveLayer] = useState();
-  const [activeColor, setActiveColor] = useState(rgbToGL(palette.colors[0]));
-  const [activeBrush, setActiveBrush] = useState(brushBox.brushes[0]);
+  const [ layers, setLayers ] = useState([]);
+  const [ activeLayer, setActiveLayer ] = useState();
+  const [ activeColor, setActiveColor ] = useState(rgbToGL( palette.colors[0] ));
+  const [ activeBrush, setActiveBrush ] = useState( brushBox.brushes[0] );
 
   const [strokeHistory, setStrokeHistory] = useState([]);
 
   const points = [];
   const position = { x: 0, y: 0 }
 
+  const dragLayer = useRef();
+
+  const dragStart = ( index ) => {
+    console.log("start drag", index)
+    dragLayer.current = index
+  }
+
+  const dragEnter = ( index ) => {
+    console.log("drag enter", index )
+    const currentLayer = dragLayer.current;
+    setLayers( oldLayers => {
+      const newLayers = [...oldLayers]
+      const dropLayer = newLayers.splice( currentLayer, 1 )[0]
+      newLayers.splice( index, 0, dropLayer )
+      dragLayer.current = index
+      return newLayers
+    })
+  }
+
   useEffect(() => {
     addLayer();
   }, [])
+
   useEffect(() => {
     attachLayers();
     setLayer("0")
@@ -31,37 +52,37 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   
   const setPosition = e => {
     const rect = e.target.getBoundingClientRect();
-    position.x = ((e.clientX - rect.left) - width/2)/(width/2);
-    position.y = (height/2 - (e.clientY - rect.top))/(height/2);
+    position.x = (( e.clientX - rect.left ) - width/2 )/( width/2 );
+    position.y = ( height/2 - ( e.clientY - rect.top) )/( height/2 );
     return position;
   }
 
   const draw = ( event, gl ) => {
     if ( event.buttons !== 1 ) {
-      setPosition(event);
+      setPosition( event );
       return;
     }
 
-    const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    const a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
-    const u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+    const a_Position = gl.getAttribLocation( gl.program, 'a_Position' );
+    const a_PointSize = gl.getAttribLocation( gl.program, 'a_PointSize' );
+    const u_FragColor = gl.getUniformLocation( gl.program, 'u_FragColor' );
 
-    const lastPoint = JSON.parse(JSON.stringify(position));
-    const currentPoint = setPosition(event);
-    const [dist, angle] = getStroke(lastPoint, currentPoint)
+    const lastPoint = JSON.parse(JSON.stringify( position ));
+    const currentPoint = setPosition( event );
+    const [ dist, angle ] = getStroke( lastPoint, currentPoint )
 
-    const drawPoint = (gl, position, size, color) => {
-      gl.vertexAttrib3f(a_Position, position[0], position[1], 0.0);
-      gl.vertexAttrib1f(a_PointSize, size);
-      gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3])
-      gl.drawArrays(gl.points, 0, 1)
+    const drawPoint = ( gl, position, size, color ) => {
+      gl.vertexAttrib3f( a_Position, position[0], position[1], 0.0 );
+      gl.vertexAttrib1f( a_PointSize, size );
+      gl.uniform4f( u_FragColor, color[0], color[1], color[2], color[3] )
+      gl.drawArrays( gl.points, 0, 1 )
     }
 
     console.log(event.pressure)
 
     for ( let i = 0; i < dist; i += 0.001 ) {
-      const x = lastPoint.x + ( Math.sin(angle) * i );
-      const y = lastPoint.y + ( Math.cos(angle) * i );
+      const x = lastPoint.x + ( Math.sin( angle ) * i );
+      const y = lastPoint.y + ( Math.cos( angle ) * i );
 
       const point = {
         position: [x, y],
@@ -69,8 +90,8 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         color: activeColor
       }
 
-      drawPoint(gl, point.position, point.size, point.color)
-      points.push(point)
+      drawPoint( gl, point.position, point.size, point.color )
+      points.push( point )
     }
   }
 
@@ -84,8 +105,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     if (!gl) alert('Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox')
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) console.error('failed to initialize shaders')
 
-    setLayers([...layers, {name: layerName, canvas: newCanvas, context: gl}])
+    setLayers([...layers, { name: layerName, canvas: newCanvas, context: gl }])
   }
+
   const removeLayer = () => { // todo
     // brush stroke history will get fuckin complex here oh god
   }
@@ -112,7 +134,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   }
 
   const layerControls = layers.map((layer, i) => 
-    <LayerPreview key={layer.name} id={i} layer={layer} points={ points } />
+    <div
+      key={layer.name}
+      draggable
+      onDragStart={ e => dragStart( i )}
+      onDragEnter={ e => dragEnter( i )}
+    >
+      <LayerPreview id={i} layer={layer} points={ points } />
+    </div>
   );
 
   const attachLayers = () => {
@@ -128,13 +157,15 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         <h1>minxel</h1>
         <PaletteBox colors={ palette.colors } setColor={ setColor } />
         <Brushes brushes={ brushBox.brushes } setBrush={ setBrush }/>
-        <div className="toolbox" id="layer-controls" onClick={ e => setLayer(e.target.id) }>
-          {layerControls}
+        <div className="toolbox" id="layer-controls" 
+          onMouseUp={ e => setLayer( e.target.id ) }
+        >
+          { layerControls }
           <button onClick={ addLayer }>add canvas</button>
           <h4>Layers</h4>
         </div>
       </div>
-      <div className="layers" id="layers" style={{width: width, height: height}}
+      <div className="layers" id="layers" style={{ width: width, height: height }}
         onPointerDown={ setPosition } 
         onPointerEnter={ setPosition }
         onPointerMove={ e => draw(e, activeLayer.context) }
