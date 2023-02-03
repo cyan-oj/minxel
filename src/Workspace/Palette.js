@@ -18,7 +18,6 @@ class Palette {
     this.colors.splice(index, 1)
     return true;
   }
-
   //movecolor
 }
 

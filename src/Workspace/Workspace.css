@@ -29,6 +29,8 @@ canvas {
   left: 10px;
   top: 42px;
   text-align: center;
+  max-width: 16%;
+  min-width: 200px;
 }
 
 .toolbox{
@@ -39,6 +41,7 @@ canvas {
   padding: 12px;
   margin: 8px;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
+  /* max-width: 100%; */
 }
 
 .layers {
@@ -51,7 +54,6 @@ canvas {
 
 .layers > * {
   position: absolute;
-  
 }
 .toolbox#layer-controls {
   flex-direction: column-reverse;
@@ -63,6 +65,7 @@ canvas {
   margin: 0;
   padding: 0;
   border: none;
+  font-size: 32px;
 }
 .swatch:hover {
   border: none;
