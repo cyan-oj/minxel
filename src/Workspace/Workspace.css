@@ -65,6 +65,7 @@ canvas {
   margin: 0;
   padding: 0;
   border: none;
+  font-size: 32px;
 }
 .swatch:hover {
   border: none;

@@ -23,7 +23,7 @@ function PaletteBox({ colors, setColor }) {
     <>
       <div className="toolbox" onClick={ e => setColor(e.target.value) }>
         { colorsList }
-        <button className="swatch" id="addColor">+</button>
+        <button className="swatch" id="addColor">⚙</button>
       </div>
     </>
   )
