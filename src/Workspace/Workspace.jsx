@@ -4,11 +4,10 @@ import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
 import BrushBox from "./BrushBox.js";
 import Palette from "./Palette.js";
 import Brushes from "./Brushes.jsx";
-import "./Workspace.css"
+import Layers from "./Layers.jsx";
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
 import { getStroke } from "../utils/glHelpers.js";
-import LayerPreview from "./LayerPreview.jsx";
-import { useRef } from "react";
+import "./Workspace.css"
 
 function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), palette = new Palette(), image }) {
 
@@ -21,25 +20,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
   const points = [];
   const position = { x: 0, y: 0 }
-
-  const dragLayer = useRef();
-
-  const dragStart = ( index ) => {
-    console.log("start drag", index)
-    dragLayer.current = index
-  }
-
-  const dragEnter = ( index ) => {
-    console.log("drag enter", index )
-    const currentLayer = dragLayer.current;
-    setLayers( oldLayers => {
-      const newLayers = [...oldLayers]
-      const dropLayer = newLayers.splice( currentLayer, 1 )[0]
-      newLayers.splice( index, 0, dropLayer )
-      dragLayer.current = index
-      return newLayers
-    })
-  }
 
   useEffect(() => {
     addLayer();
@@ -133,17 +113,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     }
   }
 
-  const layerControls = layers.map((layer, i) => 
-    <div
-      key={layer.name}
-      draggable
-      onDragStart={ e => dragStart( i )}
-      onDragEnter={ e => dragEnter( i )}
-    >
-      <LayerPreview id={i} layer={layer} points={ points } />
-    </div>
-  );
-
   const attachLayers = () => {
     const layerParent = document.getElementById("layers")
     layers.forEach(layer => {
@@ -157,13 +126,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
         <h1>minxel</h1>
         <PaletteBox colors={ palette.colors } setColor={ setColor } />
         <Brushes brushes={ brushBox.brushes } setBrush={ setBrush }/>
-        <div className="toolbox" id="layer-controls" 
-          onMouseUp={ e => setLayer( e.target.id ) }
-        >
-          { layerControls }
-          <button onClick={ addLayer }>add canvas</button>
-          <h4>Layers</h4>
-        </div>
+        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points } />
       </div>
       <div className="layers" id="layers" style={{ width: width, height: height }}
         onPointerDown={ setPosition } 

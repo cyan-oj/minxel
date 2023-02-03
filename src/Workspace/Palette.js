@@ -2,6 +2,7 @@ class Palette {
   constructor(name = "palette", colors = [[0, 0, 0], [255, 255, 255]], max = 256 ) {
     this.name = name
     this.colors = colors
+    this.max = max
   }
 
   color(index) {
@@ -9,7 +10,8 @@ class Palette {
   }
 
   addColor(color = [0, 0, 0]) {
-    if (!color.length === 3) throw `color must be an array of 3 integers from 0 - 255`
+    if ( !color.length === 3 ) throw `color must be an array of 3 integers from 0 - 255`
+    if ( this.colors.length >= max ) throw `palette already at max colors`
     this.colors.push(color)
   }
 
