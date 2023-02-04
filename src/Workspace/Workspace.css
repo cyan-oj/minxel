@@ -35,6 +35,7 @@ canvas {
 
 .toolbox{
   display: flex;
+  flex-wrap: wrap;
   background-color: var(--base);
   border: solid 1px var(--border);
   border-radius: 4px;
@@ -80,6 +81,7 @@ canvas {
 .brush {
   height: 36px;
   width: 36px;
+  font-size: 15px;
   margin: 2px;
   border: none;
 }
