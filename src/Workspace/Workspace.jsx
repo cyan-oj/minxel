@@ -9,11 +9,17 @@ import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
 import { getStroke } from "../utils/glHelpers.js";
 import "./Workspace.css"
 
-function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), palette = new Palette(), image }) {
+const defaultPalette = [
+  [0, 0, 0],
+  [255, 255, 255]
+]
+
+function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), image }) {
 
   const [ layers, setLayers ] = useState([]);
+  const [ colors, setColors ] = useState(defaultPalette);
   const [ activeLayer, setActiveLayer ] = useState();
-  const [ activeColor, setActiveColor ] = useState(rgbToGL( palette.colors[0] ));
+  const [ activeColor, setActiveColor ] = useState(rgbToGL( colors[0] ));
   const [ activeBrush, setActiveBrush ] = useState( brushBox.brushes[0] );
 
   const [strokeHistory, setStrokeHistory] = useState([]);
@@ -49,7 +55,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
 
     const lastPoint = JSON.parse(JSON.stringify( position ));
     const currentPoint = setPosition( event );
-    const [ dist, angle ] = getStroke( lastPoint, currentPoint )
+    const [ dist, angle ] = getStroke( lastPoint, currentPoint );
 
     const drawPoint = ( gl, position, size, color ) => {
       gl.vertexAttrib3f( a_Position, position[0], position[1], 0.0 );
@@ -124,9 +130,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
     <div className="workspace" id={name}>
       <div className="tools">
         <h1>minxel</h1>
-        <PaletteBox colors={ palette.colors } setColor={ setColor } />
+        <PaletteBox colors={ colors } setColors={ setColors } setColor={ setColor } />
         <Brushes brushes={ brushBox.brushes } setBrush={ setBrush }/>
-        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points } />
+        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>
       </div>
       <div className="layers" id="layers" style={{ width: width, height: height }}
         onPointerDown={ setPosition } 

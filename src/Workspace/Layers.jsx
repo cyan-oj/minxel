@@ -1,13 +1,11 @@
 import { useRef } from "react"
 import LayerPreview from "./LayerPreview";
 
-function Layers( { layers, setLayers, addLayer, setLayer, points }) {
+function Layers({ layers, setLayers, addLayer, setLayer, points }) {
 
   const dragLayer = useRef();
 
-  const dragStart = ( index ) => {
-    dragLayer.current = index
-  }
+  const dragStart = ( index ) => dragLayer.current = index
 
   const dragEnter = ( index ) => {
     const currentLayer = dragLayer.current;
@@ -20,7 +18,7 @@ function Layers( { layers, setLayers, addLayer, setLayer, points }) {
     })
   }
 
-  const layerControls = layers.map((layer, i) => 
+  const layerControls = layers.map(( layer, i ) => 
     <div key={ layer.name } draggable
       onDragStart={ e => dragStart( i )}
       onDragEnter={ e => dragEnter( i )}

@@ -9,12 +9,10 @@ function Brushes({ brushes, setBrush }) {
   )
 
   return (
-    <>
-      <div className="toolbox" onClick={ e => setBrush(e.target.value)}>
-        { brushList }
-        <button className="brush" id="addBrush">+</button>
-      </div>
-    </>
+    <div className="toolbox" onMouseUp={ e => setBrush(e.target.value)}>
+      { brushList }
+      <button className="brush" id="addBrush">+</button>
+    </div>
   )
 }
 
