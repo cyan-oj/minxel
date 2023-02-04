@@ -14,9 +14,6 @@ function PaletteBox({ colors, setColors, setColor }) {
 
   const dragColor = useRef();
   
-  // useEffect(() => {
-  // }, [colors])
-  
   const dragStart = ( index ) => {
     dragColor.current = index
   } 
@@ -32,10 +29,10 @@ function PaletteBox({ colors, setColors, setColor }) {
     })
   }
 
-  const colorsList = colors.map(( color, i) => 
+  const colorsList = colors.map(( color, index ) => 
     <button key={ color[0] } className="swatch" style={{ backgroundColor: colorString(color), color: colorString(color) }} value={ `${color}` } draggable
-      onDragStart={ e => dragStart( i)}
-      onDragEnter={ e => dragEnter( i )}
+      onDragStart={ e => dragStart( index )}
+      onDragEnter={ e => dragEnter( index )}
     >■</button>  
   )
 

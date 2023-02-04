@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { initShaders } from "../WebGLUtils/cuon-utils.js";
 import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
 import BrushBox from "./BrushBox.js";
-import Palette from "./Palette.js";
 import Brushes from "./Brushes.jsx";
+import Brush from "./Brush.js";
 import Layers from "./Layers.jsx";
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
 import { getStroke } from "../utils/glHelpers.js";
@@ -14,13 +14,21 @@ const defaultPalette = [
   [255, 255, 255]
 ]
 
-function Workspace({ name = 'untitled', height = '256', width = '256', brushBox = new BrushBox(), image }) {
+const defaultBrushes = [
+  new Brush( 1, "pen" ),
+  new Brush( 5, "pen" ),
+  new Brush( 50, "pen" ),
+  new Brush( 200, "pen" )
+]
+
+function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
 
   const [ layers, setLayers ] = useState([]);
   const [ colors, setColors ] = useState(defaultPalette);
+  const [ brushes, setBrushes ] = useState(defaultBrushes)
   const [ activeLayer, setActiveLayer ] = useState();
   const [ activeColor, setActiveColor ] = useState(rgbToGL( colors[0] ));
-  const [ activeBrush, setActiveBrush ] = useState( brushBox.brushes[0] );
+  const [ activeBrush, setActiveBrush ] = useState( brushes[0] );
 
   const [strokeHistory, setStrokeHistory] = useState([]);
 
@@ -99,15 +107,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
   }
 
   const setLayer = id => {
-    const layerId = Number(id)
-    setActiveLayer(layers[layerId])
-    console.log(id)
+    const layerId = Number( id )
+    setActiveLayer( layers[ layerId ])
   }
-  const setBrush = idx => {
-    setActiveBrush(brushBox.brushes[idx]);
+  const setBrush = index => {
+    setActiveBrush( brushes[ index ]);
   }
   const setColor = color => {
-    setActiveColor(rgbToGL(color))
+    setActiveColor( rgbToGL( color ))
   }
 
   const saveStroke = ( points, gl ) => {
@@ -131,7 +138,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', brushBox 
       <div className="tools">
         <h1>minxel</h1>
         <PaletteBox colors={ colors } setColors={ setColors } setColor={ setColor } />
-        <Brushes brushes={ brushBox.brushes } setBrush={ setBrush }/>
+        <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>
       </div>
       <div className="layers" id="layers" style={{ width: width, height: height }}
