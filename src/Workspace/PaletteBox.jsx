@@ -14,9 +14,7 @@ function PaletteBox({ colors, setColors, setColor }) {
 
   const dragColor = useRef();
   
-  const dragStart = ( index ) => {
-    dragColor.current = index
-  } 
+  const dragStart = ( index ) => dragColor.current = index
 
   const dragEnter = ( index ) => {
     const currentColor = dragColor.current;

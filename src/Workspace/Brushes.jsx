@@ -4,9 +4,7 @@ function Brushes({ brushes, setBrushes, setBrush }) {
 
   const dragBrush = useRef();
   
-  const dragStart = ( index ) => {
-    dragBrush.current = index
-  } 
+  const dragStart = ( index ) => dragBrush.current = index
 
   const dragEnter = ( index ) => {
     const currentBrush = dragBrush.current;
