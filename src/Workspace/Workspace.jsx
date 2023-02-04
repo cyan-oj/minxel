@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { initShaders } from "../WebGLUtils/cuon-utils.js";
-import PaletteBox, { rgbToGL } from "./PaletteBox.jsx";
+import PaletteBox, { rgbToGL } from "./Palette.jsx";
 import BrushBox from "./BrushBox.js";
 import Brushes from "./Brushes.jsx";
 import Brush from "./Brush.js";
@@ -28,7 +28,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ brushes, setBrushes ] = useState(defaultBrushes)
   const [ activeLayer, setActiveLayer ] = useState();
   const [ activeColor, setActiveColor ] = useState(rgbToGL( colors[0] ));
-  const [ activeBrush, setActiveBrush ] = useState( brushes[0] );
+  const [ activeBrush, setActiveBrush ] = useState( defaultBrushes[0] );
 
   const [strokeHistory, setStrokeHistory] = useState([]);
 
