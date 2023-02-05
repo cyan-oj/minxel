@@ -109,30 +109,47 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     setActiveColor( rgbToGL( color ))
   }
 
+  const redo = strokeFuture => {
+    if (strokeFuture.length < 1) return
+    const newStrokeFuture = [ ...strokeFuture ]
+    const stroke = newStrokeFuture.pop()
+    setStrokeFuture( newStrokeFuture )
+    console.log("stroke - add", stroke)
+    saveStroke( strokeHistory, stroke.points, stroke.layer )
+
+    const gl = stroke.layer.context
+    const glAttributes = {
+      a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
+      a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
+      u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
+    }
+
+    stroke.points.forEach( point => {
+      drawPoint( gl, point.position, point.size, point.color, glAttributes )
+    })
+  }
+
   const undo = strokeHistory => {
-    let stroke = []
     const newStrokeHistory = { ...strokeHistory }
-    stroke = newStrokeHistory[activeLayer.id].strokes.pop()
-    
+    const stroke = newStrokeHistory[activeLayer.id].strokes.pop()
     setStrokeHistory( newStrokeHistory )
 
     console.log("strokeHistory - remove", strokeHistory[activeLayer.id].strokes)
-
-    setStrokeFuture( oldStrokeFuture => {
-      const newStrokeFuture = [...oldStrokeFuture]
-      newStrokeFuture.push({ context: activeLayer.context, points: stroke })
-      return newStrokeFuture
-    })
+    
+    const newStrokeFuture = [...strokeFuture]
+    newStrokeFuture.push({ layer: activeLayer, points: stroke })
+    setStrokeFuture( newStrokeFuture )
 
     const gl = strokeHistory[ activeLayer.id ].context
+    const glAttributes = {
+      a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
+      a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
+      u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
+    }
+    
     gl.clear(gl.COLOR_BUFFER_BIT)
-
+    
     strokeHistory[activeLayer.id].strokes.forEach( stroke => {
-      const glAttributes = {
-        a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
-        a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
-        u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
-      }
       stroke.forEach( point => {
         drawPoint( gl, point.position, point.size, point.color, glAttributes )
       })
@@ -160,6 +177,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       <div className="tools">
         <h1>minxel</h1>
         <button onClick={ e => undo( strokeHistory ) }>undo</button>
+        <button onClick={ e => redo( strokeFuture ) }>redo</button>
         <PaletteBox colors={ colors } setColors={ setColors } setColor={ setColor } />
         <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>
@@ -169,7 +187,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         onPointerEnter={ setPosition }
         onPointerMove={ e => draw(e, activeLayer.context) }
         onPointerUp={ e => saveStroke( strokeHistory, points, activeLayer ) }
-        // onPointerLeave={ e => saveStroke( points, activeLayer ) }
+        onPointerLeave={ e => saveStroke( strokeHistory, points, activeLayer ) }
       />
     </div>
   )
