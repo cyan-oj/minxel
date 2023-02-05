@@ -109,15 +109,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     setActiveColor( rgbToGL( color ))
   }
 
-  const undo = () => {
+  const undo = strokeHistory => {
     let stroke = []
+    const newStrokeHistory = { ...strokeHistory }
+    stroke = newStrokeHistory[activeLayer.id].strokes.pop()
     
-    setStrokeHistory( oldStrokeHistory => {
-      const newStrokeHistory = { ...oldStrokeHistory }
-      stroke = newStrokeHistory[activeLayer.id].strokes.pop()
-      console.log("stroke", stroke)
-      return newStrokeHistory
-    })
+    setStrokeHistory( newStrokeHistory )
+
+    console.log("strokeHistory - remove", strokeHistory[activeLayer.id].strokes)
 
     setStrokeFuture( oldStrokeFuture => {
       const newStrokeFuture = [...oldStrokeFuture]
@@ -129,8 +128,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     strokeHistory[activeLayer.id].strokes.forEach( stroke => {
-      console.log("stroke", stroke)
-      console.log("first point", stroke[0])
       const glAttributes = {
         a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
         a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
@@ -142,30 +139,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     })
   }
 
-  // {
-  //   0: {
-  //          context: gl, 
-  //          points: [[points], [points]] 
-  //      },
-  //   1: {
-  //          context: gl, 
-  //          points: [[points], [points]] 
-  //      },
-  //   2: {
-  //          context: gl, 
-  //          points: [[points], [points]] 
-  //      },
-  // }
-
-  const saveStroke = ( points, layer ) => {
+  const saveStroke = ( strokeHistory, points, layer ) => {
     if (points.length > 0) {
-      setStrokeHistory( oldStrokeHistory => {
-        const newStrokeHistory = { ...oldStrokeHistory }
-        newStrokeHistory[layer.id] ? newStrokeHistory[layer.id].strokes.push(points) : newStrokeHistory[layer.id] = { context: layer.context, strokes: [points] }
-        return newStrokeHistory
-      })
+      const newStrokeHistory = { ...strokeHistory }
+      newStrokeHistory[ layer.id ] ? newStrokeHistory[ layer.id ].strokes.push( points ) : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [points] }
+      setStrokeHistory( newStrokeHistory )
+      console.log("strokeHistory - add", newStrokeHistory[layer.id].strokes)
     }
-    console.log(strokeHistory)
   }
 
   const attachLayers = () => {
@@ -179,7 +159,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     <div className="workspace" id={name}>
       <div className="tools">
         <h1>minxel</h1>
-        <button onClick={ undo }>undo</button>
+        <button onClick={ e => undo( strokeHistory ) }>undo</button>
         <PaletteBox colors={ colors } setColors={ setColors } setColor={ setColor } />
         <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>
@@ -188,8 +168,8 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         onPointerDown={ setPosition } 
         onPointerEnter={ setPosition }
         onPointerMove={ e => draw(e, activeLayer.context) }
-        onPointerUp={ e => saveStroke( points, activeLayer ) }
-        onPointerLeave={ e => saveStroke( points, activeLayer ) }
+        onPointerUp={ e => saveStroke( strokeHistory, points, activeLayer ) }
+        // onPointerLeave={ e => saveStroke( points, activeLayer ) }
       />
     </div>
   )
