@@ -10,3 +10,12 @@ export const drawPoint = ( gl, position, size, color, glAttributes ) => {
   gl.uniform4f( glAttributes.u_FragColor, color[0], color[1], color[2], color[3] )
   gl.drawArrays( gl.points, 0, 1 )
 }
+
+export const getAttributes = gl => {
+  const glAttributes = {
+    a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
+    a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
+    u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
+  }
+  return glAttributes
+}

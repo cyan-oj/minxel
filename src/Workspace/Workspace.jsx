@@ -5,7 +5,7 @@ import Brushes from "./Brushes.jsx";
 import Brush from "./Brush.js";
 import Layers from "./Layers.jsx";
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
-import { getStroke, drawPoint } from "../utils/glHelpers.js";
+import { getStroke, drawPoint, getAttributes } from "../utils/glHelpers.js";
 import "./Workspace.css"
 
 const defaultPalette = [[ 0, 0, 0 ], [ 255, 255, 255 ]]
@@ -53,11 +53,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       return;
     }
 
-    const glAttributes = {
-      a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
-      a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
-      u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
-    }
+    const glAttributes = getAttributes( gl )
 
     const lastPoint = JSON.parse(JSON.stringify( position ));
     const currentPoint = setPosition( event );
@@ -118,11 +114,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     saveStroke( strokeHistory, stroke.points, stroke.layer )
 
     const gl = stroke.layer.context
-    const glAttributes = {
-      a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
-      a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
-      u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
-    }
+    const glAttributes = getAttributes( gl )
 
     stroke.points.forEach( point => {
       drawPoint( gl, point.position, point.size, point.color, glAttributes )
@@ -130,6 +122,8 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const undo = strokeHistory => {
+    if (strokeHistory[activeLayer.id].strokes.length < 1 ) return
+
     const newStrokeHistory = { ...strokeHistory }
     const stroke = newStrokeHistory[activeLayer.id].strokes.pop()
     setStrokeHistory( newStrokeHistory )
@@ -141,11 +135,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     setStrokeFuture( newStrokeFuture )
 
     const gl = strokeHistory[ activeLayer.id ].context
-    const glAttributes = {
-      a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
-      a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
-      u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
-    }
+    const glAttributes = getAttributes( gl )
     
     gl.clear(gl.COLOR_BUFFER_BIT)
     
@@ -170,6 +160,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     layers.forEach(layer => {
       layerParent.appendChild(layer.canvas);
     })
+  }
+
+  const keyPress = e => { // todo
   }
 
   return (
