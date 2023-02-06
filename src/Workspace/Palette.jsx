@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useRef } from "react";
+import PaletteEditor from "./PaletteEditor";
 
 export function colorString (color) {
   return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
@@ -11,9 +13,9 @@ export function rgbToGL (color) {
 }
 
 function PaletteBox({ colors, setColors, setColor, max = 16 }) {
-
+  const [ showSettings, setShowSettings ] = useState( false );
   const dragColor = useRef();
-  
+
   const dragStart = ( index ) => dragColor.current = index
 
   const dragEnter = ( index ) => {
@@ -51,7 +53,8 @@ function PaletteBox({ colors, setColors, setColor, max = 16 }) {
   return (
     <div className="toolbox" onMouseUp={ e => setColor(e.target.value) }>
       { colorsList }
-      <button className="swatch" id="addColor" onClick={ e => addColor([ 0, 0, 0 ]) }>⚙</button>
+      <button className="swatch" id="addColor" onClick={ e => setShowSettings( !showSettings )}>⚙</button>
+      <PaletteEditor colors={ colors } setColors={ setColors } addColor={ addColor } removeColor={ removeColor } showSettings={ showSettings }/>
     </div>
   )
 }

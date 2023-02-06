@@ -19,3 +19,13 @@ export const getAttributes = gl => {
   }
   return glAttributes
 }
+
+export const redraw = ( gl, strokes ) => {
+  const glAttributes = getAttributes( gl ) 
+  gl.clear(gl.COLOR_BUFFER_BIT)
+  strokes.forEach( stroke => {
+    stroke.forEach( point => {
+      drawPoint( gl, point.position, point.size, point.color, glAttributes )
+    })
+  })
+}

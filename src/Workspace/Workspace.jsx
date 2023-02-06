@@ -5,16 +5,16 @@ import Brushes from "./Brushes.jsx";
 import Brush from "./Brush.js";
 import Layers from "./Layers.jsx";
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
-import { getStroke, drawPoint, getAttributes } from "../utils/glHelpers.js";
+import { getStroke, drawPoint, getAttributes, redraw } from "../utils/glHelpers.js";
 import "./Workspace.css"
 
 const defaultPalette = [[ 0, 0, 0 ], [ 255, 255, 255 ]]
 
-const defaultBrushes = [ new Brush( 1, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 200, "pen" )
-]
+const defaultBrushes = [ new Brush( 1, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 200, "pen" )]
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
 
+  const [ newLayerNo, setNewLayerNo ] = useState(1);
   const [ layers, setLayers ] = useState([]);
   const [ colors, setColors ] = useState(defaultPalette);
   const [ brushes, setBrushes ] = useState(defaultBrushes);
@@ -25,8 +25,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const [strokeHistory, setStrokeHistory] = useState({});
   const [strokeFuture, setStrokeFuture] = useState([]);
-
-  const [ newLayerNo, setNewLayerNo ] = useState(1);
 
   const points = [];
   const position = { x: 0, y: 0 }
@@ -94,31 +92,22 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     // brush stroke history will get fuckin complex here oh god
   }
 
-  const setLayer = id => {
-    const layerId = Number( id )
-    setActiveLayer( layers[ layerId ])
-  }
-  const setBrush = index => {
-    setActiveBrush( brushes[ index ]);
-  }
-  const setColor = color => {
-    setActiveColor( rgbToGL( color ))
-  }
+  const setLayer = id => setActiveLayer( layers[ Number( id )])
+  const setBrush = index => setActiveBrush( brushes[ index ])
+  const setColor = color => setActiveColor( rgbToGL( color ))
 
   const redo = strokeFuture => {
     if (strokeFuture.length < 1) return
+
     const newStrokeFuture = [ ...strokeFuture ]
     const stroke = newStrokeFuture.pop()
     setStrokeFuture( newStrokeFuture )
-    console.log("stroke - add", stroke)
     saveStroke( strokeHistory, stroke.points, stroke.layer )
 
     const gl = stroke.layer.context
     const glAttributes = getAttributes( gl )
 
-    stroke.points.forEach( point => {
-      drawPoint( gl, point.position, point.size, point.color, glAttributes )
-    })
+    stroke.points.forEach( point =>  drawPoint( gl, point.position, point.size, point.color, glAttributes ))
   }
 
   const undo = strokeHistory => {
@@ -127,39 +116,26 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     const newStrokeHistory = { ...strokeHistory }
     const stroke = newStrokeHistory[activeLayer.id].strokes.pop()
     setStrokeHistory( newStrokeHistory )
-
-    console.log("strokeHistory - remove", strokeHistory[activeLayer.id].strokes)
     
     const newStrokeFuture = [...strokeFuture]
     newStrokeFuture.push({ layer: activeLayer, points: stroke })
     setStrokeFuture( newStrokeFuture )
 
     const gl = strokeHistory[ activeLayer.id ].context
-    const glAttributes = getAttributes( gl )
-    
-    gl.clear(gl.COLOR_BUFFER_BIT)
-    
-    strokeHistory[activeLayer.id].strokes.forEach( stroke => {
-      stroke.forEach( point => {
-        drawPoint( gl, point.position, point.size, point.color, glAttributes )
-      })
-    })
+    redraw( gl, strokeHistory[activeLayer.id].strokes )
   }
 
   const saveStroke = ( strokeHistory, points, layer ) => {
-    if (points.length > 0) {
+    if ( points.length > 0 ) {
       const newStrokeHistory = { ...strokeHistory }
-      newStrokeHistory[ layer.id ] ? newStrokeHistory[ layer.id ].strokes.push( points ) : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [points] }
+      newStrokeHistory[ layer.id ] ? newStrokeHistory[ layer.id ].strokes.push( points ) : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ points ] }
       setStrokeHistory( newStrokeHistory )
-      console.log("strokeHistory - add", newStrokeHistory[layer.id].strokes)
     }
   }
 
   const attachLayers = () => {
     const layerParent = document.getElementById("layers")
-    layers.forEach(layer => {
-      layerParent.appendChild(layer.canvas);
-    })
+    layers.forEach(layer => { layerParent.appendChild( layer.canvas )})
   }
 
   const keyPress = e => { // todo
