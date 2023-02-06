@@ -29,8 +29,7 @@ canvas {
   left: 10px;
   top: 42px;
   text-align: center;
-  max-width: 16%;
-  min-width: 200px;
+  width: 256px;
 }
 
 .toolbox{
@@ -43,6 +42,10 @@ canvas {
   margin: 8px;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
   /* max-width: 100%; */
+}
+
+.tool-editor {
+  width: 100%
 }
 
 .layers {

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { initShaders } from "../WebGLUtils/cuon-utils.js";
-import PaletteBox, { rgbToGL } from "./Palette.jsx";
+import Palette from "./Palette.jsx";
 import Brushes from "./Brushes.jsx";
 import Brush from "./Brush.js";
 import Layers from "./Layers.jsx";
 import { FSHADER_SOURCE, VSHADER_SOURCE } from "../utils/shaders.js";
 import { getStroke, drawPoint, getAttributes, redraw } from "../utils/glHelpers.js";
+import { rgbToGL } from "../utils/colorConvert.js";
 import "./Workspace.css"
 
 const defaultPalette = [[ 0, 0, 0 ], [ 255, 255, 255 ]]
@@ -20,7 +21,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ brushes, setBrushes ] = useState(defaultBrushes);
 
   const [ activeLayer, setActiveLayer ] = useState();
-  const [ activeColor, setActiveColor ] = useState(rgbToGL( colors[0] ));
+  const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] ));
   const [ activeBrush, setActiveBrush ] = useState( defaultBrushes[0] );
 
   const [strokeHistory, setStrokeHistory] = useState({});
@@ -147,7 +148,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         <h1>minxel</h1>
         <button onClick={ e => undo( strokeHistory ) }>undo</button>
         <button onClick={ e => redo( strokeFuture ) }>redo</button>
-        <PaletteBox colors={ colors } setColors={ setColors } setColor={ setColor } />
+        <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } />
         <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>
       </div>

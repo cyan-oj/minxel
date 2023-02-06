@@ -1,18 +1,9 @@
 import { useState } from "react";
 import { useRef } from "react";
 import PaletteEditor from "./PaletteEditor";
+import { colorString } from "../utils/colorConvert";
 
-export function colorString (color) {
-  return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-}
-
-export function rgbToGL (color) {
-  const col = `${color}`
-  const rgb = col.split(',')
-  return [Number(rgb[0])/255, Number(rgb[1])/255, Number(rgb[2])/255, 1.0]
-}
-
-function PaletteBox({ colors, setColors, setColor, max = 16 }) {
+function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
   const dragColor = useRef();
 
@@ -27,12 +18,6 @@ function PaletteBox({ colors, setColors, setColor, max = 16 }) {
       dragColor.current = index
       return newColors
     })
-  }
-
-  const addColor = ( color=[ 0, 0, 0 ]) => {
-    if ( !color.length === 3 ) throw `color must be an array of 3 integers from 0 - 255`
-    if ( colors.length >= max ) throw `palette already at max colors`
-    setColors( oldColors => { return [ ...oldColors, color ]})
   }
 
   const removeColor = index => { 
@@ -54,9 +39,9 @@ function PaletteBox({ colors, setColors, setColor, max = 16 }) {
     <div className="toolbox" onMouseUp={ e => setColor(e.target.value) }>
       { colorsList }
       <button className="swatch" id="addColor" onClick={ e => setShowSettings( !showSettings )}>⚙</button>
-      <PaletteEditor colors={ colors } setColors={ setColors } addColor={ addColor } removeColor={ removeColor } showSettings={ showSettings }/>
+      <PaletteEditor colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor } showSettings={ showSettings }/>
     </div>
   )
 }
 
-export default PaletteBox;  
+export default Palette;  

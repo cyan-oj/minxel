@@ -1,24 +1,22 @@
 import { useEffect } from "react";
-import { colorString } from "./Palette";
+import { colorString, glToRGB, rgbToGL } from "../utils/colorConvert";
+import "./PaletteEditor.css"
 
-function PaletteEditor({ colors, setColors, addColor, showSettings }) {
+function PaletteEditor({ activeColor, setColors, showSettings }) {
 
   useEffect(() => {
+    console.log("active color", activeColor)
+  }, [showSettings, activeColor])
 
-  }, [showSettings])
-
-  const colorsList = colors.map(( color, index ) => 
-  <div key={ index }>
-      <button className="swatch" style={{ backgroundColor: colorString(color), color: colorString(color) }} value={ `${color}` }>■</button>
-      <button>✕</button>
-    </div>
-  )
+  const addColor = ( color=[ 255, 255, 255 ]) => {
+    setColors( oldColors => [ ...oldColors, color ] )
+  }
   
   return (
-    <div className="tool-editor" id="palette-editor" style={ showSettings ? { display: "flex" } : { display: "none" }}>
-      { colorsList }
-      <button className="swatch" id="addColor" onClick={ e => addColor([ 0, 0, 0 ]) }>+</button>
-    </div>
+    <div className="tool-editor" id="palette-editor" style={ showSettings ? { display: "block" } : { display: "none" }}>
+      <div className="color-edit-swatch" style={{ backgroundColor: colorString(glToRGB(activeColor)), color: colorString(glToRGB(activeColor)) }} >-</div>
+        <button id="addColor" onClick={ e => addColor(activeColor.slice(0, 3)) }>add color</button>
+      </div>
   )
 }
 
