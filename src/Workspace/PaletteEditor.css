@@ -1,6 +1,10 @@
 .color-edit-swatch {
-  display: block;
-  width: 100%;
+  width: 50%;
   height: 200px;
   margin: 12px 0;
 }
+
+.color-preview {
+  display: flex;
+}
+

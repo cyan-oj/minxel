@@ -21,32 +21,39 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ brushes, setBrushes ] = useState(defaultBrushes);
 
   const [ activeLayer, setActiveLayer ] = useState();
-  const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] ));
+  const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] )); //[1, 1, 1, 1.0]
   const [ activeBrush, setActiveBrush ] = useState( defaultBrushes[0] );
 
   const [strokeHistory, setStrokeHistory] = useState({});
   const [strokeFuture, setStrokeFuture] = useState([]);
 
   const points = [];
-  const position = { x: 0, y: 0 }
+  const position = { x: 0, y: 0, pressure: 0 }
 
   useEffect(() => {
     addLayer();
   }, [])
-
+  
   useEffect(() => {
     attachLayers();
     setLayer("0")
+    const keys = (event) => keyPress(event)
+    document.addEventListener( 'keydown', keys )
+    return () => {
+      document.removeEventListener( 'keydown', keys )
+    }
   }, [layers])
   
   const setPosition = e => {
     const rect = e.target.getBoundingClientRect();
     position.x = (( e.clientX - rect.left ) - width/2 )/( width/2 );
     position.y = ( height/2 - ( e.clientY - rect.top) )/( height/2 );
+    position.pressure = e.pressure
     return position;
   }
 
   const draw = ( event, gl ) => {
+    // console.log(event)
     if ( event.buttons !== 1 ) {
       setPosition( event );
       return;
@@ -56,22 +63,19 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
     const lastPoint = JSON.parse(JSON.stringify( position ));
     const currentPoint = setPosition( event );
-    const [ dist, angle ] = getStroke( lastPoint, currentPoint );
-
-    console.log(event.pressure)
+    const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint );
 
     for ( let i = 0; i < dist; i += 0.001 ) {
       const x = lastPoint.x + ( Math.sin( angle ) * i );
       const y = lastPoint.y + ( Math.cos( angle ) * i );
-
+      const pressure = lastPoint.pressure + ( deltaP/(dist/i) );
       const point = {
         position: [x, y],
-        size: activeBrush.size * event.pressure,
+        size: activeBrush.size * pressure,
         color: activeColor
       }
-
       drawPoint( gl, point.position, point.size, point.color, glAttributes )
-      points.push( point )
+      if (!(event.pressure === 0.5)) points.push( point )
     }
   }
 
@@ -112,7 +116,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const undo = strokeHistory => {
-    if (strokeHistory[activeLayer.id].strokes.length < 1 ) return
+    if (strokeHistory[activeLayer.id].strokes.length < 2 ) return
 
     const newStrokeHistory = { ...strokeHistory }
     const stroke = newStrokeHistory[activeLayer.id].strokes.pop()
@@ -139,15 +143,23 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     layers.forEach(layer => { layerParent.appendChild( layer.canvas )})
   }
 
-  const keyPress = e => { // todo
+  const keyPress = (event) => { // todo
+    console.log(event)
+    if (((event.metaKey || event.ctrlKey) && event.shiftKey && event.code === 'KeyZ')) {
+      const redo = document.getElementById("redo-button")
+      redo.click()
+    } else if ((event.metaKey || event.ctrlKey) && event.code === 'KeyZ') {
+      const undo = document.getElementById("undo-button")
+      undo.click()
+    }
   }
 
   return (
     <div className="workspace" id={name}>
       <div className="tools">
         <h1>minxel</h1>
-        <button onClick={ e => undo( strokeHistory ) }>undo</button>
-        <button onClick={ e => redo( strokeFuture ) }>redo</button>
+        <button id="undo-button" onClick={ e => undo( strokeHistory ) }>undo</button>
+        <button id="redo-button" onClick={ e => redo( strokeFuture ) }>redo</button>
         <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } />
         <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRef } from "react";
 import PaletteEditor from "./PaletteEditor";
 import { colorString } from "../utils/colorConvert";
+import { useEffect } from "react";
 
 function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
@@ -32,15 +33,18 @@ function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
     <button key={ index } className="swatch" style={{ backgroundColor: colorString(color), color: colorString(color) }} value={ `${color}` } draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
+      onMouseUp={ e => setColor(e.target.value) }
     >■</button>  
   )
 
   return (
-    <div className="toolbox" onMouseUp={ e => setColor(e.target.value) }>
+    <>
+    <div className="toolbox" >
       { colorsList }
-      <button className="swatch" id="addColor" onClick={ e => setShowSettings( !showSettings )}>⚙</button>
+      <button className="swatch" id="addColor" onClick={ e => { e.preventDefault(); setShowSettings( !showSettings )}}>⚙</button>
       <PaletteEditor colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor } showSettings={ showSettings }/>
     </div>
+    </>
   )
 }
 

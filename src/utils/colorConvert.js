@@ -8,9 +8,9 @@ export const rgbToGL = (color) => {
 }
 
 export const glToRGB = (color) => {
-  console.log("glToRGB incoming color", color)
+  // console.log("glToRGB incoming color", color)
   const newColor = [...color]
   const converted = [newColor[0] * 255, newColor[1] * 255, newColor[2] * 255]
-  console.log("converted", converted)
+  // console.log("converted", converted)
   return converted
 } 
