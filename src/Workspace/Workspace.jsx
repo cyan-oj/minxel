@@ -11,7 +11,7 @@ import "./Workspace.css"
 
 const defaultPalette = [[ 0, 0, 0 ], [ 255, 255, 255 ]]
 
-const defaultBrushes = [ new Brush( 100, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 500, "pen" ), new Brush( 15, "pen" )]
+const defaultBrushes = [ new Brush( 100, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" )]
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   const [ newLayerNo, setNewLayerNo ] = useState(1);
@@ -158,7 +158,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         <button id="undo-button" onClick={ e => undo( strokeHistory ) }>undo</button>
         <button id="redo-button" onClick={ e => redo( strokeFuture ) }>redo</button>
         <button id="pressure-button" onClick={ e => togglePressure(!pressure)}>{`pen pressure: ${pressure}`}</button>
-        <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } />
+        <Palette 
+          colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } 
+          strokeHistory={ strokeHistory} setStrokeHistory={ setStrokeHistory }
+        />
         <Brushes brushes={ brushes } activeBrush={ activeBrush } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } points={ points }/>
       </div>

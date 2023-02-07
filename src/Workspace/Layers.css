@@ -18,3 +18,7 @@
 .active-layer {
   background-color: var(--button-active);
 }
+
+.toolbox#layer-controls {
+  flex-direction: column-reverse;
+}

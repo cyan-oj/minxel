@@ -3,7 +3,7 @@ import PaletteEditor from "./PaletteEditor";
 import { colorString, glToRGB } from "../utils/colorConvert";
 import "./Palette.css"
 
-function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
+function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setStrokeHistory, gl, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
   const dragColor = useRef();
 
@@ -45,7 +45,10 @@ function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
       <button className="swatch" id="addColor" 
         onClick={ e => { e.preventDefault(); setShowSettings( !showSettings )}}
       >⚙</button>
-      <PaletteEditor colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor } showSettings={ showSettings }/>
+      <PaletteEditor 
+        colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor } showSettings={ showSettings }
+        strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }
+      />
     </div>
   )
 }

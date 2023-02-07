@@ -1,8 +1,9 @@
 import { useState } from "react";
 import convert from "color-convert"
-import { colorString, glToRGB } from "../utils/colorConvert";
+import { colorString, glToRGB, rgbToGL } from "../utils/colorConvert";
+import { redraw } from "../utils/glHelpers";
 
-function PaletteEditor({ colors, activeColor, setColors, showSettings }) {
+function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHistory, setStrokeHistory }) {
 
   const [ rgbColor, setColorRGB ] = useState( glToRGB( activeColor ) )
   const [ hslColor, setColorHSL ] = useState( convert.rgb.hsl( rgbColor ))
@@ -15,6 +16,9 @@ function PaletteEditor({ colors, activeColor, setColors, showSettings }) {
       } 
     }
     setColors( oldColors => [ ...oldColors, color ] )
+  }
+
+  const replaceColor = () => { // gl, strokehistory, newColor, oldColor
   }
 
   const setRGB = ( value, index ) => {
@@ -79,7 +83,7 @@ function PaletteEditor({ colors, activeColor, setColors, showSettings }) {
         />
       </div>
         <button id="addColor" onClick={ e => { addColor( rgbColor ) }}>add color</button>
-        <button id="replaceColor">replace active color</button>
+        <button id="replaceColor" onClick={ replaceColor }>replace active color</button>
     </div>
   )
 }

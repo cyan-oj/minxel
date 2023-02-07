@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import "./Layers.css"
 
 function LayerPreview( { layer, id, points } ) {
-
   const preview = useRef();
 
   useEffect(() => {
