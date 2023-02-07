@@ -11,7 +11,7 @@ import "./Workspace.css"
 
 const defaultPalette = [[ 0, 0, 0 ], [ 255, 255, 255 ]]
 
-const defaultBrushes = [ new Brush( 100, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 200, "pen" )]
+const defaultBrushes = [ new Brush( 100, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 500, "pen" ), new Brush( 15, "pen" )]
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   const [ newLayerNo, setNewLayerNo ] = useState(1);
@@ -22,7 +22,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const [ activeLayer, setActiveLayer ] = useState({});
   const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] ));
-  const [ activeBrush, setActiveBrush ] = useState( defaultBrushes[0] );
+  const [ activeBrush, setActiveBrush ] = useState( 0 );
 
   const [strokeHistory, setStrokeHistory] = useState({});
   const [strokeFuture, setStrokeFuture] = useState([]);
@@ -71,7 +71,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       const pressure = lastPoint.pressure + ( deltaP/(dist/i) );
       const point = {
         position: [x, y],
-        size: activeBrush.size * pressure,
+        size: brushes[activeBrush].size * pressure,
         color: activeColor
       }
       drawPoint( gl, point.position, point.size, point.color, glAttributes )
@@ -90,16 +90,15 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) console.error('failed to initialize shaders')
     
     setLayers([...layers, { id: newLayerNo, name: layerName, canvas: newCanvas, context: gl }])
-    setLayer(newLayerNo)
     setNewLayerNo( newLayerNo + 1 )
   }
 
   const removeLayer = () => { // todo
-    // brush stroke history will get fuckin complex here oh god
+    // brush stroke history will get fuckin complex here oh god 
   }
 
   const setLayer = id => setActiveLayer( layers[ Number( id )])
-  const setBrush = index => setActiveBrush( brushes[ index ])
+  const setBrush = index => setActiveBrush( Number( index ))
   const setColor = color => setActiveColor( rgbToGL( color ))
 
   const redo = strokeFuture => {
@@ -127,7 +126,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
     const gl = strokeHistory[ activeLayer.id ].context
     redraw( gl, strokeHistory[activeLayer.id].strokes )
-    console.log(strokeHistory)
   }
 
   const saveStroke = ( strokeHistory, points, layer ) => {
@@ -135,7 +133,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       const newStrokeHistory = { ...strokeHistory }
       newStrokeHistory[ layer.id ] ? newStrokeHistory[ layer.id ].strokes.push( points ) : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ points ] }
       setStrokeHistory( newStrokeHistory )
-      console.log(strokeHistory)
     }
   }
 
@@ -162,7 +159,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         <button id="redo-button" onClick={ e => redo( strokeFuture ) }>redo</button>
         <button id="pressure-button" onClick={ e => togglePressure(!pressure)}>{`pen pressure: ${pressure}`}</button>
         <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } />
-        <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } points={ points }/>
       </div>
       <div className="layers" id="layers" style={{ width: width, height: height }}
