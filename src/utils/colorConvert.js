@@ -1,6 +1,5 @@
 export const colorString = (color) => `rgb(${color[0]}, ${color[1]}, ${color[2]})`
 
-
 export const rgbToGL = (color) => {
   const col = `${color}`
   const rgb = col.split(',')
@@ -8,9 +7,7 @@ export const rgbToGL = (color) => {
 }
 
 export const glToRGB = (color) => {
-  // console.log("glToRGB incoming color", color)
   const newColor = [...color]
-  const converted = [newColor[0] * 255, newColor[1] * 255, newColor[2] * 255]
-  // console.log("converted", converted)
+  const converted = [Math.round(newColor[0] * 255), Math.round(newColor[1] * 255), Math.round(newColor[2] * 255)]
   return converted
 } 

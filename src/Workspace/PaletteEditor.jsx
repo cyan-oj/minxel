@@ -1,22 +1,37 @@
 import { useState } from "react";
 import convert from "color-convert"
-import { colorString, glToRGB } from "../utils/colorConvert";
-import "./PaletteEditor.css"
+import { colorString } from "../utils/colorConvert";
+import { redraw } from "../utils/glHelpers";
 
-function PaletteEditor({ activeColor, setColors, showSettings }) {
+function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHistory }) {
 
-  const [ rgbColor, setColorRGB ] = useState( glToRGB( activeColor ) )
+  const [ rgbColor, setColorRGB ] = useState( colors[activeColor] )
   const [ hslColor, setColorHSL ] = useState( convert.rgb.hsl( rgbColor ))
 
   const addColor = ( color=[ 255, 255, 255 ]) => {
+    for ( const swatch of colors ) {
+      if( swatch === color ) {
+        console.error('color already in palette')
+        return;
+      } 
+    }
     setColors( oldColors => [ ...oldColors, color ] )
+  }
+
+  const replaceColor = ( ) => { 
+    let newColors = null
+    setColors( oldColors => {
+      newColors = [ ...oldColors ]
+      newColors[activeColor] = rgbColor
+      return newColors
+    })
+    Object.values( strokeHistory ).forEach( layer => { redraw( layer.context, newColors, layer.strokes )})
   }
 
   const setRGB = ( value, index ) => {
     const newRGB = [...rgbColor]
     newRGB[index] = Number(value)
     const newHSL = convert.rgb.hsl(newRGB)
-
     setColorRGB( newRGB )
     setColorHSL( newHSL )
   }
@@ -32,7 +47,7 @@ function PaletteEditor({ activeColor, setColors, showSettings }) {
   return (
     <div className="tool-editor" id="palette-editor" style={ showSettings ? { display: "block" } : { display: "none" }}>
       <div className="color-preview">
-        <div className="color-edit-swatch" style={{ backgroundColor: colorString( glToRGB( activeColor )), color: colorString( glToRGB( activeColor ))}} ></div>
+        <div className="color-edit-swatch" style={{ backgroundColor: colorString( colors[ activeColor ]), color: colorString( colors[ activeColor ])}} ></div>
         <div className="color-edit-swatch" style={{ backgroundColor: colorString( rgbColor ), color: colorString( rgbColor )}} ></div>
       </div>
       <div className="sliders" id="rgb-sliders">rgb
@@ -52,8 +67,7 @@ function PaletteEditor({ activeColor, setColors, showSettings }) {
       <div className="sliders" id="hsl-sliders">hsl
         <input type="range" id="hue" min="0" max="360" value={ hslColor[0] } 
           style={{ 
-            backgroundImage:  
-            `linear-gradient(to right, 
+            backgroundImage: `linear-gradient(to right, 
             hsl(0, ${hslColor[1]}%, ${hslColor[2]}%),
             hsl(45, ${hslColor[1]}%, ${hslColor[2]}%),
             hsl(90, ${hslColor[1]}%, ${hslColor[2]}%),
@@ -76,7 +90,7 @@ function PaletteEditor({ activeColor, setColors, showSettings }) {
         />
       </div>
         <button id="addColor" onClick={ e => { addColor( rgbColor ) }}>add color</button>
-        <button id="replaceColor">replace active color</button>
+        <button id="replaceColor" onClick={ replaceColor }>replace active color</button>
     </div>
   )
 }

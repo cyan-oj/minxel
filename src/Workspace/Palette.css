@@ -1,0 +1,38 @@
+.color-edit-swatch {
+  width: 50%;
+  height: 200px;
+  margin: 12px 0;
+}
+
+.color-preview {
+  display: flex;
+}
+
+.swatch {
+  height: 40px;
+  width: 40px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 32px;
+}
+.swatch:hover {
+  border: none;
+  width: 48px;
+  height: 48px;
+  margin: -4px;
+}
+.swatch#addcolor {
+  border: solid 1px var(--base);
+}
+
+#active-swatch {
+  border: 1px solid var(--text);
+  border-radius: 2px;
+  width: 52px;
+  height: 52px;
+  margin: -6px;
+  z-index: 10;
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
+}
+

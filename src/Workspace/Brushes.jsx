@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { useRef } from "react";
+import "./Brushes.css"
 
-function Brushes({ brushes, setBrushes, setBrush }) {
-
+function Brushes({ brushes, activeBrush, setBrushes, setBrush }) {
   const dragBrush = useRef();
   
   const dragStart = ( index ) => dragBrush.current = index
@@ -18,7 +19,9 @@ function Brushes({ brushes, setBrushes, setBrush }) {
   }
 
   const brushList = brushes.map( (brush, index) => 
-    <button key={ index } value={ index } className="brush" draggable
+    <button key={ index } value={ index } className="brush"
+      id={( index === activeBrush ) ? "active-brush" : null }
+      draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
     >{brush.size}</button>  

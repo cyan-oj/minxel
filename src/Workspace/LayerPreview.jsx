@@ -1,14 +1,13 @@
 import { useEffect, useRef } from "react";
-import "./LayerPreview.css"
+import "./Layers.css"
 
-function LayerPreview( { layer, id, points } ) {
-
+function LayerPreview( { layer, id, stroke } ) {
   const preview = useRef();
 
   useEffect(() => {
     const ctx = preview.current.getContext('2d')
     ctx.drawImage(layer.canvas, 0, 0, 50, 50)
-  }, [points])
+  }, [stroke])
 
   return (
     <div className="layer-preview" id={id} >

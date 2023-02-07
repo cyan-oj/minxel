@@ -90,6 +90,7 @@ input[type=range]::-moz-range-thumb {
     --border: rgb(0, 0, 0);
     --button-active: rgb( 0, 0, 0 );
     --text: rgb(200, 200, 200);
+    --shadow: rgba(210, 210, 210, 0.4);
     --grid-light: rgb(75, 75, 75);
     --grid-dark: rgb(40, 40, 40);
   }
