@@ -50,7 +50,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     const rect = e.target.getBoundingClientRect();
     position.x = (( e.clientX - rect.left ) - width/2 )/( width/2 );
     position.y = ( height/2 - ( e.clientY - rect.top) )/( height/2 );
-
     if (pressure) {
       e.pressure === 0.5 ? position.pressure = 0.001 : position.pressure = e.pressure
     } else {
@@ -60,19 +59,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const draw = ( event, gl ) => {
-    console.log(event)
     if ( event.buttons !== 1 ) {
       setPosition( event );
       return;
     }
-
     const glAttributes = getAttributes( gl )
-
     const lastPoint = JSON.parse(JSON.stringify( position ));
     const currentPoint = setPosition( event );
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint );
-
-    
     for ( let i = 0; i < dist; i += 0.001 ) {
       const x = lastPoint.x + ( Math.sin( angle ) * i );
       const y = lastPoint.y + ( Math.cos( angle ) * i );
