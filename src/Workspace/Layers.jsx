@@ -2,7 +2,7 @@ import { useRef } from "react"
 import LayerPreview from "./LayerPreview";
 import "./Layers.css"
 
-function Layers({ layers, setLayers, addLayer, setLayer, points, activeLayer }) {
+function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) {
   const dragLayer = useRef();
   const dragStart = ( index ) => dragLayer.current = index
   const dragEnter = ( index ) => {
@@ -21,7 +21,7 @@ function Layers({ layers, setLayers, addLayer, setLayer, points, activeLayer }) 
       onDragStart={ e => dragStart( i )}
       onDragEnter={ e => dragEnter( i )}
     >
-      <LayerPreview key={layer.name} id={i} layer={ layer } points={ points } />
+      <LayerPreview key={layer.name} id={i} layer={ layer } stroke={ stroke } />
     </div>
   );
 

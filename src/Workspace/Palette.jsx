@@ -1,9 +1,10 @@
 import { useState, useRef } from "react";
 import PaletteEditor from "./PaletteEditor";
-import { colorString, glToRGB } from "../utils/colorConvert";
+import { colorString } from "../utils/colorConvert";
 import "./Palette.css"
+import { redraw } from "../utils/glHelpers";
 
-function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setStrokeHistory, gl, max = 16 }) {
+function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setStrokeHistory, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
   const dragColor = useRef();
 
@@ -18,20 +19,29 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
       dragColor.current = index
       return newColors
     })
+    Object.values( strokeHistory ).forEach( layer => { redraw( layer.context, colors, layer.strokes )})
   }
 
-  const removeColor = index => { 
+  const removeColor = index => { // before adding, need to implement color replacement
+    // check if color is used in drawing
+      // if no: delete
+      // if yes: ask how to handle removal
+        // replace with other palette color:
+          // choose other palette color and re-reference to that color
+          // delete strokes that use this color
+    // set colors 
     setColors( oldColors => {
       const newColors = [ ...oldColors ]
       newColors.splice( index, 1 )
       return newColors
     })
+    // redraw
   }
 
   const colorsList = colors.map(( color, index ) => 
     <button key={ index } className="swatch" 
-      style={{ backgroundColor: colorString(color), color: colorString(color) }} value={ `${color}` } 
-      id={( color.toString() === glToRGB( activeColor ).toString()) ? "active-swatch" : null }
+      style={{ backgroundColor: colorString(color), color: colorString(color) }} value={ index } 
+      id={( color === colors[activeColor]) ? "active-swatch" : null }
       draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import convert from "color-convert"
-import { colorString, glToRGB, rgbToGL } from "../utils/colorConvert";
+import { colorString } from "../utils/colorConvert";
 import { redraw } from "../utils/glHelpers";
 
-function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHistory, setStrokeHistory }) {
+function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHistory }) {
 
-  const [ rgbColor, setColorRGB ] = useState( glToRGB( activeColor ) )
+  const [ rgbColor, setColorRGB ] = useState( colors[activeColor] )
   const [ hslColor, setColorHSL ] = useState( convert.rgb.hsl( rgbColor ))
 
   const addColor = ( color=[ 255, 255, 255 ]) => {
@@ -18,7 +18,14 @@ function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHis
     setColors( oldColors => [ ...oldColors, color ] )
   }
 
-  const replaceColor = () => { // gl, strokehistory, newColor, oldColor
+  const replaceColor = ( ) => { 
+    let newColors = null
+    setColors( oldColors => {
+      newColors = [ ...oldColors ]
+      newColors[activeColor] = rgbColor
+      return newColors
+    })
+    Object.values( strokeHistory ).forEach( layer => { redraw( layer.context, newColors, layer.strokes )})
   }
 
   const setRGB = ( value, index ) => {
@@ -40,7 +47,7 @@ function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHis
   return (
     <div className="tool-editor" id="palette-editor" style={ showSettings ? { display: "block" } : { display: "none" }}>
       <div className="color-preview">
-        <div className="color-edit-swatch" style={{ backgroundColor: colorString( glToRGB( activeColor )), color: colorString( glToRGB( activeColor ))}} ></div>
+        <div className="color-edit-swatch" style={{ backgroundColor: colorString( colors[ activeColor ]), color: colorString( colors[ activeColor ])}} ></div>
         <div className="color-edit-swatch" style={{ backgroundColor: colorString( rgbColor ), color: colorString( rgbColor )}} ></div>
       </div>
       <div className="sliders" id="rgb-sliders">rgb
