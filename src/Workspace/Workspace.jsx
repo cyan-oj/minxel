@@ -36,7 +36,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   
   useEffect(() => {
     attachLayers();
-    setLayer("0")
+    setLayer( newLayerNo - 2 )
     const keys = (event) => keyPress(event)
     document.addEventListener( 'keydown', keys )
     return () => {
