@@ -1,14 +1,19 @@
 import { useState } from "react";
 import convert from "color-convert"
 import { colorString, glToRGB } from "../utils/colorConvert";
-import "./PaletteEditor.css"
 
-function PaletteEditor({ activeColor, setColors, showSettings }) {
+function PaletteEditor({ colors, activeColor, setColors, showSettings }) {
 
   const [ rgbColor, setColorRGB ] = useState( glToRGB( activeColor ) )
   const [ hslColor, setColorHSL ] = useState( convert.rgb.hsl( rgbColor ))
 
   const addColor = ( color=[ 255, 255, 255 ]) => {
+    for ( const swatch of colors ) {
+      if( swatch === color ) {
+        console.error('color already in palette')
+        return;
+      } 
+    }
     setColors( oldColors => [ ...oldColors, color ] )
   }
 

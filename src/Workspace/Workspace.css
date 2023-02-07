@@ -57,24 +57,6 @@ canvas {
   flex-direction: column-reverse;
 }
 
-.swatch {
-  height: 40px;
-  width: 40px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  font-size: 32px;
-}
-.swatch:hover {
-  border: none;
-  width: 48px;
-  height: 48px;
-  margin: -4px;
-}
-.swatch#addcolor {
-  border: solid 1px var(--base);
-}
-
 .brush {
   height: 36px;
   width: 36px;

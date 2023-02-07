@@ -14,15 +14,14 @@ const defaultPalette = [[ 0, 0, 0 ], [ 255, 255, 255 ]]
 const defaultBrushes = [ new Brush( 100, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 200, "pen" )]
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
-
   const [ newLayerNo, setNewLayerNo ] = useState(1);
   const [ layers, setLayers ] = useState([]);
   const [ colors, setColors ] = useState(defaultPalette);
   const [ brushes, setBrushes ] = useState(defaultBrushes);
   const [ pressure, togglePressure ] = useState( false );
 
-  const [ activeLayer, setActiveLayer ] = useState({id: 0});
-  const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] )); //[1, 1, 1, 1.0]
+  const [ activeLayer, setActiveLayer ] = useState({});
+  const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] ));
   const [ activeBrush, setActiveBrush ] = useState( defaultBrushes[0] );
 
   const [strokeHistory, setStrokeHistory] = useState({});

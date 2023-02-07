@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import PaletteEditor from "./PaletteEditor";
-import { colorString } from "../utils/colorConvert";
-import { useEffect } from "react";
+import { colorString, glToRGB } from "../utils/colorConvert";
+import "./Palette.css"
 
 function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
   const dragColor = useRef();
+
+  console.log("colors", colors, glToRGB( activeColor ))
 
   const dragStart = ( index ) => dragColor.current = index
 
@@ -30,7 +31,7 @@ function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
   }
 
   const colorsList = colors.map(( color, index ) => 
-    <button key={ index } className="swatch" style={{ backgroundColor: colorString(color), color: colorString(color) }} value={ `${color}` } draggable
+    <button key={ index } className="swatch" id={( color.toString() === glToRGB( activeColor ).toString() ) ? "active-swatch" : null } style={{ backgroundColor: colorString(color), color: colorString(color) }} value={ `${color}` } draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
       onMouseUp={ e => setColor(e.target.value) }
@@ -38,13 +39,11 @@ function Palette({ colors, activeColor, setColors, setColor, max = 16 }) {
   )
 
   return (
-    <>
     <div className="toolbox" >
       { colorsList }
       <button className="swatch" id="addColor" onClick={ e => { e.preventDefault(); setShowSettings( !showSettings )}}>⚙</button>
       <PaletteEditor colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor } showSettings={ showSettings }/>
     </div>
-    </>
   )
 }
 
