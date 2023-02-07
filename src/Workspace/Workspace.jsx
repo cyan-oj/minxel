@@ -21,7 +21,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ brushes, setBrushes ] = useState(defaultBrushes);
   const [ pressure, togglePressure ] = useState( false );
 
-  const [ activeLayer, setActiveLayer ] = useState();
+  const [ activeLayer, setActiveLayer ] = useState({id: 0});
   const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] )); //[1, 1, 1, 1.0]
   const [ activeBrush, setActiveBrush ] = useState( defaultBrushes[0] );
 
@@ -40,7 +40,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     setLayer("0")
     const keys = (event) => keyPress(event)
     document.addEventListener( 'keydown', keys )
-
     return () => {
       document.removeEventListener( 'keydown', keys )
     }
@@ -165,7 +164,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         <button id="pressure-button" onClick={ e => togglePressure(!pressure)}>{`pen pressure: ${pressure}`}</button>
         <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } />
         <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
-        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>
+        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } points={ points }/>
       </div>
       <div className="layers" id="layers" style={{ width: width, height: height }}
         onPointerDown={ setPosition } 

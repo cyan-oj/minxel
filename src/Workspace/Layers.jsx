@@ -1,12 +1,10 @@
 import { useRef } from "react"
 import LayerPreview from "./LayerPreview";
+import "./Layers.css"
 
-function Layers({ layers, setLayers, addLayer, setLayer, points }) {
-
+function Layers({ layers, setLayers, addLayer, setLayer, points, activeLayer }) {
   const dragLayer = useRef();
-
   const dragStart = ( index ) => dragLayer.current = index
-
   const dragEnter = ( index ) => {
     const currentLayer = dragLayer.current;
     setLayers( oldLayers => {
@@ -19,7 +17,7 @@ function Layers({ layers, setLayers, addLayer, setLayer, points }) {
   }
 
   const layerControls = layers.map(( layer, i ) => 
-    <div key={ layer.name } draggable
+    <div key={ layer.name } draggable className={ (activeLayer && (activeLayer.id === layer.id)) ? "active-layer" : "passive-layer" }
       onDragStart={ e => dragStart( i )}
       onDragEnter={ e => dragEnter( i )}
     >

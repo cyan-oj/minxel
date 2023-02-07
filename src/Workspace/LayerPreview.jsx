@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import "./LayerPreview.css"
+import "./Layers.css"
 
 function LayerPreview( { layer, id, points } ) {
 
