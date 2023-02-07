@@ -16,7 +16,6 @@ function PaletteEditor({ activeColor, setColors, showSettings }) {
     const newRGB = [...rgbColor]
     newRGB[index] = Number(value)
     const newHSL = convert.rgb.hsl(newRGB)
-
     setColorRGB( newRGB )
     setColorHSL( newHSL )
   }
@@ -52,8 +51,7 @@ function PaletteEditor({ activeColor, setColors, showSettings }) {
       <div className="sliders" id="hsl-sliders">hsl
         <input type="range" id="hue" min="0" max="360" value={ hslColor[0] } 
           style={{ 
-            backgroundImage:  
-            `linear-gradient(to right, 
+            backgroundImage: `linear-gradient(to right, 
             hsl(0, ${hslColor[1]}%, ${hslColor[2]}%),
             hsl(45, ${hslColor[1]}%, ${hslColor[2]}%),
             hsl(90, ${hslColor[1]}%, ${hslColor[2]}%),

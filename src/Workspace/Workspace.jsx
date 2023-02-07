@@ -11,7 +11,7 @@ import "./Workspace.css"
 
 const defaultPalette = [[ 0, 0, 0 ], [ 255, 255, 255 ]]
 
-const defaultBrushes = [ new Brush( 1, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 200, "pen" )]
+const defaultBrushes = [ new Brush( 100, "pen" ), new Brush( 5, "pen" ), new Brush( 50, "pen" ), new Brush( 200, "pen" )]
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
 
@@ -19,6 +19,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ layers, setLayers ] = useState([]);
   const [ colors, setColors ] = useState(defaultPalette);
   const [ brushes, setBrushes ] = useState(defaultBrushes);
+  const [ pressure, togglePressure ] = useState( false );
 
   const [ activeLayer, setActiveLayer ] = useState();
   const [ activeColor, setActiveColor ] = useState( rgbToGL( colors[0] )); //[1, 1, 1, 1.0]
@@ -39,6 +40,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     setLayer("0")
     const keys = (event) => keyPress(event)
     document.addEventListener( 'keydown', keys )
+
     return () => {
       document.removeEventListener( 'keydown', keys )
     }
@@ -48,12 +50,17 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     const rect = e.target.getBoundingClientRect();
     position.x = (( e.clientX - rect.left ) - width/2 )/( width/2 );
     position.y = ( height/2 - ( e.clientY - rect.top) )/( height/2 );
-    position.pressure = e.pressure
+
+    if (pressure) {
+      e.pressure === 0.5 ? position.pressure = 0.001 : position.pressure = e.pressure
+    } else {
+      position.pressure = 1
+    }
     return position;
   }
 
   const draw = ( event, gl ) => {
-    // console.log(event)
+    console.log(event)
     if ( event.buttons !== 1 ) {
       setPosition( event );
       return;
@@ -65,6 +72,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     const currentPoint = setPosition( event );
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint );
 
+    
     for ( let i = 0; i < dist; i += 0.001 ) {
       const x = lastPoint.x + ( Math.sin( angle ) * i );
       const y = lastPoint.y + ( Math.cos( angle ) * i );
@@ -75,7 +83,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         color: activeColor
       }
       drawPoint( gl, point.position, point.size, point.color, glAttributes )
-      if (!(event.pressure === 0.5)) points.push( point )
+      points.push( point )
     }
   }
 
@@ -85,11 +93,12 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     newCanvas.width = width;
     newCanvas.height = height;
     const gl = newCanvas.getContext('webgl', { antialias: false, preserveDrawingBuffer: true })
-
+    
     if (!gl) alert('Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox')
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) console.error('failed to initialize shaders')
-
+    
     setLayers([...layers, { id: newLayerNo, name: layerName, canvas: newCanvas, context: gl }])
+    setLayer(newLayerNo)
     setNewLayerNo( newLayerNo + 1 )
   }
 
@@ -111,23 +120,22 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
     const gl = stroke.layer.context
     const glAttributes = getAttributes( gl )
-
     stroke.points.forEach( point =>  drawPoint( gl, point.position, point.size, point.color, glAttributes ))
   }
 
   const undo = strokeHistory => {
-    if (strokeHistory[activeLayer.id].strokes.length < 2 ) return
+    if (strokeHistory[activeLayer.id].strokes.length < 1 ) return
 
     const newStrokeHistory = { ...strokeHistory }
-    const stroke = newStrokeHistory[activeLayer.id].strokes.pop()
-    setStrokeHistory( newStrokeHistory )
-    
     const newStrokeFuture = [...strokeFuture]
+    const stroke = newStrokeHistory[activeLayer.id].strokes.pop()
     newStrokeFuture.push({ layer: activeLayer, points: stroke })
+    setStrokeHistory( newStrokeHistory )
     setStrokeFuture( newStrokeFuture )
 
     const gl = strokeHistory[ activeLayer.id ].context
     redraw( gl, strokeHistory[activeLayer.id].strokes )
+    console.log(strokeHistory)
   }
 
   const saveStroke = ( strokeHistory, points, layer ) => {
@@ -135,6 +143,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       const newStrokeHistory = { ...strokeHistory }
       newStrokeHistory[ layer.id ] ? newStrokeHistory[ layer.id ].strokes.push( points ) : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ points ] }
       setStrokeHistory( newStrokeHistory )
+      console.log(strokeHistory)
     }
   }
 
@@ -143,8 +152,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     layers.forEach(layer => { layerParent.appendChild( layer.canvas )})
   }
 
-  const keyPress = (event) => { // todo
-    console.log(event)
+  const keyPress = (event) => {
     if (((event.metaKey || event.ctrlKey) && event.shiftKey && event.code === 'KeyZ')) {
       const redo = document.getElementById("redo-button")
       redo.click()
@@ -160,6 +168,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         <h1>minxel</h1>
         <button id="undo-button" onClick={ e => undo( strokeHistory ) }>undo</button>
         <button id="redo-button" onClick={ e => redo( strokeFuture ) }>redo</button>
+        <button id="pressure-button" onClick={ e => togglePressure(!pressure)}>{`pen pressure: ${pressure}`}</button>
         <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } />
         <Brushes brushes={ brushes } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } points={ points }/>
@@ -167,9 +176,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       <div className="layers" id="layers" style={{ width: width, height: height }}
         onPointerDown={ setPosition } 
         onPointerEnter={ setPosition }
-        onPointerMove={ e => draw(e, activeLayer.context) }
-        onPointerUp={ e => saveStroke( strokeHistory, points, activeLayer ) }
-        onPointerLeave={ e => saveStroke( strokeHistory, points, activeLayer ) }
+        onPointerMove={ e => draw( e, activeLayer.context )}
+        onPointerUp={ e => saveStroke( strokeHistory, points, activeLayer )}
+        onPointerLeave={ e => saveStroke( strokeHistory, points, activeLayer )}
       />
     </div>
   )
