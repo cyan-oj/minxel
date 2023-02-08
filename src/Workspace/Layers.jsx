@@ -8,20 +8,21 @@ function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) 
   const dragEnter = ( index ) => {
     const currentLayer = dragLayer.current;
     setLayers( oldLayers => {
-      const newLayers = [...oldLayers]
+      const newLayers = [...oldLayers ]
       const dropLayer = newLayers.splice( currentLayer, 1 )[0]
       newLayers.splice( index, 0, dropLayer )
       dragLayer.current = index
       return newLayers
     })
+    setLayer( index )
   }
 
   const layerControls = layers.map(( layer, i ) => 
-    <div key={ layer.name } draggable className={ (activeLayer && (activeLayer.id === layer.id)) ? "active-layer" : "passive-layer" }
+    <div key={ layer.name } draggable className={( activeLayer && ( activeLayer.id === layer.id )) ? "active-layer" : "passive-layer" }
       onDragStart={ e => dragStart( i )}
       onDragEnter={ e => dragEnter( i )}
     >
-      <LayerPreview key={layer.name} id={i} layer={ layer } stroke={ stroke } />
+      <LayerPreview key={ layer.name } id={ i } layer={ layer } stroke={ stroke } />
     </div>
   );
 

@@ -5,14 +5,14 @@ function LayerPreview( { layer, id, stroke } ) {
   const preview = useRef();
 
   useEffect(() => {
-    const ctx = preview.current.getContext('2d')
-    ctx.drawImage(layer.canvas, 0, 0, 50, 50)
-  }, [stroke])
+    const ctx = preview.current.getContext( '2d' )
+    ctx.drawImage( layer.canvas, 0, 0, 50, 50 )
+  }, [ stroke ])
 
   return (
-    <div className="layer-preview" id={id} >
-      <canvas ref={ preview } id={id} className="layer-thumbnail" width={50} height={50}></canvas>
-      <p id={id} >{ layer.name }</p>
+    <div className="layer-preview" id={ id }>
+      <canvas ref={ preview } id={ id } className="layer-thumbnail" width={ 50 } height={ 50 } />
+      <p id={ id } >{ layer.name }</p>
     </div>
   )
 }

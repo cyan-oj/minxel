@@ -1,10 +1,10 @@
 import { rgbToGL } from "./colorConvert";
 
-export const getStroke = (point1, point2) => { 
-  const distance = Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+export const getStroke = ( point1, point2 ) => { 
+  const distance = Math.sqrt( Math.pow( point2.x - point1.x, 2 ) + Math.pow( point2.y - point1.y, 2 ));
   const angle = Math.atan2( point2.x - point1.x, point2.y - point1.y );
   const deltaP = point2.pressure - point1.pressure;
-  return [distance, angle, deltaP]
+  return [ distance, angle, deltaP ]
 }
 
 export const drawPoint = ( gl, position, size, color, glAttributes ) => {
@@ -25,7 +25,7 @@ export const getAttributes = gl => {
 
 export const redraw = ( gl, colors, strokes ) => {
   const glAttributes = getAttributes( gl ) 
-  gl.clear(gl.COLOR_BUFFER_BIT)
+  gl.clear( gl.COLOR_BUFFER_BIT )
   strokes.forEach( stroke => {
     const drawColor = rgbToGL( colors[stroke.color] )
     stroke.points.forEach( point => {

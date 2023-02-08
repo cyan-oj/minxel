@@ -1,97 +1,111 @@
 :root {
-  --base: rgba(255, 255, 255, .70);
-  --border: rgb(255, 255, 255);
-  --button-active: rgb( 255, 255, 255 );
-  --text: rgb(15, 15, 15);
-  --shadow: rgba(0, 0, 0, .4);
-  --grid-light: rgb(255, 255, 255);
-  --grid-dark: rgb(220, 220, 220);
+	--base: rgba(255, 255, 255, 0.7);
+	--border: rgb(255, 255, 255);
+	--button-active: rgb(255, 255, 255);
+	--text: rgb(15, 15, 15);
+	--shadow: rgba(0, 0, 0, 0.4);
+	--grid-light: rgb(255, 255, 255);
+	--grid-dark: rgb(220, 220, 220);
 
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 500;
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 20px;
+	line-height: 24px;
+	font-weight: 500;
 
-  color-scheme: light dark;
-  color: var(--text);
-  
-  background-color: var(--grid-light);
-  background-image: linear-gradient(45deg, var(--grid-dark) 25%, transparent 25%, transparent 75%, var(--grid-dark) 75%, var(--grid-dark)),
-  linear-gradient(45deg, var(--grid-dark) 25%, transparent 25%, transparent 75%, var(--grid-dark) 75%, var(--grid-dark));
-  background-size: 40px 40px;
-  background-position: 0 0, 20px 20px;
+	color-scheme: light dark;
+	color: var(--text);
+
+	background-color: var(--grid-light);
+	background-image: linear-gradient(
+			45deg,
+			var(--grid-dark) 25%,
+			transparent 25%,
+			transparent 75%,
+			var(--grid-dark) 75%,
+			var(--grid-dark)
+		),
+		linear-gradient(
+			45deg,
+			var(--grid-dark) 25%,
+			transparent 25%,
+			transparent 75%,
+			var(--grid-dark) 75%,
+			var(--grid-dark)
+		);
+	background-size: 40px 40px;
+	background-position: 0 0, 20px 20px;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  touch-action: none;
+	margin: 0;
+	display: flex;
+	touch-action: none;
 }
 
 h1 {
-  font-size: 2em;
-  margin: -.5em .1em .4em;
+	font-size: 2em;
+	margin: -0.5em 0.1em 0.4em;
 }
 
 h4 {
-  margin: -.2em .1em .4em;
+	margin: -0.2em 0.1em 0.4em;
 }
 
 button {
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: var(--base);
-  border: solid 1px var(--border);
-  cursor: pointer;
-  margin: .1em .4em;
-  padding: .1em .4em;
+	font-size: 1em;
+	font-weight: 500;
+	font-family: inherit;
+	background-color: var(--base);
+	border: solid 1px var(--border);
+	cursor: pointer;
+	margin: 0.1em 0.4em;
+	padding: 0.1em 0.4em;
 }
 button:hover {
-  z-index: 50;
-  padding: .2em .4em;
-  margin: 0em .4em;
-  background-color: var(--button-active);
-  border-radius: 3px;
+	z-index: 50;
+	padding: 0.2em 0.4em;
+	margin: 0em 0.4em;
+	background-color: var(--button-active);
+	border-radius: 3px;
 }
 
-input[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 16px;
-  margin: 2px 0px;
-  background: var(--text);
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
+input[type='range'] {
+	-webkit-appearance: none;
+	width: 100%;
+	height: 16px;
+	margin: 2px 0px;
+	background: var(--text);
+	border: none;
+	border-radius: 0;
+	cursor: pointer;
 }
 
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 8px;
-  height: 24px;
-  background: var(--text);
-  border: none;
-  border-radius: 0;
+input[type='range']::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 8px;
+	height: 24px;
+	background: var(--text);
+	border: none;
+	border-radius: 0;
 }
 
-input[type=range]::-moz-range-thumb {
-  -webkit-appearance: none;
-  width: 8px;
-  height: 24px;
-  background: var(--text);
-  border: none;
-  border-radius: 0;
+input[type='range']::-moz-range-thumb {
+	-webkit-appearance: none;
+	width: 8px;
+	height: 24px;
+	background: var(--text);
+	border: none;
+	border-radius: 0;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --base: rgba(0, 0, 0, .4);
-    --border: rgb(0, 0, 0);
-    --button-active: rgb( 0, 0, 0 );
-    --text: rgb(200, 200, 200);
-    --shadow: rgba(210, 210, 210, 0.4);
-    --grid-light: rgb(75, 75, 75);
-    --grid-dark: rgb(40, 40, 40);
-  }
+	:root {
+		--base: rgba(0, 0, 0, 0.4);
+		--border: rgb(0, 0, 0);
+		--button-active: rgb(0, 0, 0);
+		--text: rgb(200, 200, 200);
+		--shadow: rgba(210, 210, 210, 0.4);
+		--grid-light: rgb(75, 75, 75);
+		--grid-dark: rgb(40, 40, 40);
+	}
 }
