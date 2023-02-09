@@ -3,7 +3,10 @@ import Workspace from './Workspace/Workspace'
 function App() {
 
 	return (
-		<Workspace width={ 512 } height={ 512 } />
+		<>
+			<div id="background-gradient"></div>
+			<Workspace width={ 512 } height={ 512 } />
+		</>
 	)
 }
 

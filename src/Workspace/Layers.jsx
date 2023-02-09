@@ -1,12 +1,12 @@
 import { useRef } from "react"
-import LayerPreview from "./LayerPreview";
+import LayerPreview from "./LayerPreview"
 import "./Layers.css"
 
 function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) {
-  const dragLayer = useRef();
+  const dragLayer = useRef()
   const dragStart = ( index ) => dragLayer.current = index
   const dragEnter = ( index ) => {
-    const currentLayer = dragLayer.current;
+    const currentLayer = dragLayer.current
     setLayers( oldLayers => {
       const newLayers = [...oldLayers ]
       const dropLayer = newLayers.splice( currentLayer, 1 )[0]
@@ -24,7 +24,7 @@ function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) 
     >
       <LayerPreview key={ layer.name } id={ i } layer={ layer } stroke={ stroke } />
     </div>
-  );
+  )
 
   return (
     <div className="toolbox" id="layer-controls" onMouseUp={ e => setLayer( e.target.id ) }>
@@ -35,4 +35,4 @@ function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) 
   )
 }
 
-export default Layers;
+export default Layers

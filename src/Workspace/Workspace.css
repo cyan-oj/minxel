@@ -25,31 +25,45 @@ canvas {
   text-align: center;
   width: 256px;
 }
-
 .toolbox{
   display: flex;
   flex-wrap: wrap;
-  background-color: var(--base);
-  border: solid 1px var(--border);
   border-radius: 4px;
-  padding: 12px;
+  padding: 0px;
   margin: 8px;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
-  /* max-width: 100%; */
 }
-
+.toolbar {
+  display: block;
+  width: 100%;
+  font-size: 18px;
+  background-color: var(--base-transparent);
+  border: solid 1px var(--border);
+}
+.toolbar:hover {
+  cursor: pointer;
+}
 .tool-editor {
   width: 100%
+}
+.tool-sample {
+  margin: 12px 0px;
 }
 
 .layers {
   box-sizing: border-box;
   position: relative;
-  background-color: var(--base);
+  background-color: var(--base-transparent);
   border: solid 1px var(--border);
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
-
 .layers > * {
   position: absolute;
+}
+
+#app-info {
+  position: absolute;
+  right: 10px;
+  text-align: center;
+  width: 256px;
 }

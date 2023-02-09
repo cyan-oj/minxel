@@ -36,3 +36,8 @@
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 
+#editor-labels {
+  display: flex;
+  justify-content: space-around;
+}
+

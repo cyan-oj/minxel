@@ -1,7 +1,7 @@
 import { useState } from "react";
 import convert from "color-convert"
-import { colorString } from "../utils/colorConvert";
-import { redraw } from "../utils/glHelpers";
+import { colorString } from "../utils/colorConvert"
+import { redraw } from "../utils/glHelpers"
 
 function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHistory }) {
 
@@ -43,12 +43,21 @@ function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHis
     setColorHSL( newHSL )
     setColorRGB( newRGB )
   }
+
+const resetColor = ( color ) => {
+  setColorRGB( color )
+  setColorHSL( convert.rgb.hsl( color ))
+}
   
   return (
     <div className="tool-editor" id="palette-editor" style={ showSettings ? { display: "block" } : { display: "none" }}>
       <div className="color-preview">
-        <div className="color-edit-swatch" style={{ backgroundColor: colorString( colors[ activeColor ]), color: colorString( colors[ activeColor ])}} ></div>
+        <div className="color-edit-swatch" style={{ backgroundColor: colorString( colors[activeColor] ), color: colorString( colors[activeColor] )}} ></div>
         <div className="color-edit-swatch" style={{ backgroundColor: colorString( rgbColor ), color: colorString( rgbColor )}} ></div>
+      </div>
+      <div id="editor-labels">
+        <div>active</div>
+        <div>new</div>
       </div>
       <div className="sliders" id="rgb-sliders">rgb
         <input type="range" min="0" max="255" value={ rgbColor[0] } 
@@ -89,8 +98,14 @@ function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHis
           style={{ backgroundImage:  `linear-gradient(to right, hsl(${hslColor[0]}, ${hslColor[1]}%, 0%), hsl(${hslColor[0]}, ${hslColor[1]}%, 50%), hsl(${hslColor[0]}, ${hslColor[1]}%, 100%))` }}
         />
       </div>
-        <button id="addColor" onClick={ e => { addColor( rgbColor ) }}>add color</button>
-        <button id="replaceColor" onClick={ replaceColor }>replace active color</button>
+      <div className="toolbar">
+        <button id="addColor" title="add color to palette" 
+          onClick={ e => { addColor( rgbColor ) }}>+</button>
+        <button id="replaceColor" title="replace active color with new color" 
+          onClick={ replaceColor }>swap</button>
+        <button id="resetColor" title="reset new color to active color"
+          onClick={ e => resetColor( colors[activeColor] )}>reset</button>
+      </div>
     </div>
   )
 }

@@ -1,9 +1,14 @@
 :root {
-	--base: rgba(255, 255, 255, 0.7);
+	--base: rgba(255, 255, 255);
+	--base-transparent: rgba(255, 255, 255, 0.7);
+
+	--accent: rgba(240, 240, 240);
 	--border: rgb(255, 255, 255);
-	--button-active: rgb(255, 255, 255);
+	--active: rgb(200, 200, 200);
+
 	--text: rgb(15, 15, 15);
 	--shadow: rgba(0, 0, 0, 0.4);
+
 	--grid-light: rgb(255, 255, 255);
 	--grid-dark: rgb(220, 220, 220);
 
@@ -11,29 +16,26 @@
 	font-size: 20px;
 	line-height: 24px;
 	font-weight: 500;
-
 	color-scheme: light dark;
 	color: var(--text);
 
 	background-color: var(--grid-light);
-	background-image: linear-gradient(
-			45deg,
-			var(--grid-dark) 25%,
-			transparent 25%,
-			transparent 75%,
-			var(--grid-dark) 75%,
-			var(--grid-dark)
-		),
-		linear-gradient(
-			45deg,
-			var(--grid-dark) 25%,
-			transparent 25%,
-			transparent 75%,
-			var(--grid-dark) 75%,
-			var(--grid-dark)
-		);
+	background-image: 
+		linear-gradient(45deg,var(--grid-dark) 25%, transparent 25%, transparent 75%, var(--grid-dark) 75%, var(--grid-dark)),
+		linear-gradient(45deg, var(--grid-dark) 25%, transparent 25%, transparent 75%, var(--grid-dark) 75%, var(--grid-dark));
 	background-size: 40px 40px;
 	background-position: 0 0, 20px 20px;
+}
+
+#background-gradient{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-image: linear-gradient( to right, 
+		var(--base),
+		var(--base) 300px,
+		transparent 400px,
+		transparent)
 }
 
 body {
@@ -46,7 +48,6 @@ h1 {
 	font-size: 2em;
 	margin: -0.5em 0.1em 0.4em;
 }
-
 h4 {
 	margin: -0.2em 0.1em 0.4em;
 }
@@ -55,17 +56,18 @@ button {
 	font-size: 1em;
 	font-weight: 500;
 	font-family: inherit;
-	background-color: var(--base);
+	background-color: var(--accent);
 	border: solid 1px var(--border);
 	cursor: pointer;
 	margin: 0.1em 0.4em;
 	padding: 0.1em 0.4em;
+	position: relative;
 }
 button:hover {
-	z-index: 50;
+	z-index: 20;
 	padding: 0.2em 0.4em;
 	margin: 0em 0.4em;
-	background-color: var(--button-active);
+	background-color: var(--active);
 	border-radius: 3px;
 }
 
@@ -100,12 +102,23 @@ input[type='range']::-moz-range-thumb {
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--base: rgba(0, 0, 0, 0.4);
+		--base: rgb(0, 0, 0);
+		--base-transparent: rgba(0, 0, 0, 0.4);
+
+		--accent: rgb(50, 50, 50);
 		--border: rgb(0, 0, 0);
-		--button-active: rgb(0, 0, 0);
+		--active: rgb(0, 0, 0);
+
 		--text: rgb(200, 200, 200);
 		--shadow: rgba(210, 210, 210, 0.4);
 		--grid-light: rgb(75, 75, 75);
 		--grid-dark: rgb(40, 40, 40);
 	}
+}
+
+.icon {
+	fill: var(--accent)
+}
+.icon:hover {
+	fill: var(--active)
 }

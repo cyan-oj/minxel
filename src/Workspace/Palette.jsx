@@ -1,11 +1,14 @@
-import { useState, useRef } from "react";
-import PaletteEditor from "./PaletteEditor";
-import { colorString } from "../utils/colorConvert";
+import { useState, useRef } from "react"
+import PaletteEditor from "./PaletteEditor"
+import { colorString } from "../utils/colorConvert"
 import "./Palette.css"
-import { redraw } from "../utils/glHelpers";
+import { redraw } from "../utils/glHelpers"
 
 function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setStrokeHistory, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
+  // const [ showRGB, setShowRGB ] = useState( false )
+  // const [ showHSL, setShowHSL ] = useState( true )
+
   const dragColor = useRef();
 
   const dragStart = ( index ) => dragColor.current = index
@@ -51,12 +54,15 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
 
   return (
     <div className="toolbox" >
-      { colorsList }
-      <button className="swatch" id="addColor" 
-        onClick={ e => { e.preventDefault(); setShowSettings( !showSettings )}}
-      >⚙</button>
+      <div className="tool-sample">
+        { colorsList }
+      </div>
+      <div className="toolbar" id="addColor" 
+          onClick={ e => { e.preventDefault(); setShowSettings( !showSettings )}}
+          >{`⚙ color menu ${ showSettings ? '▼' : '▶'}`}</div>
       <PaletteEditor 
-        colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor } showSettings={ showSettings }
+        colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor }
+        showSettings={ showSettings }
         strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }
       />
     </div>

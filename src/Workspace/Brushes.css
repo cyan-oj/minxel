@@ -11,7 +11,7 @@
   height: 44px;
   margin: -2px;
 }
-.brush#addcolor {
+.brush#addBrush {
   border: solid 1px var(--base);
 }
 
@@ -22,4 +22,5 @@
   height: 48px;
   margin: -4px;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
+  z-index: 10;
 }

@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import { useRef } from "react";
+import { useRef } from "react"
 import "./Brushes.css"
+import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
 function Brushes({ brushes, activeBrush, setBrushes, setBrush }) {
-  const dragBrush = useRef();
+  const dragBrush = useRef()
   
   const dragStart = ( index ) => dragBrush.current = index
 
@@ -24,15 +24,20 @@ function Brushes({ brushes, activeBrush, setBrushes, setBrush }) {
       draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
+      onMouseUp={ e => setBrush(e.target.value)}
     >{brush.size}</button>  
   )
 
   return (
-    <div className="toolbox" onMouseUp={ e => setBrush(e.target.value)}>
+    <div className="toolbox" >
+      <div className="toolbar">
+          <Addicon className="icon" width="32" height="32"/>
+      </div>
+      <div className="tool-sample">
       { brushList }
-      <button className="brush" id="addBrush">+</button>
+      </div>
     </div>
   )
 }
 
-export default Brushes;
+export default Brushes

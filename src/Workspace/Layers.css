@@ -1,3 +1,8 @@
+.toolbox#layer-controls {
+  background-color: var(--base-transparent);
+  padding: 8px;
+}
+
 .layer-preview{
   display: flex;
   margin-top: .2em;
