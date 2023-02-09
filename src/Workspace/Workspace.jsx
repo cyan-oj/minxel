@@ -10,6 +10,7 @@ import { rgbToGL } from '../utils/colorConvert.js'
 import './Workspace.css'
 import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-circle-sharp.svg'
 import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-circle-sharp.svg'
+import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
 import ThemeTest from './ThemeTest.jsx'
 
 const defaultPalette = [
@@ -17,14 +18,14 @@ const defaultPalette = [
   [ 255, 255, 255 ],
 ]
 
-const defaultBrushes = [ new Brush( 100, 'pen' ), new Brush( 5, 'pen' ), new Brush( 50, 'pen' )]
+const defaultBrushes = [ new Brush( 3, 'pen' ), new Brush( 30, 'pen' ), new Brush( 100, 'pen' )]
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
   const [ layers, setLayers ] = useState([])
   const [ colors, setColors ] = useState( defaultPalette )
   const [ brushes, setBrushes ] = useState( defaultBrushes )
-  const [ pressure, togglePressure ] = useState( true )
+  const [ pressure, togglePressure ] = useState( false )
 
   const [ activeLayer, setActiveLayer ] = useState({})
   const [ activeColor, setActiveColor ] = useState( 0 )
@@ -191,16 +192,20 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       </div>
       <div className="tools">
         <h1>minxel</h1>
-        <div className='toolbar'>
-        <button id="pressure-button" onClick={ e => togglePressure( !pressure )}>
-          {`pen pressure: ${ pressure ? "on" : "off" }`}</button>
-          <button onClick={ saveFile }>
-            save file</button>
-          <div id="undo-button" onClick={ e => undo( strokeHistory )}> 
-            <UndoIcon  className="icon" />
-          </div>
-          <div id="redo-button" onClick={ e => redo( strokeFuture )} >
-            <RedoIcon className="icon"/>
+        <div className='toolbox'>
+            <div className='toolbar'>
+              <button onClick={ saveFile }>
+                download image  <DownloadIcon  className="icon" /></button>
+              <button id="undo-button" onClick={ e => undo( strokeHistory )}> 
+                undo <UndoIcon  className="icon" />
+              </button>
+              <button id="redo-button" onClick={ e => redo( strokeFuture )} >
+                redo <RedoIcon className="icon"/>
+            </button>
+            </div>
+          <div className='tool-sample'>
+            <button id="pressure-button" onClick={ e => togglePressure( !pressure )}>
+              {`pen pressure: ${ pressure ? "on" : "off" }`}</button>
           </div>
         </div>
         <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>

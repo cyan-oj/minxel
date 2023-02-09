@@ -24,13 +24,12 @@
 }
 
 #active-swatch {
-  border: 1px solid var(--bg);
+  border: 1px solid var(--alt);
   border-radius: 2px;
   width: 64px;
   height: 64px;
   margin: -6px;
   z-index: 10;
-  filter: drop-shadow(0 0 1.4mm var(--dim));
 }
 
 #editor-labels {

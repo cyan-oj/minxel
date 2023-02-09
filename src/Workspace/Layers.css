@@ -6,17 +6,16 @@
   justify-content: space-between;
   padding: .4em;
   border-radius: 4px;
-  background-color: var(--dim);
+  background-color: var(--base);
 }
 .layer-preview:hover {
-  background-color: var(--bg);
+  background-color: var(--alt);
 }
 .layer-name {
   margin-right: 12px
 }
-
 .layer-thumbnail {
-  border: solid 1px var(--alt);
+  border: solid 1px var(--main);
 }
 
 .active-layer {
@@ -27,11 +26,14 @@
   justify-content: space-between;
   padding: .4em;
   border-radius: 4px;
-  background-color: var(--bg);
+  background-color: var(--highlight);
 }
 
 .tool-sample#layer-sample {
   padding: 0;
   flex-direction: column-reverse;
   background-color: transparent;
+}
+.tool-sample#layer-sample > * {
+  filter: none;
 }
