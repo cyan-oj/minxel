@@ -12,15 +12,15 @@
   margin: -2px;
 }
 .brush#addBrush {
-  border: solid 1px var(--base);
+  border: solid 1px var(--bg);
 }
 
 #active-brush {
-  border: 1px solid var(--text);
+  border: 1px solid var(--bg);
   border-radius: 2px;
   width: 48px;
   height: 48px;
   margin: -4px;
-  filter: drop-shadow(0 0 1.4mm var(--shadow));
+  filter: drop-shadow(0 0 1.4mm var(--dim));
   z-index: 10;
 }

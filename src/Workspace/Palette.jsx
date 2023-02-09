@@ -57,7 +57,7 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
       <div className="tool-sample">
         { colorsList }
       </div>
-      <div className="toolbar" id="addColor" 
+      <div className="toolbar"
           onClick={ e => { e.preventDefault(); setShowSettings( !showSettings )}}
           >{`⚙ color menu ${ showSettings ? '▼' : '▶'}`}</div>
       <PaletteEditor 

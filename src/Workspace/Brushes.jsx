@@ -30,11 +30,12 @@ function Brushes({ brushes, activeBrush, setBrushes, setBrush }) {
 
   return (
     <div className="toolbox" >
-      <div className="toolbar">
-          <Addicon className="icon" width="32" height="32"/>
-      </div>
       <div className="tool-sample">
       { brushList }
+      </div>
+      <div className="toolbar">
+          {/* <Addicon className="icon" width="32" height="32"/> */}
+          brush size presets
       </div>
     </div>
   )

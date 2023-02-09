@@ -1,29 +1,37 @@
-.toolbox#layer-controls {
-  background-color: var(--base-transparent);
-  padding: 8px;
-}
-
 .layer-preview{
+  flex-grow: 1;
   display: flex;
   margin-top: .2em;
   align-items: center;
   justify-content: space-between;
-  padding-right: .4em;
-  border-radius: 2px;
+  padding: .4em;
+  border-radius: 4px;
+  background-color: var(--dim);
 }
-
 .layer-preview:hover {
-  background-color: var(--button-active);
+  background-color: var(--bg);
+}
+.layer-name {
+  margin-right: 12px
 }
 
 .layer-thumbnail {
-  border: solid 1px var(--border);
+  border: solid 1px var(--alt);
 }
 
 .active-layer {
-  background-color: var(--button-active);
+  flex-grow: 1;
+  display: flex;
+  margin-top: .2em;
+  align-items: center;
+  justify-content: space-between;
+  padding: .4em;
+  border-radius: 4px;
+  background-color: var(--bg);
 }
 
-.toolbox#layer-controls {
+.tool-sample#layer-sample {
+  padding: 0;
   flex-direction: column-reverse;
+  background-color: transparent;
 }

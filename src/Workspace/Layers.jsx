@@ -1,6 +1,7 @@
 import { useRef } from "react"
 import LayerPreview from "./LayerPreview"
 import "./Layers.css"
+import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
 function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) {
   const dragLayer = useRef()
@@ -18,19 +19,22 @@ function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) 
   }
 
   const layerControls = layers.map(( layer, i ) => 
-    <div key={ layer.name } draggable className={( activeLayer && ( activeLayer.id === layer.id )) ? "active-layer" : "passive-layer" }
+    <div key={ layer.name } draggable
       onDragStart={ e => dragStart( i )}
       onDragEnter={ e => dragEnter( i )}
     >
-      <LayerPreview key={ layer.name } id={ i } layer={ layer } stroke={ stroke } />
+      <LayerPreview key={ layer.name } id={ i } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } />
     </div>
   )
 
   return (
-    <div className="toolbox" id="layer-controls" onMouseUp={ e => setLayer( e.target.id ) }>
-      { layerControls }
-      <button onClick={ addLayer }>add canvas</button>
-      <h4>Layers</h4>
+    <div className="toolbox" id="layer-controls">
+      <div className="toolbar" onClick={ addLayer } >
+        <Addicon className="icon" />
+        add canvas</div>
+      <div className="tool-sample" id="layer-sample" onMouseUp={ e => setLayer( e.target.id )}>
+        { layerControls }
+      </div>
     </div>
   )
 }

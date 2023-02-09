@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import "./Layers.css"
 
-function LayerPreview( { layer, id, stroke } ) {
+function LayerPreview( { layer, id, stroke, activeLayer } ) {
   const preview = useRef();
 
   useEffect(() => {
@@ -10,9 +10,9 @@ function LayerPreview( { layer, id, stroke } ) {
   }, [ stroke ])
 
   return (
-    <div className="layer-preview" id={ id }>
+    <div id={ id } className={( activeLayer && ( activeLayer.id === layer.id )) ? "active-layer" : "layer-preview" }>
       <canvas ref={ preview } id={ id } className="layer-thumbnail" width={ 50 } height={ 50 } />
-      <p id={ id } >{ layer.name }</p>
+      <p className="layer-name" id={ id } >{ layer.name }</p>
     </div>
   )
 }

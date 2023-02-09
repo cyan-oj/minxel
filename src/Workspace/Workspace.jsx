@@ -10,6 +10,7 @@ import { rgbToGL } from '../utils/colorConvert.js'
 import './Workspace.css'
 import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-circle-sharp.svg'
 import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-circle-sharp.svg'
+import ThemeTest from './ThemeTest.jsx'
 
 const defaultPalette = [
   [ 0, 0, 0 ],
@@ -186,17 +187,22 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         onPointerLeave={ e => saveStroke( strokeHistory, stroke, activeLayer )}
       />
       <div id="app-info">
-        <h1>minxel</h1>
+        {/* <ThemeTest /> */}
       </div>
       <div className="tools">
-        <UndoIcon id="undo-button" className="icon" width="32" height="32" 
-          onClick={ e => undo( strokeHistory )} />
-        <RedoIcon className="icon" width="32" height="32" id="redo-button" 
-          onClick={ e => redo( strokeFuture )} />
+        <h1>minxel</h1>
+        <div className='toolbar'>
         <button id="pressure-button" onClick={ e => togglePressure( !pressure )}>
           {`pen pressure: ${ pressure ? "on" : "off" }`}</button>
-        <button onClick={ saveFile }>
-          save file</button>
+          <button onClick={ saveFile }>
+            save file</button>
+          <div id="undo-button" onClick={ e => undo( strokeHistory )}> 
+            <UndoIcon  className="icon" />
+          </div>
+          <div id="redo-button" onClick={ e => redo( strokeFuture )} >
+            <RedoIcon className="icon"/>
+          </div>
+        </div>
         <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
         <Brushes brushes={ brushes } activeBrush={ activeBrush } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>
