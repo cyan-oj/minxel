@@ -2,8 +2,8 @@
 	--base: rgba(220, 220, 220);
 	--alt: rgba(245, 245, 245);	
 	--highlight: rgba(255, 255, 255);
-	--accent: rgb(74, 41, 156);
-	--active: rgb(215, 95, 255);
+	--accent: rgb(57, 75, 127);
+	--active: rgb(115, 115, 234);
 	--main: rgba(120, 120, 120);
 	--emphasis: rgba(80, 80, 80);
 	--shadow: rgba(0, 0, 0, 0.4);
@@ -22,6 +22,19 @@
 	background-size: 40px 40px;
 	background-position: 0 0, 20px 20px;
 }
+@media (prefers-color-scheme: dark) {
+	:root {
+		--highlight: rgba(70, 70, 70);
+		--alt: rgba(45, 45, 45);	
+		--base: rgba(20, 20, 20);
+		--accent: rgb(57, 106, 127);
+		--active: rgb(115, 184, 234);
+		--main: rgba(200, 200, 200);
+		--emphasis: rgba(215, 215, 215);
+		--shadow: rgba(0, 0, 0, 0.4);
+	}
+}
+
 body {
 	margin: 0;
 	display: flex;
@@ -93,18 +106,6 @@ input[type='range']::-moz-range-thumb {
 	border: none;
 	border-radius: 0;
 }
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--bg: var(--dark-alt);
-		--alt: var(--dark-base);
-		--dim: var(--core03);
-		--main: var(--core01);
-		--emphasis: var(--core00);
-		--grid-accent: var(--dark-base)
-	}
-}
-
 .icon {
 	fill: var(--accent);
 	width: 32px;
