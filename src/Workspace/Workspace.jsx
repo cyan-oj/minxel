@@ -83,8 +83,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const setPosition = ( e ) => {
     const rect = e.target.getBoundingClientRect()
-    position.x = ( e.clientX - rect.left - width * Number(canvasScale) / 2 ) / ( width * Number(canvasScale) / 2 )
-    position.y = ( height * Number(canvasScale) / 2 - ( e.clientY - rect.top )) / ( height * Number(canvasScale) / 2 )
+    const scale = Number(canvasScale)
+    position.x = ( e.clientX - rect.left - width * scale / 2 ) / ( width * scale / 2 )
+    position.y = ( height * scale / 2 - ( e.clientY - rect.top )) / ( height * scale / 2 )
     if ( pressure ) {
       e.pressure === 0.5 ? ( position.pressure = 0.001 ) : ( position.pressure = e.pressure )
     } else {
