@@ -11,6 +11,8 @@ import './Workspace.css'
 import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-circle-sharp.svg'
 import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-circle-sharp.svg'
 import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
+import { ReactComponent as ZoomInIcon } from '../assets/icons/sharp-icons/expand-sharp.svg'
+import { ReactComponent as ZoomOutIcon } from '../assets/icons/sharp-icons/contract-sharp.svg'
 import ThemeTest from './ThemeTest.jsx'
 
 const defaultPalette = [
@@ -168,7 +170,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     }
   }
 
-  function saveFile() {
+  const saveFile = () => {
     const exportCanvas = document.getElementById( 'export-canvas' )
     const exportContext = exportCanvas.getContext( '2d' )
     layers.forEach(( layer ) => exportContext.drawImage( layer.canvas, 0, 0 ))
@@ -176,6 +178,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     saveLink.setAttribute( 'download', 'minxel.png' )
     saveLink.setAttribute( 'href', exportCanvas.toDataURL( 'image/png' ).replace( 'image/png', 'image/octet-stream' ))
     saveLink.click()
+  }
+
+  const zoomIn = () => {
+    console.log("zoomin'")
+  }
+
+  const zoomOut = () => {
+    console.log("zoomout")
   }
 
   return (
@@ -201,7 +211,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
               </button>
               <button id="redo-button" onClick={ e => redo( strokeFuture )} >
                 redo <RedoIcon className="icon"/>
-            </button>
+              </button>
+              <button id="zoom-in-button" onClick={ zoomIn } >
+                zoom in <ZoomInIcon className="icon"/>
+              </button>
+              <button id="zoom-out-button" onClick={ zoomOut } >
+                zoom out <ZoomOutIcon className="icon"/>
+              </button>
             </div>
           <div className='tool-sample'>
             <button id="pressure-button" onClick={ e => togglePressure( !pressure )}>
