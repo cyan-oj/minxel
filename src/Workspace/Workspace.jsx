@@ -7,12 +7,12 @@ import { FSHADER_SOURCE, VSHADER_SOURCE } from '../utils/shaders.js'
 import { getStroke, drawPoint, getAttributes, redraw } from '../utils/glHelpers.js'
 import { rgbToGL } from '../utils/colorConvert.js'
 import './Workspace.css'
-import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-circle-sharp.svg'
-import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-circle-sharp.svg'
-import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
-import { ReactComponent as ZoomInIcon } from '../assets/icons/sharp-icons/expand-sharp.svg'
-import { ReactComponent as ZoomOutIcon } from '../assets/icons/sharp-icons/contract-sharp.svg'
-import { ReactComponent as PanIcon } from '../assets/icons/sharp-icons/move-sharp.svg'
+import { ReactComponent as UndoIcon } from '../assets/icons/outline-icons/arrow-undo-outline.svg'
+import { ReactComponent as RedoIcon } from '../assets/icons/outline-icons/arrow-redo-outline.svg'
+import { ReactComponent as DownloadIcon } from '../assets/icons/outline-icons/download-outline.svg'
+import { ReactComponent as ZoomInIcon } from '../assets/icons/outline-icons/expand-outline.svg'
+import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/contract-outline.svg'
+import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
 import ThemeTest from './ThemeTest.jsx'
 
 const defaultPalette = [
@@ -76,10 +76,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }, [layers])
 
   const setClientPosition = e => {
-    // const rect = e.target.getBoundingClientRect()
-    // clientPosition.x = ( e.clientX - rect.left - width / 2 ) / ( width / 2 )
-    // clientPosition.y = ( height / 2 - ( e.clientY - rect.top )) / ( height / 2 )
-    // console.log("client position before setting:", clientPosition.current, e.clientX, e.clientY)
     clientPosition.current.x =  e.clientX,
     clientPosition.current.y =  e.clientY
     return clientPosition.current 
@@ -87,13 +83,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const setPosition = ( e ) => {
     const rect = e.target.getBoundingClientRect()
-    position.x = ( e.clientX - rect.left - width / 2 ) / ( width / 2 )
-    position.y = ( height / 2 - ( e.clientY - rect.top )) / ( height / 2 )
+    position.x = ( e.clientX - rect.left - width * Number(canvasScale) / 2 ) / ( width * Number(canvasScale) / 2 )
+    position.y = ( height * Number(canvasScale) / 2 - ( e.clientY - rect.top )) / ( height * Number(canvasScale) / 2 )
     if ( pressure ) {
       e.pressure === 0.5 ? ( position.pressure = 0.001 ) : ( position.pressure = e.pressure )
     } else {
       position.pressure = 1
     }
+    console.log(position)
     return position
   }
 
@@ -211,27 +208,18 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const pan = event => {
-    // console.log("panpan", event.clientX, event.clientY, clientPosition.current, canvasPosition )
     if ( event.buttons !== 1 ) { 
       setClientPosition(event);
       return
     }
-    // debugger;
     const pastPos = JSON.parse(JSON.stringify(clientPosition.current))
     const nextPos = setClientPosition(event);
-
-    const newCanvasPos = JSON.parse(JSON.stringify(canvasPosition))
-    console.log(pastPos, nextPos, newCanvasPos)
-    
-    newCanvasPos.left = Number(newCanvasPos.left.slice(0, newCanvasPos.left.length - 2))
-    newCanvasPos.top = Number(newCanvasPos.top.slice(0, newCanvasPos.top.length - 2))
-
-    console.log(pastPos, nextPos, newCanvasPos)
-    
-    newCanvasPos.left = newCanvasPos.left + nextPos.x - pastPos.x + 'px'
-    newCanvasPos.top = newCanvasPos.top + nextPos.y - pastPos.y + 'px'
-    
-    console.log(pastPos, nextPos, newCanvasPos)
+    const newCanvasPos = { 
+      left: Number(canvasPosition.left.slice(0, canvasPosition.left.length - 2)),
+      top: Number(canvasPosition.top.slice(0, canvasPosition.top.length - 2))
+    }
+    newCanvasPos.left = `${newCanvasPos.left + nextPos.x - pastPos.x}px`
+    newCanvasPos.top = `${newCanvasPos.top + nextPos.y - pastPos.y}px`
     setCanvasPosition( newCanvasPos )
   }
 
@@ -255,19 +243,19 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
               <button onClick={ saveFile }>
                 download image  <DownloadIcon  className="icon" /></button>
               <button id="undo-button" onClick={ e => undo( strokeHistory )}> 
-                undo <UndoIcon  className="icon" />
+                undo  <UndoIcon  className="icon" />
               </button>
               <button id="redo-button" onClick={ e => redo( strokeFuture )} >
-                redo <RedoIcon className="icon"/>
+                redo  <RedoIcon className="icon"/>
               </button>
               <button id="zoom-in-button" onClick={ zoomIn } >
-                zoom in <ZoomInIcon className="icon"/>
+                zoom in  <ZoomInIcon className="icon"/>
               </button>
               <button id="zoom-out-button" onClick={ zoomOut } >
-                zoom out <ZoomOutIcon className="icon"/>
+                zoom out  <ZoomOutIcon className="icon"/>
               </button>
               <button id="pan-button" onClick={ e => togglePanning(!panning) } >
-                pan canvas <PanIcon className="icon"/>
+                pan canvas  <PanIcon className="icon"/>
               </button>
             </div>
           <div className='tool-sample'>

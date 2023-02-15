@@ -107,11 +107,12 @@ input[type='range']::-moz-range-thumb {
 	border: none;
 	border-radius: 0;
 }
+
 .icon {
 	fill: var(--accent);
 	width: 32px;
 	height: 32px;
 }
-.icon:hover {
+.icon:hover .icon.active {
 	fill: var(--active)
 }
