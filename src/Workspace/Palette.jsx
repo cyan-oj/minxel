@@ -4,7 +4,7 @@ import { colorString } from "../utils/colorConvert"
 import "./Palette.css"
 import { redraw } from "../utils/glHelpers"
 
-function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setStrokeHistory, max = 16 }) {
+function Palette({ colors, activeColor, setColors, dispatch, strokeHistory, setStrokeHistory, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
   // const [ showRGB, setShowRGB ] = useState( false )
   // const [ showHSL, setShowHSL ] = useState( true )
@@ -48,7 +48,7 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
       draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
-      onMouseUp={ e => setColor(e.target.value) }
+      onMouseUp={ e => dispatch({ type: "activeColor", payload: e.target.value })}
     >■</button>  
   )
 

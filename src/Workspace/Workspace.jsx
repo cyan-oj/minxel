@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useReducer } from 'react'
 import { initShaders } from '../WebGLUtils/cuon-utils.js'
 import Palette from './Palette.jsx'
 import Brushes from './Brushes.jsx'
@@ -26,29 +26,41 @@ const defaultBrushes = [
   { name: "pen", type: "point", size: 100, spacing: 0.002 }, 
 ]
 
+const defaultState = {
+  panning: false,
+  pressure: false,
+  activeColor: 0
+}
+
+const reducer = ( state, action ) => {
+  const { type, payload } = action
+  return { ...state, [type]: payload }
+}
+
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
+  
+  const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
+  const { panning, pressure, activeColor } = state
+
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
   const [ layers, setLayers ] = useState([])
   const [ colors, setColors ] = useState( defaultPalette )
   const [ brushes, setBrushes ] = useState( defaultBrushes )
-  const [ pressure, togglePressure ] = useState( false )
   const [ canvasScale, setCanvasScale ] = useState( '1.0' )
   
   const [ activeLayer, setActiveLayer ] = useState({})
-  const [ activeColor, setActiveColor ] = useState( 0 )
   const [ activeBrush, setActiveBrush ] = useState( 0 )
   
   const [ strokeHistory, setStrokeHistory ] = useState({})
   const [ strokeFuture, setStrokeFuture ] = useState([])
   
-  const [ panning, togglePanning ] = useState( false )
-  
   const [ canvasPosition, setCanvasPosition ] = useState({ left: '0px', top: '0px' })
   const clientPosition = useRef({ x: 0, y: 0 })
-
+  
   const stroke = { color: activeColor, points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
-
+  
+  
   useEffect(() => {
       addLayer()
   }, [])
@@ -81,13 +93,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     return clientPosition.current 
   }
 
-  const setPosition = ( e ) => {
-    const rect = e.target.getBoundingClientRect()
+  const setPosition = ( evt ) => {
+    const rect = evt.target.getBoundingClientRect()
     const scale = Number(canvasScale)
-    position.x = ( e.clientX - rect.left - width * scale / 2 ) / ( width * scale / 2 )
-    position.y = ( height * scale / 2 - ( e.clientY - rect.top )) / ( height * scale / 2 )
+    position.x = ( evt.clientX - rect.left - width * scale / 2 ) / ( width * scale / 2 )
+    position.y = ( height * scale / 2 - ( evt.clientY - rect.top )) / ( height * scale / 2 )
     if ( pressure ) {
-      e.pressure === 0.5 ? ( position.pressure = 0.001 ) : ( position.pressure = e.pressure )
+      evt.pressure === 0.5 ? ( position.pressure = 0.001 ) : ( position.pressure = evt.pressure )
     } else {
       position.pressure = 1
     }
@@ -95,14 +107,14 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     return position
   }
 
-  const draw = ( event, gl ) => {
-    if ( event.buttons !== 1 ) {
-      setPosition( event )
+  const draw = ( evt, gl ) => {
+    if ( evt.buttons !== 1 ) {
+      setPosition( evt )
       return
     }
     const glAttributes = getAttributes( gl )
     const lastPoint = JSON.parse(JSON.stringify( position ))
-    const currentPoint = setPosition( event )
+    const currentPoint = setPosition( evt )
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint )
     stroke.color = activeColor
     const drawColor = rgbToGL( colors[ stroke.color ])
@@ -144,7 +156,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const setLayer = ( id ) => setActiveLayer( layers[Number( id )])
   const setBrush = ( index ) => setActiveBrush( Number( index ))
-  const setColor = ( index ) => setActiveColor( Number( index ))
+  // const setColor = ( index ) => setActiveColor( Number( index ))
 
   const redo = ( strokeFuture ) => {
     console.log( strokeHistory, strokeFuture )
@@ -208,13 +220,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     setCanvasScale( (Number(canvasScale) - 0.25).toString() )
   }
 
-  const pan = event => {
-    if ( event.buttons !== 1 ) { 
-      setClientPosition(event);
+  const pan = evt => {
+    if ( evt.buttons !== 1 ) { 
+      setClientPosition(evt);
       return
     }
     const pastPos = JSON.parse(JSON.stringify(clientPosition.current))
-    const nextPos = setClientPosition(event);
+    const nextPos = setClientPosition(evt);
     const newCanvasPos = { 
       left: Number(canvasPosition.left.slice(0, canvasPosition.left.length - 2)),
       top: Number(canvasPosition.top.slice(0, canvasPosition.top.length - 2))
@@ -225,7 +237,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   return (
-    <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ setClientPosition }>
+    <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className="layers" id="layers" 
         style={{ width: width, height: height, scale: canvasScale, left: canvasPosition.left, top: canvasPosition.top }}
         onPointerDown={ setPosition }
@@ -255,16 +267,16 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
               <button id="zoom-out-button" onClick={ zoomOut } >
                 zoom out  <ZoomOutIcon className="icon"/>
               </button>
-              <button id="pan-button" onClick={ e => togglePanning(!panning) } >
+              <button id="pan-button" onClick={ e => dispatch({ type: "panning", payload: !panning}) } >
                 pan canvas  <PanIcon className="icon"/>
               </button>
             </div>
           <div className='tool-sample'>
-            <button id="pressure-button" onClick={ e => togglePressure( !pressure )}>
-              {`pen pressure: ${ pressure ? "on" : "off" }`}</button>
+            <button id="pressure-button" onClick={ e => dispatch({ type: "pressure", payload: !pressure})}>
+              {`pen pressure: ${state.pressure ? "on" : "off"}`}</button>
           </div>
         </div>
-        <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
+        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } setColors={ setColors } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
         <Brushes brushes={ brushes } activeBrush={ activeBrush } setBrushes={ setBrushes } setBrush={ setBrush }/>
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>
       </div>
