@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { initShaders } from '../WebGLUtils/cuon-utils.js'
 import Palette from './Palette.jsx'
 import Brushes from './Brushes.jsx'
@@ -28,6 +28,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ colors, setColors ] = useState( defaultPalette )
   const [ brushes, setBrushes ] = useState( defaultBrushes )
   const [ pressure, togglePressure ] = useState( false )
+  const [ canvasScale, setCanvasScale ] = useState( '1.0' )
 
   const [ activeLayer, setActiveLayer ] = useState({})
   const [ activeColor, setActiveColor ] = useState( 0 )
@@ -35,6 +36,8 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const [ strokeHistory, setStrokeHistory ] = useState({})
   const [ strokeFuture, setStrokeFuture ] = useState([])
+
+  const layersRef = useRef();
 
   const stroke = { color: activeColor, points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
@@ -181,16 +184,18 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const zoomIn = () => {
-    console.log("zoomin'")
+    console.log( canvasScale )
+    setCanvasScale( (Number(canvasScale) + 0.25).toString() )
   }
 
   const zoomOut = () => {
-    console.log("zoomout")
+    console.log( canvasScale )
+    setCanvasScale( (Number(canvasScale) - 0.25).toString() )
   }
 
   return (
     <div className="workspace" id={ name }>
-      <div className="layers" id="layers" style={{ width: width, height: height }}
+      <div className="layers" id="layers" style={{ width: width, height: height, scale: canvasScale }}
         onPointerDown={ setPosition }
         onPointerEnter={ setPosition }
         onPointerMove={ e => draw( e, activeLayer.context )}
