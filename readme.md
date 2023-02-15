@@ -9,17 +9,6 @@ All brushstrokes are stored in history, which allows for quick undo/redo, and th
 
 Quick overview of using WebGL to draw lines with pressure sensitivity, with some extra comments: 
 
-
-```javascript
-// src/utils/glHelpers
-export const getStroke = ( point1, point2 ) => { 
-    const distance = Math.sqrt( Math.pow( point2.x - point1.x, 2 ) + Math.pow( point2.y - point1.y, 2 ))
-    const angle = Math.atan2( point2.x - point1.x, point2.y - point1.y )
-    const deltaP = point2.pressure - point1.pressure
-  return [ distance, angle, deltaP ]
-}
-```
-
 an event listener on the drawing canvas is triggered when a mouse or pointer moves on the canvas
 
 ```javascript
@@ -65,4 +54,16 @@ an event listener on the drawing canvas is triggered when a mouse or pointer mov
       stroke.points.push( point )
     }
   }
+```
+
+the getStroke method returns several properties that describe the relationship between the two points passed in
+
+```javascript
+// src/utils/glHelpers
+export const getStroke = ( point1, point2 ) => { 
+    const distance = Math.sqrt( Math.pow( point2.x - point1.x, 2 ) + Math.pow( point2.y - point1.y, 2 ))
+    const angle = Math.atan2( point2.x - point1.x, point2.y - point1.y )
+    const deltaP = point2.pressure - point1.pressure
+  return [ distance, angle, deltaP ]
+}
 ```
