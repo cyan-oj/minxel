@@ -2,7 +2,7 @@ import { useRef } from "react"
 import "./Brushes.css"
 import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
-function Brushes({ brushes, activeBrush, setBrushes, setBrush }) {
+function Brushes({ brushes, activeBrush, dispatch, setBrushes }) {
   const dragBrush = useRef()
   
   const dragStart = ( index ) => dragBrush.current = index
@@ -24,7 +24,7 @@ function Brushes({ brushes, activeBrush, setBrushes, setBrush }) {
       draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
-      onMouseUp={ e => setBrush(e.target.value)}
+      onMouseUp={ e => dispatch({ type: "activeBrush", payload: e.target.value })}
     >{brush.size}</button>  
   )
 

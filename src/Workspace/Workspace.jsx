@@ -29,7 +29,8 @@ const defaultBrushes = [
 const defaultState = {
   panning: false,
   pressure: false,
-  activeColor: 0
+  activeColor: 0,
+  activeBrush: 0
 }
 
 const reducer = ( state, action ) => {
@@ -40,7 +41,7 @@ const reducer = ( state, action ) => {
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   
   const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
-  const { panning, pressure, activeColor } = state
+  const { panning, pressure, activeColor, activeBrush } = state
 
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
   const [ layers, setLayers ] = useState([])
@@ -49,7 +50,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ canvasScale, setCanvasScale ] = useState( '1.0' )
   
   const [ activeLayer, setActiveLayer ] = useState({})
-  const [ activeBrush, setActiveBrush ] = useState( 0 )
   
   const [ strokeHistory, setStrokeHistory ] = useState({})
   const [ strokeFuture, setStrokeFuture ] = useState([])
@@ -155,8 +155,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const setLayer = ( id ) => setActiveLayer( layers[Number( id )])
-  const setBrush = ( index ) => setActiveBrush( Number( index ))
-  // const setColor = ( index ) => setActiveColor( Number( index ))
 
   const redo = ( strokeFuture ) => {
     console.log( strokeHistory, strokeFuture )
@@ -190,7 +188,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const saveStroke = ( strokeHistory, stroke, layer ) => {
-    // console.log( 'saveStroke', strokeHistory )
     if ( stroke.points.length > 0 ) {
       const newStrokeHistory = { ...strokeHistory }
       newStrokeHistory[ layer.id] 
@@ -277,7 +274,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
           </div>
         </div>
         <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } setColors={ setColors } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } setBrushes={ setBrushes } setBrush={ setBrush }/>
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } setBrushes={ setBrushes } />
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
