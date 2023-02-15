@@ -71,7 +71,7 @@ canvas {
 .layers {
   box-sizing: border-box;
   position: relative;
-  background-color: var(--alt);
+  background-color: var(--canvas-bg);
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 .layers > * {

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { initShaders } from '../WebGLUtils/cuon-utils.js'
 import Palette from './Palette.jsx'
 import Brushes from './Brushes.jsx'
-import Brush from './Brush.js'
 import Layers from './Layers.jsx'
 import { FSHADER_SOURCE, VSHADER_SOURCE } from '../utils/shaders.js'
 import { getStroke, drawPoint, getAttributes, redraw } from '../utils/glHelpers.js'
@@ -13,6 +12,7 @@ import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-re
 import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
 import { ReactComponent as ZoomInIcon } from '../assets/icons/sharp-icons/expand-sharp.svg'
 import { ReactComponent as ZoomOutIcon } from '../assets/icons/sharp-icons/contract-sharp.svg'
+import { ReactComponent as PanIcon } from '../assets/icons/sharp-icons/move-sharp.svg'
 import ThemeTest from './ThemeTest.jsx'
 
 const defaultPalette = [
@@ -20,7 +20,11 @@ const defaultPalette = [
   [ 255, 255, 255 ],
 ]
 
-const defaultBrushes = [ new Brush( 3, 'pen' ), new Brush( 30, 'pen' ), new Brush( 100, 'pen' )]
+const defaultBrushes = [ 
+  { name: "pen", type: "point", size: 3, spacing: 0.002 }, 
+  { name: "pen", type: "point", size: 30, spacing: 0.002 }, 
+  { name: "pen", type: "point", size: 100, spacing: 0.002 }, 
+]
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
@@ -29,15 +33,18 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ brushes, setBrushes ] = useState( defaultBrushes )
   const [ pressure, togglePressure ] = useState( false )
   const [ canvasScale, setCanvasScale ] = useState( '1.0' )
-
+  
   const [ activeLayer, setActiveLayer ] = useState({})
   const [ activeColor, setActiveColor ] = useState( 0 )
   const [ activeBrush, setActiveBrush ] = useState( 0 )
-
+  
   const [ strokeHistory, setStrokeHistory ] = useState({})
   const [ strokeFuture, setStrokeFuture ] = useState([])
-
-  const layersRef = useRef();
+  
+  const [ panning, togglePanning ] = useState( false )
+  
+  const [ canvasPosition, setCanvasPosition ] = useState({ left: '0px', top: '0px' })
+  const clientPosition = useRef({ x: 0, y: 0 })
 
   const stroke = { color: activeColor, points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
@@ -68,6 +75,16 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     }
   }, [layers])
 
+  const setClientPosition = e => {
+    // const rect = e.target.getBoundingClientRect()
+    // clientPosition.x = ( e.clientX - rect.left - width / 2 ) / ( width / 2 )
+    // clientPosition.y = ( height / 2 - ( e.clientY - rect.top )) / ( height / 2 )
+    // console.log("client position before setting:", clientPosition.current, e.clientX, e.clientY)
+    clientPosition.current.x =  e.clientX,
+    clientPosition.current.y =  e.clientY
+    return clientPosition.current 
+  }
+
   const setPosition = ( e ) => {
     const rect = e.target.getBoundingClientRect()
     position.x = ( e.clientX - rect.left - width / 2 ) / ( width / 2 )
@@ -91,7 +108,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint )
     stroke.color = activeColor
     const drawColor = rgbToGL( colors[ stroke.color ])
-    for ( let i = 0; i < dist; i += 0.001 ) {
+    for ( let i = 0; i < dist; i += brushes[activeBrush].spacing ) {
       const x = lastPoint.x + Math.sin( angle ) * i
       const y = lastPoint.y + Math.cos( angle ) * i
       const pressure = lastPoint.pressure + deltaP / (dist / i)
@@ -163,7 +180,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const saveStroke = ( strokeHistory, stroke, layer ) => {
-    console.log( 'saveStroke', strokeHistory )
+    // console.log( 'saveStroke', strokeHistory )
     if ( stroke.points.length > 0 ) {
       const newStrokeHistory = { ...strokeHistory }
       newStrokeHistory[ layer.id] 
@@ -193,12 +210,38 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     setCanvasScale( (Number(canvasScale) - 0.25).toString() )
   }
 
+  const pan = event => {
+    // console.log("panpan", event.clientX, event.clientY, clientPosition.current, canvasPosition )
+    if ( event.buttons !== 1 ) { 
+      setClientPosition(event);
+      return
+    }
+    // debugger;
+    const pastPos = JSON.parse(JSON.stringify(clientPosition.current))
+    const nextPos = setClientPosition(event);
+
+    const newCanvasPos = JSON.parse(JSON.stringify(canvasPosition))
+    console.log(pastPos, nextPos, newCanvasPos)
+    
+    newCanvasPos.left = Number(newCanvasPos.left.slice(0, newCanvasPos.left.length - 2))
+    newCanvasPos.top = Number(newCanvasPos.top.slice(0, newCanvasPos.top.length - 2))
+
+    console.log(pastPos, nextPos, newCanvasPos)
+    
+    newCanvasPos.left = newCanvasPos.left + nextPos.x - pastPos.x + 'px'
+    newCanvasPos.top = newCanvasPos.top + nextPos.y - pastPos.y + 'px'
+    
+    console.log(pastPos, nextPos, newCanvasPos)
+    setCanvasPosition( newCanvasPos )
+  }
+
   return (
-    <div className="workspace" id={ name }>
-      <div className="layers" id="layers" style={{ width: width, height: height, scale: canvasScale }}
+    <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ setClientPosition }>
+      <div className="layers" id="layers" 
+        style={{ width: width, height: height, scale: canvasScale, left: canvasPosition.left, top: canvasPosition.top }}
         onPointerDown={ setPosition }
         onPointerEnter={ setPosition }
-        onPointerMove={ e => draw( e, activeLayer.context )}
+        onPointerMove={ panning ? null : e => draw( e, activeLayer.context )}
         onPointerUp={ e => saveStroke( strokeHistory, stroke, activeLayer )}
         onPointerLeave={ e => saveStroke( strokeHistory, stroke, activeLayer )}
       />
@@ -206,7 +249,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
         {/* <ThemeTest /> */}
       </div>
       <div className="tools">
-        <h1>minxel</h1>
+        <h1>minxel.</h1>
         <div className='toolbox'>
             <div className='toolbar'>
               <button onClick={ saveFile }>
@@ -222,6 +265,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
               </button>
               <button id="zoom-out-button" onClick={ zoomOut } >
                 zoom out <ZoomOutIcon className="icon"/>
+              </button>
+              <button id="pan-button" onClick={ e => togglePanning(!panning) } >
+                pan canvas <PanIcon className="icon"/>
               </button>
             </div>
           <div className='tool-sample'>
