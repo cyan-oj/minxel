@@ -25,7 +25,7 @@ function Palette({ colors, activeColor, setColors, dispatch, strokeHistory, setS
     Object.values( strokeHistory ).forEach( layer => { redraw( layer.context, colors, layer.strokes )})
   }
 
-  const removeColor = index => { // before adding, need to implement color replacement
+  const removeColor = index => { // can't be done nondestructively
     // check if color is used in drawing
       // if no: delete
       // if yes: ask how to handle removal

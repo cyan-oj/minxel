@@ -110,9 +110,11 @@ input[type='range']::-moz-range-thumb {
 
 .icon {
 	fill: var(--accent);
+	stroke: var(--accent);
 	width: 32px;
 	height: 32px;
 }
 .icon:hover .icon.active {
-	fill: var(--active)
+	fill: var(--active);
+	stroke: var(--active);
 }

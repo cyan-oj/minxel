@@ -78,6 +78,26 @@ canvas {
   position: absolute;
 }
 
+.tool-toggles {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  padding: 8px 2px;
+  background-color: var(--base);
+}
+.tool-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tool-name {
+  display: flex;
+  align-items: center;
+}
+
 #app-info {
   position: absolute;
   right: 10px;
