@@ -14,6 +14,7 @@ import { ReactComponent as ZoomInIcon } from '../assets/icons/outline-icons/expa
 import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/contract-outline.svg'
 import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
 import { ReactComponent as SettingsIcon } from '../assets/icons/outline-icons/settings-outline.svg'
+import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
 import ToolButton from './ToolButton.jsx'
 
 const defaultPalette = [
@@ -35,9 +36,10 @@ const defaultState = {
   activeColor: 0,
   activeBrush: 0,
   toolButtons: [
-    { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon },
-    { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon },
-    { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon },
+    { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false },
+    { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false },
+    { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning" },
+    { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
   ]
 }
 
@@ -242,7 +244,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const toolBar = toolButtons.map(( button, i ) =>
     <ToolButton key={button.buttonText} buttonText={ button.buttonText } Icon={ button.svg } action={ button.action } 
-      dispatch={ dispatch } showTools={ showTools } />
+      dispatch={ dispatch } showTools={ showTools } active={ button.active } state={ state }/>
   )
 
   return (
@@ -273,19 +275,15 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
             </button>
           </div>
           <div className='tool-toggles'>
-              <button id="undo-button" onClick={ e => undo( strokeHistory )}> 
-                undo  <UndoIcon  className="icon" />
-              </button>
-              <button id="redo-button" onClick={ e => redo( strokeFuture )} >
-                redo  <RedoIcon className="icon"/>
-              </button>
-
-              { toolBar }
-
-              <button id="pressure-button" onClick={ e => dispatch({ type: "togglePressure" })}>
-                {`pen pressure: ${state.pressure ? "on" : "off"}`}</button>
-            </div>
-              </div>
+            <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
+              clickFunction={ e => undo( strokeHistory ) } 
+              showTools={ showTools }/>
+            <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
+              clickFunction={ e => redo( strokeFuture ) } 
+              showTools={ showTools }/>
+            { toolBar }
+          </div>
+        </div>
         <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } setColors={ setColors } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
         <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } setBrushes={ setBrushes } />
         <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>

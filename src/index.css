@@ -3,7 +3,7 @@
 	--alt: rgba(245, 245, 245);	
 	--highlight: rgba(255, 255, 255);
 	--accent: rgb(57, 75, 127);
-	--active: rgb(115, 115, 234);
+	--active: rgb(154, 188, 253);
 	--main: rgba(120, 120, 120);
 	--emphasis: rgba(80, 80, 80);
 	--shadow: rgba(0, 0, 0, 0.4);
@@ -114,7 +114,7 @@ input[type='range']::-moz-range-thumb {
 	width: 32px;
 	height: 32px;
 }
-.icon:hover .icon.active {
+.icon:hover .icon-active {
 	fill: var(--active);
 	stroke: var(--active);
 }
