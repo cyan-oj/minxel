@@ -94,10 +94,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     const keys = ( event ) => {
       //set keyboard shortcuts
       if (( event.metaKey || event.ctrlKey ) && event.shiftKey && event.code === 'KeyZ' ) {
-        const redo = document.getElementById( 'redo-button' )
+        const redo = document.getElementById( 'redo' )
         redo.click()
       } else if (( event.metaKey || event.ctrlKey ) && event.code === 'KeyZ' ) {
-        const undo = document.getElementById( 'undo-button' )
+        const undo = document.getElementById( 'undo' )
         undo.click()
       }
     }
@@ -249,6 +249,10 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   return (
     <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
+      <div className='tools-right'> 
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } setBrushes={ setBrushes } />
+        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>
+      </div>
       <div className="layers" id="layers" 
         style={{ width: width, height: height, 
           scale: canvasScale, 
@@ -285,8 +289,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
           </div>
         </div>
         <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } setColors={ setColors } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } setBrushes={ setBrushes } />
-        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
       <canvas id={ 'export-canvas' } style={{ display: 'none' }} width={ width } height={ height } />

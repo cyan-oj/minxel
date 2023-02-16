@@ -25,6 +25,15 @@ canvas {
   width: 256px;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
+.tools-right {
+  position: absolute;
+  right: 10px;
+  top: 42px;
+  text-align: center;
+  width: 256px;
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
+  z-index: 10
+}
 .toolbox{
   display: flex;
   flex-wrap: wrap;
@@ -105,6 +114,9 @@ canvas {
 .tool-icon:hover, .tool-icon-active:hover {
   border-radius: 20px;
   margin: 4px;
+}
+.tool-icon:active {
+  background-color: var(--active);
 }
 .tool-icon-active {
   background-color: var(--active);

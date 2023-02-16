@@ -19,7 +19,7 @@ function ToolButton({ buttonText, Icon, active = "active", showTools, state = { 
             { buttonText } 
           </div>
         }
-        <button onClick={ dispatch ? (e => dispatch({ type: action })) : clickFunction } className={ state[active] ? "tool-icon-active" : "tool-icon" }>
+        <button id={ buttonText } onClick={ dispatch ? (e => dispatch({ type: action })) : clickFunction } className={ state[active] ? "tool-icon-active" : "tool-icon" }>
           <Icon className="icon"/>
         </button>
         </div>
