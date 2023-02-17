@@ -4,7 +4,7 @@ import { colorString } from "../utils/colorConvert"
 import "./Palette.css"
 import { redraw } from "../utils/glHelpers"
 
-function Palette({ colors, activeColor, setColors, dispatch, strokeHistory, setStrokeHistory, max = 16 }) {
+function Palette({ colors, activeColor, setColors, dispatch, strokeHistory, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
   // const [ showRGB, setShowRGB ] = useState( false )
   // const [ showHSL, setShowHSL ] = useState( true )
@@ -62,8 +62,8 @@ function Palette({ colors, activeColor, setColors, dispatch, strokeHistory, setS
           >{`⚙ color menu ${ showSettings ? '▼' : '▶'}`}</div>
       <PaletteEditor 
         colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor }
+        strokeHistory={ strokeHistory } dispatch={ dispatch }
         showSettings={ showSettings }
-        strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }
       />
     </div>
   )

@@ -40,7 +40,9 @@ const defaultState = {
     { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false },
     { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning" },
     { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
-  ]
+  ],
+  strokeHistory: {},
+  redoCache: []
 }
 
 const reducer = ( state, action ) => {
@@ -61,7 +63,7 @@ const reducer = ( state, action ) => {
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   
   const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
-  const { panning, pressure, canvasScale, canvasPosition, activeColor, activeBrush, toolButtons } = state
+  const { panning, pressure, canvasScale, canvasPosition, activeColor, activeBrush, toolButtons, strokeHistory, redoCache } = state
 
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
   const [ layers, setLayers ] = useState([])
@@ -69,9 +71,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   const [ brushes, setBrushes ] = useState( defaultBrushes )
   
   const [ activeLayer, setActiveLayer ] = useState({})
-  
-  const [ strokeHistory, setStrokeHistory ] = useState({})
-  const [ strokeFuture, setStrokeFuture ] = useState([])
 
   const [ showTools, setShowTools ] = useState( false );
 
@@ -79,7 +78,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   
   const stroke = { color: activeColor, points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
-  
   
   useEffect(() => {
       addLayer()
@@ -175,13 +173,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const setLayer = ( id ) => setActiveLayer( layers[Number( id )])
 
-  const redo = ( strokeFuture ) => {
-    console.log( strokeHistory, strokeFuture )
-    if ( strokeFuture.length < 1 ) return
+  const redo = ( redoCache ) => {
+    console.log( strokeHistory, redoCache )
+    if ( redoCache.length < 1 ) return
 
-    const newStrokeFuture = [...strokeFuture ]
-    const nextStroke = newStrokeFuture.pop()
-    setStrokeFuture( newStrokeFuture )
+    const newRedoCache = [...redoCache ]
+    const nextStroke = newRedoCache.pop()
+    dispatch({ type: "redoCache", payload: newRedoCache })
     saveStroke( strokeHistory, nextStroke.stroke, nextStroke.layer )
 
     const gl = nextStroke.layer.context
@@ -196,11 +194,11 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     if ( !strokeHistory[ activeLayer.id ] || strokeHistory[ activeLayer.id ].strokes.length < 1 ) return
     
     const newStrokeHistory = { ...strokeHistory }
-    const newStrokeFuture = [...strokeFuture ]
+    const newRedoCache = [...redoCache ]
     const stroke = newStrokeHistory[ activeLayer.id ].strokes.pop()
-    newStrokeFuture.push({ layer: activeLayer, stroke: stroke })
-    setStrokeHistory( newStrokeHistory )
-    setStrokeFuture( newStrokeFuture )
+    newRedoCache.push({ layer: activeLayer, stroke: stroke })
+    dispatch({ type: "strokeHistory", payload: newStrokeHistory })
+    dispatch({ type: "redoCache", payload: newRedoCache })
 
     const gl = strokeHistory[ activeLayer.id ].context
     redraw( gl, colors, strokeHistory[ activeLayer.id ].strokes )
@@ -212,7 +210,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       newStrokeHistory[ layer.id] 
         ? newStrokeHistory[ layer.id ].strokes.push(stroke) 
         : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ stroke ] }
-      setStrokeHistory( newStrokeHistory )
+        dispatch({ type: "strokeHistory", payload: newStrokeHistory })
     }
   }
 
@@ -244,7 +242,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
   const toolBar = toolButtons.map(( button, i ) =>
     <ToolButton key={button.buttonText} buttonText={ button.buttonText } Icon={ button.svg } action={ button.action } 
-      dispatch={ dispatch } showTools={ showTools } active={ button.active } state={ state }/>
+      dispatch={ dispatch } showTools={ showTools } state={ state[button.active] }/>
   )
 
   return (
@@ -283,12 +281,12 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
               clickFunction={ e => undo( strokeHistory ) } 
               showTools={ showTools }/>
             <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
-              clickFunction={ e => redo( strokeFuture ) } 
+              clickFunction={ e => redo( redoCache ) } 
               showTools={ showTools }/>
             { toolBar }
           </div>
         </div>
-        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } setColors={ setColors } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
+        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } setColors={ setColors } strokeHistory={ strokeHistory } />
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
       <canvas id={ 'export-canvas' } style={{ display: 'none' }} width={ width } height={ height } />

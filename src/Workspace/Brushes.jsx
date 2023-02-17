@@ -1,10 +1,11 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import "./Brushes.css"
 import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
 function Brushes({ brushes, activeBrush, dispatch, setBrushes }) {
+  console.log(activeBrush)
   const dragBrush = useRef()
-  
+
   const dragStart = ( index ) => dragBrush.current = index
 
   const dragEnter = ( index ) => {
@@ -20,7 +21,7 @@ function Brushes({ brushes, activeBrush, dispatch, setBrushes }) {
 
   const brushList = brushes.map( (brush, index) => 
     <button key={ index } value={ index } className="brush"
-      id={( index === activeBrush ) ? "active-brush" : null }
+      id={( index == activeBrush ) ? "active-brush" : null }
       draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
