@@ -1,29 +1,25 @@
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import "./Brushes.css"
-import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
-function Brushes({ brushes, activeBrush, dispatch, setBrushes }) {
+function Brushes({ brushes, activeBrush, dispatch }) {
   const dragBrush = useRef()
 
   const dragStart = ( index ) => dragBrush.current = index
 
-  const dragEnter = ( index ) => {
+  const dragEnter = ( index, brushes ) => {
     const currentBrush = dragBrush.current;
-    setBrushes( oldBrushes => {
-      const newBrushes = [...oldBrushes]
-      const dropBrush = newBrushes.splice( currentBrush, 1 )[0]
-      newBrushes.splice( index, 0, dropBrush )
-      dragBrush.current = index
-      return newBrushes
-    })
+    const dropBrush = brushes.splice( currentBrush, 1 )[0]
+    brushes.splice( index, 0, dropBrush )
+    dragBrush.current = index
+    dispatch({ type: "brushes", payload: brushes })
   }
 
-  const brushList = brushes.map( (brush, index) => 
+  const brushList = brushes.map(( brush, index ) => 
     <button key={ index } value={ index } className="brush"
       id={( index == activeBrush ) ? "active-brush" : null }
       draggable
       onDragStart={ e => dragStart( index )}
-      onDragEnter={ e => dragEnter( index )}
+      onDragEnter={ e => dragEnter( index, brushes )}
       onMouseUp={ e => dispatch({ type: "activeBrush", payload: e.target.value })}
     >{brush.size}</button>  
   )
@@ -34,7 +30,6 @@ function Brushes({ brushes, activeBrush, dispatch, setBrushes }) {
       { brushList }
       </div>
       <div className="toolbar">
-          {/* <Addicon className="icon" width="32" height="32"/> */}
           brush size presets
       </div>
     </div>

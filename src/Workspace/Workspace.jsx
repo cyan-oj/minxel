@@ -78,13 +78,17 @@ const reducer = ( state, action ) => {
 }
 
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
-  
   const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
-  const { colors, panning, pressure, canvasScale, canvasPosition, activeColor, activeBrush, activeLayer, toolButtons, strokeHistory, redoCache } = state
+  const { 
+    colors, brushes,
+    panning, pressure, canvasScale, canvasPosition, 
+    activeColor, activeBrush, activeLayer, 
+    toolButtons, 
+    strokeHistory, redoCache 
+  } = state
 
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
   const [ layers, setLayers ] = useState([])
-  const [ brushes, setBrushes ] = useState( defaultBrushes )
 
   const [ showTools, setShowTools ] = useState( false );
 
@@ -193,7 +197,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const redo = ( redoCache ) => {
-    console.log( strokeHistory, redoCache )
     if ( redoCache.length < 1 ) return
 
     const newRedoCache = [...redoCache ]
@@ -267,7 +270,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   return (
     <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className='tools-right'> 
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } setBrushes={ setBrushes } />
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } />
         <Layers dispatch={ dispatch } layers={ layers } setLayers={ setLayers } addLayer={ addLayer } activeLayer={ activeLayer } stroke={ stroke }/>
       </div>
       <div className="layers" id="layers" 

@@ -15,11 +15,11 @@ function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
 
   const dragEnter = ( index ) => {
     const currentColor = dragColor.current;
-      const newColors = [ ...colors ]
-      const dropColor = newColors.splice( currentColor, 1 )[0]
-      newColors.splice( index, 0, dropColor )
-      dragColor.current = index
-      dispatch({ type: "colors", payload: newColors })
+    const newColors = [ ...colors ]
+    const dropColor = newColors.splice( currentColor, 1 )[0]
+    newColors.splice( index, 0, dropColor )
+    dragColor.current = index
+    dispatch({ type: "colors", payload: newColors })
     Object.values( strokeHistory ).forEach( layer => { redraw( layer.context, colors, layer.strokes )})
   }
 
@@ -31,7 +31,7 @@ function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
           // choose other palette color and re-reference to that color
           // delete strokes that use this color
     // set colors 
-      const newColors = [ ...colort ]
+      const newColors = [ ...colors ]
       newColors.splice( index, 1 )
       dispatch({ type: "colors", payload: newColors })
     // redraw
