@@ -29,6 +29,7 @@ const defaultBrushes = [
 ]
 
 const defaultState = {
+  colors: defaultPalette,
   panning: false,
   pressure: false,
   canvasScale: '1.0',
@@ -57,6 +58,20 @@ const reducer = ( state, action ) => {
       return { ...state, panning: !state.panning }
     case "togglePressure": 
       return { ...state, pressure: !state.pressure }
+    case "addColor": {
+      for ( const swatch of state.colors ) {
+        if( swatch === payload ) {
+          console.error('color already in palette')
+          return { ...state };
+        } 
+      }
+      return { ...state, colors: [...state.colors, payload]}
+    }
+    case "replaceColor": {
+      const colors = [...state.colors]
+      colors[payload.index] = payload.color
+      return {...state, colors: colors}
+    }
     default: return { ...state, [type]: payload }
   }
 }
@@ -64,14 +79,11 @@ const reducer = ( state, action ) => {
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   
   const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
-  const { panning, pressure, canvasScale, canvasPosition, activeColor, activeBrush, activeLayer, toolButtons, strokeHistory, redoCache } = state
+  const { colors, panning, pressure, canvasScale, canvasPosition, activeColor, activeBrush, activeLayer, toolButtons, strokeHistory, redoCache } = state
 
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
   const [ layers, setLayers ] = useState([])
-  const [ colors, setColors ] = useState( defaultPalette )
   const [ brushes, setBrushes ] = useState( defaultBrushes )
-  
-  // const [ activeLayer, setActiveLayer ] = useState({})
 
   const [ showTools, setShowTools ] = useState( false );
 
@@ -292,7 +304,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
             { toolBar }
           </div>
         </div>
-        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } setColors={ setColors } strokeHistory={ strokeHistory } />
+        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } strokeHistory={ strokeHistory } />
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
       <canvas id={ 'export-canvas' } style={{ display: 'none' }} width={ width } height={ height } />

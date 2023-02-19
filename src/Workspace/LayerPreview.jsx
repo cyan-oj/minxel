@@ -3,7 +3,6 @@ import "./Layers.css"
 
 function LayerPreview( { layer, id, stroke, activeLayer } ) {
   const preview = useRef();
-  console.log(id, "activelayer:", activeLayer)
 
   useEffect(() => {
     const ctx = preview.current.getContext( '2d' )

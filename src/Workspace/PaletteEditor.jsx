@@ -3,28 +3,21 @@ import convert from "color-convert"
 import { colorString } from "../utils/colorConvert"
 import { redraw } from "../utils/glHelpers"
 
-function PaletteEditor({ colors, activeColor, setColors, showSettings, strokeHistory }) {
+function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispatch }) {
 
   const [ rgbColor, setColorRGB ] = useState( colors[activeColor] )
   const [ hslColor, setColorHSL ] = useState( convert.rgb.hsl( rgbColor ))
 
-  const addColor = ( color=[ 255, 255, 255 ]) => {
-    for ( const swatch of colors ) {
-      if( swatch === color ) {
-        console.error('color already in palette')
-        return;
+  const replaceColor = ( color, index ) => { 
+    dispatch({ 
+      type: "replaceColor", 
+      payload: {
+        color, 
+        index
       } 
-    }
-    setColors( oldColors => [ ...oldColors, color ] )
-  }
-
-  const replaceColor = ( ) => { 
-    let newColors = null
-    setColors( oldColors => {
-      newColors = [ ...oldColors ]
-      newColors[activeColor] = rgbColor
-      return newColors
     })
+    const newColors = [...colors]
+    newColors[index] = color
     Object.values( strokeHistory ).forEach( layer => { redraw( layer.context, newColors, layer.strokes )})
   }
 
@@ -100,9 +93,9 @@ const resetColor = ( color ) => {
       </div>
       <div className="toolbar">
         <button id="addColor" title="add color to palette" 
-          onClick={ e => { addColor( rgbColor ) }}>+</button>
+          onClick={ e => dispatch({ type: "addColor", payload: rgbColor })}>+</button>
         <button id="replaceColor" title="replace active color with new color" 
-          onClick={ replaceColor }>swap</button>
+          onClick={() => replaceColor( rgbColor, activeColor )}>swap</button>
         <button id="resetColor" title="reset new color to active color"
           onClick={ e => resetColor( colors[activeColor] )}>reset</button>
       </div>
