@@ -30,6 +30,7 @@ const defaultBrushes = [
 
 const defaultState = {
   colors: defaultPalette,
+  brushes: defaultBrushes,
   panning: false,
   pressure: false,
   canvasScale: '1.0',
@@ -65,7 +66,7 @@ const reducer = ( state, action ) => {
           return { ...state };
         } 
       }
-      return { ...state, colors: [...state.colors, payload]}
+      return { ...state, colors: [...state.colors, payload], activeColor: state.colors.length}
     }
     case "replaceColor": {
       const colors = [...state.colors]
