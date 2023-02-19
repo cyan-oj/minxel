@@ -3,27 +3,26 @@ import LayerPreview from "./LayerPreview"
 import "./Layers.css"
 import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
-function Layers({ layers, setLayers, addLayer, stroke, activeLayer, dispatch }) {
+function Layers({ layers, addLayer, stroke, activeLayer, dispatch }) {
   const dragLayer = useRef()
+
   const dragStart = ( index ) => dragLayer.current = index
-  const dragEnter = ( index ) => {
+
+  const dragEnter = ( index, layers ) => {
     const currentLayer = dragLayer.current
-    setLayers( oldLayers => {
-      const newLayers = [...oldLayers ]
-      const dropLayer = newLayers.splice( currentLayer, 1 )[0]
-      newLayers.splice( index, 0, dropLayer )
-      dragLayer.current = index
-      return newLayers
-    })
+    const dropLayer = layers.splice( currentLayer, 1 )[0]
+    layers.splice( index, 0, dropLayer )
+    dragLayer.current = index
+    dispatch({ type: "layers", payload: layers})
     dispatch({ type: "activeLayer", payload: index })
   }
 
   const layerControls = layers.map(( layer, i ) => 
-    <div key={ layer.name } draggable
+    <div key={ layer.id } draggable
       onDragStart={ e => dragStart( i )}
-      onDragEnter={ e => dragEnter( i )}
+      onDragEnter={ e => dragEnter( i, layers )}
     >
-      <LayerPreview key={ layer.name } id={ i } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } />
+      <LayerPreview id={ layer.id } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } />
     </div>
   )
 

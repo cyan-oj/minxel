@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useReducer } from 'react'
+import { FSHADER_SOURCE, VSHADER_SOURCE } from '../utils/shaders.js'
 import { initShaders } from '../WebGLUtils/cuon-utils.js'
+import { getStroke, drawPoint, getAttributes, redraw } from '../utils/glHelpers.js'
+import { rgbToGL } from '../utils/colorConvert.js'
 import Palette from './Palette.jsx'
 import Brushes from './Brushes.jsx'
 import Layers from './Layers.jsx'
-import { FSHADER_SOURCE, VSHADER_SOURCE } from '../utils/shaders.js'
-import { getStroke, drawPoint, getAttributes, redraw } from '../utils/glHelpers.js'
-import { rgbToGL } from '../utils/colorConvert.js'
+import ToolButton from './ToolButton.jsx'
 import './Workspace.css'
 import { ReactComponent as UndoIcon } from '../assets/icons/outline-icons/arrow-undo-outline.svg'
 import { ReactComponent as RedoIcon } from '../assets/icons/outline-icons/arrow-redo-outline.svg'
@@ -15,7 +16,6 @@ import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/con
 import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
 import { ReactComponent as SettingsIcon } from '../assets/icons/outline-icons/settings-outline.svg'
 import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
-import ToolButton from './ToolButton.jsx'
 
 const defaultPalette = [
   [ 0, 0, 0 ],
@@ -31,6 +31,8 @@ const defaultBrushes = [
 const defaultState = {
   colors: defaultPalette,
   brushes: defaultBrushes,
+  layers: [],
+  newLayerNo: 0,
   panning: false,
   pressure: false,
   canvasScale: '1.0',
@@ -59,20 +61,26 @@ const reducer = ( state, action ) => {
       return { ...state, panning: !state.panning }
     case "togglePressure": 
       return { ...state, pressure: !state.pressure }
-    case "addColor": {
+    case "addColor":
       for ( const swatch of state.colors ) {
         if( swatch === payload ) {
           console.error('color already in palette')
           return { ...state };
         } 
       }
-      return { ...state, colors: [...state.colors, payload], activeColor: state.colors.length}
-    }
-    case "replaceColor": {
+      return { ...state, colors: [...state.colors, payload ], activeColor: state.colors.length}
+    case "addLayer": 
+      console.log("adding layer", payload )
+      return { 
+        ...state, 
+        layers: [...state.layers, payload], 
+        activeLayer: 0,
+        newLayerNo: state.newLayerNo + 1
+      }
+    case "replaceColor":
       const colors = [...state.colors]
       colors[payload.index] = payload.color
       return {...state, colors: colors}
-    }
     default: return { ...state, [type]: payload }
   }
 }
@@ -80,42 +88,31 @@ const reducer = ( state, action ) => {
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
   const { 
-    colors, brushes,
+    colors, brushes, layers, newLayerNo,
     panning, pressure, canvasScale, canvasPosition, 
     activeColor, activeBrush, activeLayer, 
     toolButtons, 
     strokeHistory, redoCache 
   } = state
 
-  const [ newLayerNo, setNewLayerNo] = useState( 1 )
-  const [ layers, setLayers ] = useState([])
+  // const [ newLayerNo, setNewLayerNo] = useState( 1 )
+  // const [ layers, setLayers ] = useState([])
 
   const [ showTools, setShowTools ] = useState( false );
 
   const clientPosition = useRef({ x: 0, y: 0 })
-  
   const stroke = { color: activeColor, points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
   
   useEffect(() => {
-      addLayer()
-      dispatch({
-        type: "canvasPosition",
-        payload: {
-          left: `${( window.innerWidth - width )/ 2 }px`,
-          top: `${( window.innerHeight - height ) /2 }px`,
-        }
-      })
-  }, [])
-
-  useEffect(() => {
-    // attach layers and set new layer as active
-    const layerParent = document.getElementById( 'layers' )
-    layers.forEach(( layer ) => {
-      layerParent.appendChild( layer.canvas )
+    dispatch({
+      type: "canvasPosition",
+      payload: {
+        left: `${( window.innerWidth - width )/ 2 }px`,
+        top: `${( window.innerHeight - height ) /2 }px`,
+      }
     })
     const keys = ( event ) => {
-      //set keyboard shortcuts
       if (( event.metaKey || event.ctrlKey ) && event.shiftKey && event.code === 'KeyZ' ) {
         const redo = document.getElementById( 'redo' )
         redo.click()
@@ -128,6 +125,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     return () => {
       document.removeEventListener( 'keydown', keys )
     }
+  }, [])
+
+  useEffect(() => {
+    const layerParent = document.getElementById( 'layers' )
+    layers.forEach(( layer ) => {
+      layerParent.appendChild( layer.canvas )
+    })
   }, [layers])
 
   const setClientPosition = evt => {
@@ -185,9 +189,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
     const newLayer = { id: newLayerNo, name: layerName, canvas: newCanvas, context: gl }
 
-    setLayers([...layers, newLayer])
-    setNewLayerNo( newLayerNo + 1 )
-    dispatch({ type: "activeLayer", payload: 0 })
+    dispatch({ type: "addLayer", payload: newLayer })
+    // setNewLayerNo( newLayerNo + 1 )
+    // dispatch({ type: "activeLayer", payload: 0 })
   }
 
   const removeLayer = () => {
@@ -271,7 +275,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className='tools-right'> 
         <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } />
-        <Layers dispatch={ dispatch } layers={ layers } setLayers={ setLayers } addLayer={ addLayer } activeLayer={ activeLayer } stroke={ stroke }/>
+        <Layers dispatch={ dispatch } layers={ layers } addLayer={ addLayer } activeLayer={ activeLayer } stroke={ stroke }/>
       </div>
       <div className="layers" id="layers" 
         style={{ width: width, height: height, 
