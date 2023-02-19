@@ -3,7 +3,6 @@ import "./Brushes.css"
 import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
 function Brushes({ brushes, activeBrush, dispatch, setBrushes }) {
-  console.log(activeBrush)
   const dragBrush = useRef()
 
   const dragStart = ( index ) => dragBrush.current = index

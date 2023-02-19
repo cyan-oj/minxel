@@ -25,7 +25,7 @@ const defaultPalette = [
 const defaultBrushes = [ 
   { name: "pen", type: "point", size: 3, spacing: 0.002 }, 
   { name: "pen", type: "point", size: 30, spacing: 0.002 }, 
-  { name: "pen", type: "point", size: 100, spacing: 0.002 }, 
+  { name: "pen", type: "point", size: 100, spacing: 0.002 }
 ]
 
 const defaultState = {
@@ -35,6 +35,7 @@ const defaultState = {
   canvasPosition: { left: '0px', top: '0px' },
   activeColor: 0,
   activeBrush: 0,
+  activeLayer: 0,
   toolButtons: [
     { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false },
     { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false },
@@ -63,14 +64,14 @@ const reducer = ( state, action ) => {
 function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
   
   const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
-  const { panning, pressure, canvasScale, canvasPosition, activeColor, activeBrush, toolButtons, strokeHistory, redoCache } = state
+  const { panning, pressure, canvasScale, canvasPosition, activeColor, activeBrush, activeLayer, toolButtons, strokeHistory, redoCache } = state
 
   const [ newLayerNo, setNewLayerNo] = useState( 1 )
   const [ layers, setLayers ] = useState([])
   const [ colors, setColors ] = useState( defaultPalette )
   const [ brushes, setBrushes ] = useState( defaultBrushes )
   
-  const [ activeLayer, setActiveLayer ] = useState({})
+  // const [ activeLayer, setActiveLayer ] = useState({})
 
   const [ showTools, setShowTools ] = useState( false );
 
@@ -81,6 +82,13 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   
   useEffect(() => {
       addLayer()
+      dispatch({
+        type: "canvasPosition",
+        payload: {
+          left: `${( window.innerWidth - width )/ 2 }px`,
+          top: `${( window.innerHeight - height ) /2 }px`,
+        }
+      })
   }, [])
 
   useEffect(() => {
@@ -162,7 +170,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
 
     setLayers([...layers, newLayer])
     setNewLayerNo( newLayerNo + 1 )
-    setActiveLayer(newLayer)
+    dispatch({ type: "activeLayer", payload: 0 })
   }
 
   const removeLayer = () => {
@@ -170,8 +178,6 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
       // cannot be undone
       // when removing layer, add layer to action history when action history is implemented?
   }
-
-  const setLayer = ( id ) => setActiveLayer( layers[Number( id )])
 
   const redo = ( redoCache ) => {
     console.log( strokeHistory, redoCache )
@@ -191,17 +197,17 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const undo = ( strokeHistory ) => {
-    if ( !strokeHistory[ activeLayer.id ] || strokeHistory[ activeLayer.id ].strokes.length < 1 ) return
+    if ( !strokeHistory[ layers[activeLayer].id ] || strokeHistory[ layers[activeLayer].id ].strokes.length < 1 ) return
     
     const newStrokeHistory = { ...strokeHistory }
     const newRedoCache = [...redoCache ]
-    const stroke = newStrokeHistory[ activeLayer.id ].strokes.pop()
-    newRedoCache.push({ layer: activeLayer, stroke: stroke })
+    const stroke = newStrokeHistory[ layers[activeLayer].id ].strokes.pop()
+    newRedoCache.push({ layer: layers[activeLayer], stroke: stroke })
     dispatch({ type: "strokeHistory", payload: newStrokeHistory })
     dispatch({ type: "redoCache", payload: newRedoCache })
 
-    const gl = strokeHistory[ activeLayer.id ].context
-    redraw( gl, colors, strokeHistory[ activeLayer.id ].strokes )
+    const gl = strokeHistory[ layers[activeLayer].id ].context
+    redraw( gl, colors, strokeHistory[ layers[activeLayer].id ].strokes )
   }
 
   const saveStroke = ( strokeHistory, stroke, layer ) => {
@@ -249,7 +255,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className='tools-right'> 
         <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } setBrushes={ setBrushes } />
-        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>
+        <Layers dispatch={ dispatch } layers={ layers } setLayers={ setLayers } addLayer={ addLayer } activeLayer={ activeLayer } stroke={ stroke }/>
       </div>
       <div className="layers" id="layers" 
         style={{ width: width, height: height, 
@@ -259,9 +265,9 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
           cursor: panning ? "grab" : null }}
         onPointerDown={ setPosition }
         onPointerEnter={ setPosition }
-        onPointerMove={ panning ? null : e => draw( e, activeLayer.context )}
-        onPointerUp={ e => saveStroke( strokeHistory, stroke, activeLayer )}
-        onPointerLeave={ e => saveStroke( strokeHistory, stroke, activeLayer )}
+        onPointerMove={ panning ? null : e => draw( e, layers[activeLayer].context )}
+        onPointerUp={ e => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
+        onPointerLeave={ e => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
       />
       <div id="app-info">
       </div>

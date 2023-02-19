@@ -3,7 +3,7 @@ import LayerPreview from "./LayerPreview"
 import "./Layers.css"
 import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
 
-function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) {
+function Layers({ layers, setLayers, addLayer, stroke, activeLayer, dispatch }) {
   const dragLayer = useRef()
   const dragStart = ( index ) => dragLayer.current = index
   const dragEnter = ( index ) => {
@@ -15,7 +15,7 @@ function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) 
       dragLayer.current = index
       return newLayers
     })
-    setLayer( index )
+    dispatch({ type: "activeLayer", payload: index })
   }
 
   const layerControls = layers.map(( layer, i ) => 
@@ -32,7 +32,7 @@ function Layers({ layers, setLayers, addLayer, setLayer, stroke, activeLayer }) 
       <div className="toolbar" onClick={ addLayer } >
         <Addicon className="icon" />
         add canvas</div>
-      <div className="tool-sample" id="layer-sample" onMouseUp={ e => setLayer( e.target.id )}>
+      <div className="tool-sample" id="layer-sample" onMouseUp={ e => dispatch({ type: "activeLayer", payload: e.target.id })}>
         { layerControls }
       </div>
     </div>
