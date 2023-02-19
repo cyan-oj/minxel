@@ -55,12 +55,11 @@ canvas {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  height: 100%;
   border-radius: 4px;
   padding: 12px 12px;
   background-color: var(--base);
 }
-.tool-sample > *{
+.tool-sample > * {
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 .tooltip {

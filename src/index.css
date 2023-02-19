@@ -108,6 +108,31 @@ input[type='range']::-moz-range-thumb {
 	border-radius: 0;
 }
 
+#welcome {
+	position: absolute;
+	background-color: var(--base);
+	border-radius: 4px;
+	top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+	z-index: 100;
+	display: flex;
+	flex-direction: row;
+	filter: drop-shadow(0 0 1.4mm var(--shadow));
+}
+#welcome-settings{
+	display: flex;
+	width: 50%;
+	flex-direction: column;
+}
+
+#welcome-settings > label {
+	flex: 1, 1, auto;
+	display: flex;
+	justify-content: space-between;
+	margin: 4px 0px;
+}
+
 .icon {
 	fill: var(--accent);
 	stroke: var(--accent);
@@ -118,3 +143,5 @@ input[type='range']::-moz-range-thumb {
 	fill: var(--active);
 	stroke: var(--active);
 }
+
+

@@ -32,6 +32,8 @@ const defaultState = {
   colors: defaultPalette,
   brushes: defaultBrushes,
   layers: [],
+  // width: 256,
+  // height: 256,
   newLayerNo: 0,
   panning: false,
   pressure: false,
@@ -50,7 +52,7 @@ const defaultState = {
   redoCache: []
 }
 
-const reducer = ( state, action ) => {
+const workSpaceReducer = ( state, action ) => {
   const { type, payload } = action
   switch ( type ) {
     case "zoomIn": 
@@ -74,7 +76,7 @@ const reducer = ( state, action ) => {
       return { 
         ...state, 
         layers: [...state.layers, payload], 
-        activeLayer: 0,
+        activeLayer: state.layers.length,
         newLayerNo: state.newLayerNo + 1
       }
     case "replaceColor":
@@ -85,10 +87,11 @@ const reducer = ( state, action ) => {
   }
 }
 
-function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
-  const [ state, dispatch ] = useReducer( reducer, { ...defaultState })
+function Workspace({ name = 'untitled', height = 256, width = 256, image }) {
+  const [ state, dispatch ] = useReducer( workSpaceReducer, { ...defaultState })
   const { 
     colors, brushes, layers, newLayerNo,
+    // width, height,
     panning, pressure, canvasScale, canvasPosition, 
     activeColor, activeBrush, activeLayer, 
     toolButtons, 
@@ -188,10 +191,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     if ( !initShaders( gl, VSHADER_SOURCE, FSHADER_SOURCE )) console.error( 'failed to initialize shaders' )
 
     const newLayer = { id: newLayerNo, name: layerName, canvas: newCanvas, context: gl }
-
     dispatch({ type: "addLayer", payload: newLayer })
-    // setNewLayerNo( newLayerNo + 1 )
-    // dispatch({ type: "activeLayer", payload: 0 })
   }
 
   const removeLayer = () => {
@@ -272,6 +272,7 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   )
 
   return (
+
     <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className='tools-right'> 
         <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } />
