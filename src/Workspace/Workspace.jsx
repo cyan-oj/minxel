@@ -84,6 +84,8 @@ const workSpaceReducer = ( state, action ) => {
         activeLayer: state.layers.length,
         newLayerNo: state.newLayerNo + 1
       }
+    case "removeLayer":
+      
     case "replaceColor":
       const colors = [...state.colors]
       colors[payload.index] = payload.color
@@ -182,7 +184,7 @@ function Workspace( props ) {
     }
   }
 
-  const removeLayer = () => {
+  const removeLayer = ( index ) => {
       // todo
       // cannot be undone
       // when removing layer, add layer to action history when action history is implemented?

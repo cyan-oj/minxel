@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import convert from "color-convert"
-import { colorString } from "../utils/colorConvert"
 import { redraw } from "../utils/glHelpers"
 import ColorSliders from "./ColorSliders";
 
