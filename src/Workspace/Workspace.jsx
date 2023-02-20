@@ -86,15 +86,20 @@ const workSpaceReducer = ( state, action ) => {
       }
     case "deleteLayer":
       const newLayers = [...state.layers]
-      console.log({ payload, newLayers })
-      newLayers.splice( payload, 1 )
-      return { ...state, layers: [ ...newLayers], activeLayer: 0 }
+      const newStrokeHistory = { ...state.strokeHistory }
+      console.log({ payload, newStrokeHistory })
+      
+      const removed = newLayers.splice( payload, 1 )
+      delete newStrokeHistory[removed[0].id]
+      
+      console.log( payload, removed[0], newStrokeHistory )
+      // todo: update stroke history
+      return { ...state, layers: [ ...newLayers], activeLayer: 0, strokeHistory: newStrokeHistory }
     case "replaceColor":
       const colors = [...state.colors]
       colors[payload.index] = payload.color
       return {...state, colors: colors}
     case "activeLayer":
-      console.log(payload)
       return { ...state, activeLayer: payload }
     default: return { ...state, [type]: payload }
   }
@@ -103,7 +108,7 @@ const workSpaceReducer = ( state, action ) => {
 function Workspace( props ) {
   const [ state, dispatch ] = useReducer( workSpaceReducer, props, init)
   const { 
-    colors, brushes, layers, newLayerNo,
+    colors, brushes, layers,
     width, height,
     panning, pressure, canvasScale, canvasPosition, 
     activeColor, activeBrush, activeLayer, 
@@ -317,4 +322,4 @@ function Workspace( props ) {
   )
 }
 
-export default Workspace;
+export default Workspace

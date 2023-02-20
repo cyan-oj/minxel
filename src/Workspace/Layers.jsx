@@ -7,7 +7,7 @@ import { ReactComponent as SettingsIcon } from '../assets/icons/outline-icons/se
 import ToolButton from "./ToolButton"
 
 function Layers({ layers, stroke, activeLayer, dispatch }) {
-  const [ showTools, setShowTools ] = useState( false );
+  const [ showTools, setShowTools ] = useState( false )
   const dragLayer = useRef()
 
   const dragStart = ( index ) => dragLayer.current = index
@@ -23,7 +23,7 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
 
   const layerControls = layers.map(( layer, idx ) => 
     <div key={ layer.id } draggable
-      onDragStart={ e => dragStart( idx )}
+      onDragStart={ () => dragStart( idx )}
       onDragEnter={ e => dragEnter( idx, Number(e.target.id), layers )}>
       <LayerPreview id={ idx } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } />
     </div>
@@ -40,7 +40,7 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
         <ToolButton buttonText={ "add layer" } Icon={ AddIcon }
           action={ "addLayer"} dispatch={ dispatch }
           showTools={ showTools }/>
-        <ToolButton buttonText={ "delete active layer"} Icon={ TrashIcon} 
+        <ToolButton buttonText={ "delete layer"} Icon={ TrashIcon} 
           clickFunction={() => dispatch({ type: "deleteLayer", payload: activeLayer })}
           showTools={ showTools }/>
       </div>
