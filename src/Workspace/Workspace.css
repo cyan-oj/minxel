@@ -81,36 +81,22 @@ canvas {
 .tool-toggles {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: stretch;
   width: 100%;
   border-radius: 4px;
   padding: 8px 4px;
   background-color: var(--base);
 }
-.tool-button {
-  flex: 1 1 auto;
-  display: flex;
-  justify-content: space-between;
-}
 .tool-name {
   display: flex;
   align-items: center;
+  margin: 8px 0px;
 }
-.tool-icon, .tool-icon-active {
-  width: 40px;
-  height: 40px;
-  margin: 4px;
-  border-radius: 20px;
-}
-.tool-icon:hover, .tool-icon-active:hover {
-  border-radius: 20px;
-  margin: 4px;
-}
-.tool-icon:active {
-  background-color: var(--active);
-}
-.tool-icon-active {
-  background-color: var(--active);
+.tool-button {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;;
+	cursor: pointer;
 }
 
 #app-info {

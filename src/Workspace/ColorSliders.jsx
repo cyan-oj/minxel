@@ -8,13 +8,13 @@ function ColorSliders ({ setNewColor, cacheColorText, newColorText="new color", 
   const [ hslColor, setColorHSL ] = useState( convert.rgb.hsl( rgbColor ))
   const [ rgbSliders, setSliders ] = useState( false )
 
-  useEffect(() => setColorRGB( cacheColor ), [cacheColor])
-  useEffect(() => setColorHSL(convert.rgb.hsl(rgbColor)), [rgbColor])
+  useEffect(() => setColorRGB( cacheColor ), [ cacheColor ])
+  useEffect(() => setColorHSL( convert.rgb.hsl( rgbColor )), [ rgbColor ])
   
   const setRGB = ( value, index ) => {
     const newRGB = [...rgbColor]
-    newRGB[index] = Number(value)
-    const newHSL = convert.rgb.hsl(newRGB)
+    newRGB[index] = Number( value )
+    const newHSL = convert.rgb.hsl( newRGB )
     setColorRGB( newRGB )
     setNewColor( newRGB )
     setColorHSL( newHSL )
@@ -22,8 +22,8 @@ function ColorSliders ({ setNewColor, cacheColorText, newColorText="new color", 
   
   const setHSL = ( value, index ) => {
     const newHSL = [...hslColor]
-    newHSL[index] = Number(value)
-    const newRGB = convert.hsl.rgb(newHSL)
+    newHSL[index] = Number( value )
+    const newRGB = convert.hsl.rgb( newHSL )
     setColorHSL( newHSL )
     setColorRGB( newRGB )
     setNewColor( newRGB )

@@ -1,9 +1,9 @@
 import { useRef, useState } from "react"
 import LayerPreview from "./LayerPreview"
 import "./Layers.css"
-import { ReactComponent as AddIcon } from "../assets/icons/outline-icons/add-outline.svg"
-import { ReactComponent as TrashIcon } from "../assets/icons/outline-icons/trash-outline.svg"
-import { ReactComponent as SettingsIcon } from '../assets/icons/outline-icons/settings-outline.svg'
+import { ReactComponent as AddIcon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
+import { ReactComponent as TrashIcon } from "../assets/icons/sharp-icons/trash-sharp.svg"
+import { ReactComponent as SettingsIcon } from '../assets/icons/sharp-icons/settings-sharp.svg'
 import ToolButton from "./ToolButton"
 
 function Layers({ layers, stroke, activeLayer, dispatch }) {

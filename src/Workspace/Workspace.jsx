@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useEffect, useRef, useReducer } from 'react'
+import { useState, useEffect, useRef, useReducer } from 'react'
 import { getStroke, drawPoint, getAttributes, redraw, createLayer } from '../utils/glHelpers.js'
 import { rgbToGL } from '../utils/colorConvert.js'
 import Palette from './Palette.jsx'
@@ -6,13 +6,15 @@ import Brushes from './Brushes.jsx'
 import Layers from './Layers.jsx'
 import ToolButton from './ToolButton.jsx'
 import './Workspace.css'
-import { ReactComponent as UndoIcon } from '../assets/icons/outline-icons/arrow-undo-outline.svg'
-import { ReactComponent as RedoIcon } from '../assets/icons/outline-icons/arrow-redo-outline.svg'
-import { ReactComponent as DownloadIcon } from '../assets/icons/outline-icons/download-outline.svg'
+import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-circle-sharp.svg'
+import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-circle-sharp.svg'
+import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
+
 import { ReactComponent as ZoomInIcon } from '../assets/icons/outline-icons/expand-outline.svg'
 import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/contract-outline.svg'
 import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
-import { ReactComponent as SettingsIcon } from '../assets/icons/outline-icons/settings-outline.svg'
+
+import { ReactComponent as SettingsIcon } from '../assets/icons/sharp-icons/settings-sharp.svg'
 import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
 
 const defaultPalette = [
@@ -67,12 +69,6 @@ const workSpaceReducer = ( state, action ) => {
     case "togglePressure": 
       return { ...state, pressure: !state.pressure }
     case "addColor":
-      for ( const swatch of state.colors ) {
-        if( swatch === payload ) {
-          console.error('color already in palette')
-          return { ...state };
-        } 
-      }
       return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length}
     case "layers":
       return { ...state, layers: [ ...payload ]}
@@ -87,13 +83,8 @@ const workSpaceReducer = ( state, action ) => {
     case "deleteLayer":
       const newLayers = [...state.layers]
       const newStrokeHistory = { ...state.strokeHistory }
-      console.log({ payload, newStrokeHistory })
-      
-      const removed = newLayers.splice( payload, 1 )
-      delete newStrokeHistory[removed[0].id]
-      
-      console.log( payload, removed[0], newStrokeHistory )
-      // todo: update stroke history
+      const [ removed ] = newLayers.splice( payload, 1 )
+      delete newStrokeHistory[removed.id]
       return { ...state, layers: [ ...newLayers], activeLayer: 0, strokeHistory: newStrokeHistory }
     case "replaceColor":
       const colors = [...state.colors]
@@ -216,7 +207,7 @@ function Workspace( props ) {
     if ( !strokeHistory[ layers[activeLayer].id ] || strokeHistory[ layers[activeLayer].id ].strokes.length < 1 ) return
 
     const newStrokeHistory = { ...strokeHistory }
-    const newRedoCache = [...redoCache ]
+    const newRedoCache = [ ...redoCache ]
     const stroke = newStrokeHistory[ layers[activeLayer].id ].strokes.pop()
     newRedoCache.push({ layer: layers[activeLayer], stroke: stroke })
     dispatch({ type: "strokeHistory", payload: newStrokeHistory })
@@ -230,7 +221,7 @@ function Workspace( props ) {
     if ( stroke.points.length > 0 ) {
       const newStrokeHistory = { ...strokeHistory }
       newStrokeHistory[ layer.id] 
-        ? newStrokeHistory[ layer.id ].strokes.push(stroke) 
+        ? newStrokeHistory[ layer.id ].strokes.push( stroke ) 
         : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ stroke ] }
         dispatch({ type: "strokeHistory", payload: newStrokeHistory })
     }

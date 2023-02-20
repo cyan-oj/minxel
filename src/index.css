@@ -9,7 +9,7 @@
 	--shadow: rgba(0, 0, 0, 0.4);
 	--canvas-bg: rgba(245, 245, 245, 0.6);	;
 
-	font-family: 'Courier New', Courier, monospace;
+	font-family: Courier, monospace;
 	font-size: 20px;
 	line-height: 24px;
 	font-weight: 500;
@@ -69,7 +69,6 @@ button {
 	margin: 0.1em 0.4em;
 	padding: 0.1em 0.4em;
 	position: relative;
-
 }
 button:hover {
 	z-index: 20;
@@ -146,13 +145,18 @@ input[type='range']::-moz-range-thumb {
 	border: solid 1px var(--alt)
 }
 
-.icon {
+.icon, .icon-active {
 	fill: var(--accent);
 	stroke: var(--accent);
 	width: 24px;
 	height: 24px;
+	margin: 0px 6px;
 }
-.icon:hover .icon-active {
+.icon:hover {
+	fill: var(--active);
+	stroke: var(--active);
+}
+.icon-active {
 	fill: var(--active);
 	stroke: var(--active);
 }
