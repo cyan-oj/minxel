@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useReducer } from 'react'
+import { useState, useLayoutEffect, useEffect, useRef, useReducer } from 'react'
 import { getStroke, drawPoint, getAttributes, redraw, createLayer } from '../utils/glHelpers.js'
 import { rgbToGL } from '../utils/colorConvert.js'
 import Palette from './Palette.jsx'
@@ -84,12 +84,18 @@ const workSpaceReducer = ( state, action ) => {
         activeLayer: state.layers.length,
         newLayerNo: state.newLayerNo + 1
       }
-    case "removeLayer":
-      
+    case "deleteLayer":
+      const newLayers = [...state.layers]
+      console.log({ payload, newLayers })
+      newLayers.splice( payload, 1 )
+      return { ...state, layers: [ ...newLayers], activeLayer: 0 }
     case "replaceColor":
       const colors = [...state.colors]
       colors[payload.index] = payload.color
       return {...state, colors: colors}
+    case "activeLayer":
+      console.log(payload)
+      return { ...state, activeLayer: payload }
     default: return { ...state, [type]: payload }
   }
 }

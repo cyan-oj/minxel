@@ -1,9 +1,13 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import LayerPreview from "./LayerPreview"
 import "./Layers.css"
-import { ReactComponent as Addicon } from "../assets/icons/sharp-icons/add-circle-sharp.svg"
+import { ReactComponent as AddIcon } from "../assets/icons/outline-icons/add-outline.svg"
+import { ReactComponent as TrashIcon } from "../assets/icons/outline-icons/trash-outline.svg"
+import { ReactComponent as SettingsIcon } from '../assets/icons/outline-icons/settings-outline.svg'
+import ToolButton from "./ToolButton"
 
 function Layers({ layers, stroke, activeLayer, dispatch }) {
+  const [ showTools, setShowTools ] = useState( false );
   const dragLayer = useRef()
 
   const dragStart = ( index ) => dragLayer.current = index
@@ -20,19 +24,28 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
   const layerControls = layers.map(( layer, idx ) => 
     <div key={ layer.id } draggable
       onDragStart={ e => dragStart( idx )}
-      onDragEnter={ e => dragEnter( idx, Number(layer.id), layers )}>
-      <LayerPreview id={ layer.id } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } />
+      onDragEnter={ e => dragEnter( idx, Number(e.target.id), layers )}>
+      <LayerPreview id={ idx } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } />
     </div>
   )
 
   return (
     <div className="toolbox" id="layer-controls">
-      <div className="toolbar" 
-        onClick={() => dispatch({ type: "addLayer" })} >
-        <Addicon className="icon" />
-        add canvas</div>
+      <div className="toolbar" >
+        <button onClick={ e => setShowTools( !showTools ) }>
+          <SettingsIcon  className="icon"/> settings  
+        </button>
+      </div>
+      <div className="tool-toggles">
+        <ToolButton buttonText={ "add layer" } Icon={ AddIcon }
+          action={ "addLayer"} dispatch={ dispatch }
+          showTools={ showTools }/>
+        <ToolButton buttonText={ "delete active layer"} Icon={ TrashIcon} 
+          clickFunction={() => dispatch({ type: "deleteLayer", payload: activeLayer })}
+          showTools={ showTools }/>
+      </div>
       <div className="tool-sample" id="layer-sample" 
-        onMouseUp={ e => dispatch({ type: "activeLayer", payload: e.target.id })}>
+        onMouseUp={ e => dispatch({ type: "activeLayer", payload: Number(e.target.id) })}>
         { layerControls }
       </div>
     </div>
