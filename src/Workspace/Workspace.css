@@ -87,16 +87,18 @@ canvas {
   padding: 8px 4px;
   background-color: var(--base);
 }
-.tool-name {
+.tool-button {
   display: flex;
   align-items: center;
-  margin: 8px 0px;
+  justify-content: space-between;;
+  cursor: pointer;
 }
-.tool-button {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;;
-	cursor: pointer;
+.tool-details {
+  margin: 8px 0px;
+  flex: 2 0
+}
+.shortcut {
+  font-size: 12px;
 }
 
 #app-info {

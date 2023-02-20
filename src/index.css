@@ -149,7 +149,7 @@ input[type='range']::-moz-range-thumb {
 	display: flex;
 	align-items: center;
 	background-color: var(--accent);
-	border-radius: 16px;
+	border-radius: 4px;
 	fill: var(--active);
 	stroke: var(--active);
 	width: 18px;

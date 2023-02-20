@@ -290,12 +290,14 @@ function Workspace( props ) {
               download image  <DownloadIcon  className="icon"/>
             </button>
           </div>
-          <div className='tool-toggles'>
+          <div className='tool-toggles' style={{ flexDirection: showTools ? "column" : "row" }}>
             <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
               clickFunction={ e => undo( strokeHistory ) } 
+              shortcutText={ "ctrl + Z" }
               showTools={ showTools }/>
             <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
               clickFunction={ e => redo( redoCache ) } 
+              shortcutText={ "ctrl + Shift + Z" }
               showTools={ showTools }/>
             { toolBar }
           </div>
