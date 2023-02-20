@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import PaletteEditor from "./PaletteEditor"
 import { colorString } from "../utils/colorConvert"
 import "./Palette.css"
@@ -6,8 +6,11 @@ import { redraw } from "../utils/glHelpers"
 
 function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
-  // const [ showRGB, setShowRGB ] = useState( false )
-  // const [ showHSL, setShowHSL ] = useState( true )
+  const [ cacheColor, setCacheColor ] = useState( colors[activeColor] )
+
+  useEffect(() => {
+    setCacheColor( colors[activeColor] )
+  }, [activeColor])
 
   const dragColor = useRef();
 
@@ -59,7 +62,7 @@ function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
       <PaletteEditor 
         colors={ colors } activeColor={ activeColor } removeColor={ removeColor }
         strokeHistory={ strokeHistory } dispatch={ dispatch }
-        showSettings={ showSettings }
+        showSettings={ showSettings } cacheColor={ cacheColor } setCacheColor={ setCacheColor }
       />
     </div>
   )

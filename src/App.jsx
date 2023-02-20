@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import ColorSliders from './Workspace/ColorSliders';
 import Workspace from './Workspace/Workspace'
 
 function App() {	
@@ -12,23 +11,30 @@ function App() {
 	<>
 		{ !showWorkspace &&
 			<div id="welcome">
-				<div className="toolbox" id="welcome-settings">
-						<ColorSliders oldColor={ backgroundColor } setNewColor={ setBackgroundColor } oldColorText={ "background color" } />
-						<label htmlFor="width">width
-							<input type="number" value={ width } onChange={ e => setWidth(e.target.value ? Number(e.target.value) : 0 )} />
-						</label>
+				<div id="startup-message">
+					<div>
+						welcome to minxel.
+					</div>
+					<div className="ratio">
+						{ width > height 
+							? <div className="ratio-preview" style={{ width: 300, height: 300 * height/width, backgroundColor: "white"}}></div>
+							: <div className="ratio-preview" style={{ width: 300 * width/height , height: 300, backgroundColor: "white"}}></div>
+						}
+					</div>
+				</div>
+				<div id="welcome-settings">
 						<label htmlFor="width">height
 							<input type="number" value={ height } onChange={ e => setHeight(e.target.value ? Number(e.target.value) : 0 )} />
 						</label>
+						<label htmlFor="width">width
+							<input type="number" value={ width } onChange={ e => setWidth(e.target.value ? Number(e.target.value) : 0 )} />
+						</label>
 						<button onClick={() => setShowWorkspace( true )}>start drawing!</button>
-				</div>
-				<div id="startup-message">
-					welcome to minxel! to start drawing, choose your starting properties and hit "start"
 				</div>
 			</div>
 		}
 		{ showWorkspace &&
-			<Workspace  width={ width } height={ height }/>
+			<Workspace  width={ width } height={ height } backgroundColor={ backgroundColor }/>
 		}
 	</>
 	)

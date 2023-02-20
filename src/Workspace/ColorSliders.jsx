@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { colorString } from "../utils/colorConvert"
 import convert from "color-convert"
 
-function ColorSliders ({ oldColor, setNewColor, oldColorText }) {
+function ColorSliders ({ setNewColor, cacheColorText, newColorText="new color", cacheColor }) {
 
-  const [ rgbColor, setColorRGB ] = useState( oldColor )
+  const [ rgbColor, setColorRGB ] = useState( cacheColor )
   const [ hslColor, setColorHSL ] = useState( convert.rgb.hsl( rgbColor ))
   const [ rgbSliders, setSliders ] = useState( false )
 
+  useEffect(() => setColorRGB( cacheColor ), [cacheColor])
+  useEffect(() => setColorHSL(convert.rgb.hsl(rgbColor)), [rgbColor])
+  
   const setRGB = ( value, index ) => {
     const newRGB = [...rgbColor]
     newRGB[index] = Number(value)
@@ -29,8 +32,8 @@ function ColorSliders ({ oldColor, setNewColor, oldColorText }) {
   return (
   <>
   <div className="color-preview">
-    <div className="color-edit-swatch" style={{ backgroundColor: colorString( oldColor )}} >{ oldColorText }</div>
-    <div className="color-edit-swatch" style={{ backgroundColor: colorString( rgbColor )}} >new color</div>
+    <div className="color-edit-swatch" style={{ backgroundColor: colorString( cacheColor )}} >{ cacheColorText }</div>
+    <div className="color-edit-swatch" style={{ backgroundColor: colorString( rgbColor )}} >{ newColorText }</div>
   </div>
   <div className="toolbar">
       <button onClick={() => setSliders(true)}>rgb</button><button onClick={() => setSliders(false)}>hsl</button>

@@ -1,4 +1,6 @@
 import { rgbToGL } from "./colorConvert"
+import { FSHADER_SOURCE, VSHADER_SOURCE } from '../utils/shaders.js'
+import { initShaders } from '../WebGLUtils/cuon-utils.js'
 
 export const getStroke = ( point1, point2 ) => { 
   const distance = Math.sqrt( Math.pow( point2.x - point1.x, 2 ) + Math.pow( point2.y - point1.y, 2 ))
@@ -32,4 +34,18 @@ export const redraw = ( gl, colors, strokes ) => {
       drawPoint( gl, point.position, point.size, drawColor, glAttributes )
     })
   })
+}
+
+export const createLayer = ( width, height, num, backgroundColor=[0.0, 0.0, 0.0, 0.0] ) => {
+  const layerName = `layer ${num + 1}`
+  const newCanvas = document.createElement( 'CANVAS' )
+  newCanvas.width = width
+  newCanvas.height = height
+  const gl = newCanvas.getContext( 'webgl', { antialias: false, preserveDrawingBuffer: true })
+  gl.clearColor(...backgroundColor);
+  gl.clear(gl.COLOR_BUFFER_BIT)
+  if ( !gl ) alert( 'Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox' )
+  if ( !initShaders( gl, VSHADER_SOURCE, FSHADER_SOURCE )) console.error( 'failed to initialize shaders' )
+  const newLayer = { id: num, name: layerName, canvas: newCanvas, context: gl }
+  return newLayer
 }

@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import convert from "color-convert"
 import { colorString } from "../utils/colorConvert"
 import { redraw } from "../utils/glHelpers"
 import ColorSliders from "./ColorSliders";
 
-function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispatch }) {
-  const [newColor, setNewColor] = useState( colors[activeColor] )
+function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispatch, cacheColor}) {
+  const [ newColor, setNewColor ] = useState( colors[activeColor] )
+
+  useEffect(() => {
+    replaceColor(newColor, activeColor)
+  }, [newColor])
+
   const replaceColor = ( color, index ) => { 
     dispatch({ 
       type: "replaceColor", 
@@ -21,12 +26,12 @@ function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispa
   
   return (
     <div className="tool-editor" id="palette-editor" style={ showSettings ? { display: "block" } : { display: "none" }}>
-      <ColorSliders oldColor={ colors[activeColor] } setNewColor={ setNewColor } oldColorText={ "active color"} />
+      <ColorSliders setNewColor={ setNewColor } cacheColorText={ "previous color"} cacheColor={ cacheColor }/>
       <div className="toolbar">
         <button id="addColor" title="add color to palette" 
           onClick={ e => dispatch({ type: "addColor", payload: newColor })}>+</button>
         <button id="replaceColor" title="replace active color with new color" 
-          onClick={() => replaceColor( newColor, activeColor )}>swap</button>
+          onClick={() => replaceColor( cacheColor, activeColor )}>revert</button>
       </div>
     </div>
   )

@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, useReducer } from 'react'
-import { FSHADER_SOURCE, VSHADER_SOURCE } from '../utils/shaders.js'
-import { initShaders } from '../WebGLUtils/cuon-utils.js'
-import { getStroke, drawPoint, getAttributes, redraw } from '../utils/glHelpers.js'
+import { getStroke, drawPoint, getAttributes, redraw, createLayer } from '../utils/glHelpers.js'
 import { rgbToGL } from '../utils/colorConvert.js'
 import Palette from './Palette.jsx'
 import Brushes from './Brushes.jsx'
@@ -28,28 +26,33 @@ const defaultBrushes = [
   { name: "pen", type: "point", size: 100, spacing: 0.002 }
 ]
 
-const defaultState = {
-  colors: defaultPalette,
-  brushes: defaultBrushes,
-  layers: [],
-  // width: 256,
-  // height: 256,
-  newLayerNo: 0,
-  panning: false,
-  pressure: false,
-  canvasScale: '1.0',
-  canvasPosition: { left: '0px', top: '0px' },
-  activeColor: 0,
-  activeBrush: 0,
-  activeLayer: 0,
-  toolButtons: [
-    { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false },
-    { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false },
-    { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning" },
-    { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
-  ],
-  strokeHistory: {},
-  redoCache: []
+const init = ( props ) => {
+  const initialState = {
+    colors: defaultPalette,
+    brushes: defaultBrushes,
+    layers: [],
+    width: props.width || 256,
+    height: props.height || 256,
+    newLayerNo: 1,
+    panning: false,
+    pressure: false,
+    canvasScale: '1.0',
+    canvasPosition: { left: '0px', top: '0px' },
+    activeColor: 0,
+    activeBrush: 0,
+    activeLayer: 0,
+    toolButtons: [
+      { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false },
+      { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false },
+      { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning" },
+      { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
+    ],
+    strokeHistory: {},
+    redoCache: []
+  }
+  const firstLayer = createLayer( props.width, props.height, 0 )
+  initialState.layers.push( firstLayer )
+  return initialState
 }
 
 const workSpaceReducer = ( state, action ) => {
@@ -70,12 +73,14 @@ const workSpaceReducer = ( state, action ) => {
           return { ...state };
         } 
       }
-      return { ...state, colors: [...state.colors, payload ], activeColor: state.colors.length}
+      return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length}
+    case "layers":
+      return { ...state, layers: [ ...payload ]}
     case "addLayer": 
-      console.log("adding layer", payload )
+      const newLayer = createLayer( state.width, state.height, state.newLayerNo )
       return { 
         ...state, 
-        layers: [...state.layers, payload], 
+        layers: [...state.layers, newLayer], 
         activeLayer: state.layers.length,
         newLayerNo: state.newLayerNo + 1
       }
@@ -87,19 +92,16 @@ const workSpaceReducer = ( state, action ) => {
   }
 }
 
-function Workspace({ name = 'untitled', height = 256, width = 256, image }) {
-  const [ state, dispatch ] = useReducer( workSpaceReducer, { ...defaultState })
+function Workspace( props ) {
+  const [ state, dispatch ] = useReducer( workSpaceReducer, props, init)
   const { 
     colors, brushes, layers, newLayerNo,
-    // width, height,
+    width, height,
     panning, pressure, canvasScale, canvasPosition, 
     activeColor, activeBrush, activeLayer, 
     toolButtons, 
     strokeHistory, redoCache 
   } = state
-
-  // const [ newLayerNo, setNewLayerNo] = useState( 1 )
-  // const [ layers, setLayers ] = useState([])
 
   const [ showTools, setShowTools ] = useState( false );
 
@@ -180,20 +182,6 @@ function Workspace({ name = 'untitled', height = 256, width = 256, image }) {
     }
   }
 
-  const addLayer = () => {
-    const layerName = `layer ${layers.length + 1}`
-    const newCanvas = document.createElement( 'CANVAS' )
-    newCanvas.width = width
-    newCanvas.height = height
-    const gl = newCanvas.getContext( 'webgl', { antialias: false, preserveDrawingBuffer: true })
-
-    if ( !gl ) alert( 'Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox' )
-    if ( !initShaders( gl, VSHADER_SOURCE, FSHADER_SOURCE )) console.error( 'failed to initialize shaders' )
-
-    const newLayer = { id: newLayerNo, name: layerName, canvas: newCanvas, context: gl }
-    dispatch({ type: "addLayer", payload: newLayer })
-  }
-
   const removeLayer = () => {
       // todo
       // cannot be undone
@@ -226,8 +214,8 @@ function Workspace({ name = 'untitled', height = 256, width = 256, image }) {
     dispatch({ type: "strokeHistory", payload: newStrokeHistory })
     dispatch({ type: "redoCache", payload: newRedoCache })
 
-    const gl = strokeHistory[ layers[activeLayer].id ].context
-    redraw( gl, colors, strokeHistory[ layers[activeLayer].id ].strokes )
+    const gl = strokeHistory[layers[activeLayer].id].context
+    redraw( gl, colors, strokeHistory[layers[activeLayer].id].strokes )
   }
 
   const saveStroke = ( strokeHistory, stroke, layer ) => {
@@ -273,10 +261,10 @@ function Workspace({ name = 'untitled', height = 256, width = 256, image }) {
 
   return (
 
-    <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
+    <div className="workspace" onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className='tools-right'> 
         <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } />
-        <Layers dispatch={ dispatch } layers={ layers } addLayer={ addLayer } activeLayer={ activeLayer } stroke={ stroke }/>
+        <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
       </div>
       <div className="layers" id="layers" 
         style={{ width: width, height: height, 
