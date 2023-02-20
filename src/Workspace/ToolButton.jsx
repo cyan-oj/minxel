@@ -14,7 +14,7 @@ function ToolButton({ buttonText, Icon, showTools, state = false, action, dispat
       { showTools && 
       <>
         <div onClick={() => setPinned( !pinned )} className="tool-name">
-          { pinned ? <PinnedIcon className="icon" /> : <UnPinnedIcon className="icon" /> }
+          { pinned ? <PinnedIcon className="pin" /> : <UnPinnedIcon className="unpin" /> }
         </div>
         <div className="tool-details">
           <div className="tool-name">

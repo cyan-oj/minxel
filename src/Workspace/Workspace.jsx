@@ -6,8 +6,8 @@ import Brushes from './Brushes.jsx'
 import Layers from './Layers.jsx'
 import ToolButton from './ToolButton.jsx'
 import './Workspace.css'
-import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-circle-sharp.svg'
-import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-circle-sharp.svg'
+import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-sharp.svg'
+import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-sharp.svg'
 import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
 
 import { ReactComponent as ZoomInIcon } from '../assets/icons/outline-icons/expand-outline.svg'
@@ -284,7 +284,7 @@ function Workspace( props ) {
         <div className='toolbox'>
           <div className='toolbar'>
             <button onClick={ e => setShowTools( !showTools ) }>
-              <SettingsIcon  className="icon"/> settings  
+              <SettingsIcon  className="unpin"/> settings  
             </button>
             <button onClick={ saveFile }>
               download image  <DownloadIcon  className="icon"/>

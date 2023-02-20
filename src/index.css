@@ -2,7 +2,7 @@
 	--base: rgba(220, 220, 220);
 	--alt: rgba(245, 245, 245);	
 	--highlight: rgba(255, 255, 255);
-	--accent: rgb(57, 75, 127);
+	--accent: rgb(51, 35, 97);
 	--active: rgb(154, 188, 253);
 	--main: rgba(120, 120, 120);
 	--emphasis: rgba(80, 80, 80);
@@ -145,18 +145,33 @@ input[type='range']::-moz-range-thumb {
 	border: solid 1px var(--alt)
 }
 
-.icon, .icon-active {
-	fill: var(--accent);
-	stroke: var(--accent);
-	width: 24px;
-	height: 24px;
-	margin: 0px 6px;
+.icon, .icon-active, .pin, .unpin {
+	display: flex;
+	align-items: center;
+	background-color: var(--accent);
+	border-radius: 16px;
+	fill: var(--active);
+	stroke: var(--active);
+	width: 18px;
+	height: 18px;
+	padding: 5px;
+	margin: 2px 4px;
 }
 .icon:hover {
-	fill: var(--active);
-	stroke: var(--active);
+	background-color: var(--active);
+	fill: var(--accent);
+	stroke: var(--accent);
 }
 .icon-active {
-	fill: var(--active);
-	stroke: var(--active);
+	background-color: var(--active);
+	fill: var(--accent);
+	stroke: var(--accent);
+}
+.pin, .unpin {
+	background-color: var(--active);
+	fill: var(--accent);
+	stroke: var(--accent);
+}
+.unpin {
+	background-color: transparent;
 }
