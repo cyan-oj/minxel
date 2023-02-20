@@ -1,13 +1,16 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import PaletteEditor from "./PaletteEditor"
 import { colorString } from "../utils/colorConvert"
 import "./Palette.css"
 import { redraw } from "../utils/glHelpers"
 
-function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setStrokeHistory, max = 16 }) {
+function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false );
-  // const [ showRGB, setShowRGB ] = useState( false )
-  // const [ showHSL, setShowHSL ] = useState( true )
+  const [ cacheColor, setCacheColor ] = useState( colors[activeColor] )
+
+  useEffect(() => {
+    setCacheColor( colors[activeColor] )
+  }, [activeColor])
 
   const dragColor = useRef();
 
@@ -15,17 +18,15 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
 
   const dragEnter = ( index ) => {
     const currentColor = dragColor.current;
-    setColors( oldColors => {
-      const newColors = [ ...oldColors ]
-      const dropColor = newColors.splice( currentColor, 1 )[0]
-      newColors.splice( index, 0, dropColor )
-      dragColor.current = index
-      return newColors
-    })
+    const newColors = [ ...colors ]
+    const dropColor = newColors.splice( currentColor, 1 )[0]
+    newColors.splice( index, 0, dropColor )
+    dragColor.current = index
+    dispatch({ type: "colors", payload: newColors })
     Object.values( strokeHistory ).forEach( layer => { redraw( layer.context, colors, layer.strokes )})
   }
 
-  const removeColor = index => { // before adding, need to implement color replacement
+  const removeColor = index => { // can't be done nondestructively
     // check if color is used in drawing
       // if no: delete
       // if yes: ask how to handle removal
@@ -33,11 +34,9 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
           // choose other palette color and re-reference to that color
           // delete strokes that use this color
     // set colors 
-    setColors( oldColors => {
-      const newColors = [ ...oldColors ]
+      const newColors = [ ...colors ]
       newColors.splice( index, 1 )
-      return newColors
-    })
+      dispatch({ type: "colors", payload: newColors })
     // redraw
   }
 
@@ -48,7 +47,7 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
       draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}
-      onMouseUp={ e => setColor(e.target.value) }
+      onMouseUp={ e => dispatch({ type: "activeColor", payload: e.target.value })}
     >■</button>  
   )
 
@@ -61,9 +60,9 @@ function Palette({ colors, activeColor, setColors, setColor, strokeHistory, setS
           onClick={ e => { e.preventDefault(); setShowSettings( !showSettings )}}
           >{`⚙ color menu ${ showSettings ? '▼' : '▶'}`}</div>
       <PaletteEditor 
-        colors={ colors } activeColor={ activeColor } setColors={ setColors } removeColor={ removeColor }
-        showSettings={ showSettings }
-        strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }
+        colors={ colors } activeColor={ activeColor } removeColor={ removeColor }
+        strokeHistory={ strokeHistory } dispatch={ dispatch }
+        showSettings={ showSettings } cacheColor={ cacheColor } setCacheColor={ setCacheColor }
       />
     </div>
   )

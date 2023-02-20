@@ -10,7 +10,7 @@ function LayerPreview( { layer, id, stroke, activeLayer } ) {
   }, [ stroke ])
 
   return (
-    <div id={ id } className={( activeLayer && ( activeLayer.id === layer.id )) ? "active-layer" : "layer-preview" }>
+    <div id={ id } className={( activeLayer && ( Number(activeLayer) === id )) ? "active-layer" : "layer-preview" }>
       <canvas ref={ preview } id={ id } className="layer-thumbnail" width={ 50 } height={ 50 } />
       <p className="layer-name" id={ id } >{ layer.name }</p>
     </div>

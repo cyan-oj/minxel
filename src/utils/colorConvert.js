@@ -1,4 +1,6 @@
-export const colorString = ( color ) => `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+export const colorString = ( color ) => {
+  return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+} 
 
 export const rgbToGL = ( color ) => {
   const col = `${color}`

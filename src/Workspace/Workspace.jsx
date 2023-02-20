@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
-import { initShaders } from '../WebGLUtils/cuon-utils.js'
+import { useState, useEffect, useRef, useReducer } from 'react'
+import { getStroke, drawPoint, getAttributes, redraw, createLayer } from '../utils/glHelpers.js'
+import { rgbToGL } from '../utils/colorConvert.js'
 import Palette from './Palette.jsx'
 import Brushes from './Brushes.jsx'
 import Layers from './Layers.jsx'
-import { FSHADER_SOURCE, VSHADER_SOURCE } from '../utils/shaders.js'
-import { getStroke, drawPoint, getAttributes, redraw } from '../utils/glHelpers.js'
-import { rgbToGL } from '../utils/colorConvert.js'
+import ToolButton from './ToolButton.jsx'
 import './Workspace.css'
 import { ReactComponent as UndoIcon } from '../assets/icons/outline-icons/arrow-undo-outline.svg'
 import { ReactComponent as RedoIcon } from '../assets/icons/outline-icons/arrow-redo-outline.svg'
@@ -13,7 +12,8 @@ import { ReactComponent as DownloadIcon } from '../assets/icons/outline-icons/do
 import { ReactComponent as ZoomInIcon } from '../assets/icons/outline-icons/expand-outline.svg'
 import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/contract-outline.svg'
 import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
-import ThemeTest from './ThemeTest.jsx'
+import { ReactComponent as SettingsIcon } from '../assets/icons/outline-icons/settings-outline.svg'
+import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
 
 const defaultPalette = [
   [ 0, 0, 0 ],
@@ -23,49 +23,106 @@ const defaultPalette = [
 const defaultBrushes = [ 
   { name: "pen", type: "point", size: 3, spacing: 0.002 }, 
   { name: "pen", type: "point", size: 30, spacing: 0.002 }, 
-  { name: "pen", type: "point", size: 100, spacing: 0.002 }, 
+  { name: "pen", type: "point", size: 100, spacing: 0.002 }
 ]
 
-function Workspace({ name = 'untitled', height = '256', width = '256', image }) {
-  const [ newLayerNo, setNewLayerNo] = useState( 1 )
-  const [ layers, setLayers ] = useState([])
-  const [ colors, setColors ] = useState( defaultPalette )
-  const [ brushes, setBrushes ] = useState( defaultBrushes )
-  const [ pressure, togglePressure ] = useState( false )
-  const [ canvasScale, setCanvasScale ] = useState( '1.0' )
-  
-  const [ activeLayer, setActiveLayer ] = useState({})
-  const [ activeColor, setActiveColor ] = useState( 0 )
-  const [ activeBrush, setActiveBrush ] = useState( 0 )
-  
-  const [ strokeHistory, setStrokeHistory ] = useState({})
-  const [ strokeFuture, setStrokeFuture ] = useState([])
-  
-  const [ panning, togglePanning ] = useState( false )
-  
-  const [ canvasPosition, setCanvasPosition ] = useState({ left: '0px', top: '0px' })
-  const clientPosition = useRef({ x: 0, y: 0 })
+const init = ( props ) => {
+  const initialState = {
+    colors: defaultPalette,
+    brushes: defaultBrushes,
+    layers: [],
+    width: props.width || 256,
+    height: props.height || 256,
+    newLayerNo: 1,
+    panning: false,
+    pressure: false,
+    canvasScale: '1.0',
+    canvasPosition: { left: '0px', top: '0px' },
+    activeColor: 0,
+    activeBrush: 0,
+    activeLayer: 0,
+    toolButtons: [
+      { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false },
+      { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false },
+      { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning" },
+      { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
+    ],
+    strokeHistory: {},
+    redoCache: []
+  }
+  const firstLayer = createLayer( props.width, props.height, 0 )
+  initialState.layers.push( firstLayer )
+  return initialState
+}
 
+const workSpaceReducer = ( state, action ) => {
+  const { type, payload } = action
+  switch ( type ) {
+    case "zoomIn": 
+      return { ...state, canvasScale: (Number(state.canvasScale) * 1.25).toFixed(6).toString()}
+    case "zoomOut": 
+      return { ...state, canvasScale: (Number(state.canvasScale) / 1.25).toFixed(6).toString()}
+    case "togglePanning": 
+      return { ...state, panning: !state.panning }
+    case "togglePressure": 
+      return { ...state, pressure: !state.pressure }
+    case "addColor":
+      for ( const swatch of state.colors ) {
+        if( swatch === payload ) {
+          console.error('color already in palette')
+          return { ...state };
+        } 
+      }
+      return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length}
+    case "layers":
+      return { ...state, layers: [ ...payload ]}
+    case "addLayer": 
+      const newLayer = createLayer( state.width, state.height, state.newLayerNo )
+      return { 
+        ...state, 
+        layers: [...state.layers, newLayer], 
+        activeLayer: state.layers.length,
+        newLayerNo: state.newLayerNo + 1
+      }
+    case "replaceColor":
+      const colors = [...state.colors]
+      colors[payload.index] = payload.color
+      return {...state, colors: colors}
+    default: return { ...state, [type]: payload }
+  }
+}
+
+function Workspace( props ) {
+  const [ state, dispatch ] = useReducer( workSpaceReducer, props, init)
+  const { 
+    colors, brushes, layers, newLayerNo,
+    width, height,
+    panning, pressure, canvasScale, canvasPosition, 
+    activeColor, activeBrush, activeLayer, 
+    toolButtons, 
+    strokeHistory, redoCache 
+  } = state
+
+  const [ showTools, setShowTools ] = useState( false );
+
+  const clientPosition = useRef({ x: 0, y: 0 })
   const stroke = { color: activeColor, points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
-
+  
   useEffect(() => {
-      addLayer()
-  }, [])
-
-  useEffect(() => {
-    // attach layers and set new layer as active
-    const layerParent = document.getElementById( 'layers' )
-    layers.forEach(( layer ) => {
-      layerParent.appendChild( layer.canvas )
+    dispatch({
+      type: "canvasPosition",
+      payload: {
+        left: `${( window.innerWidth - width )/ 2 }px`,
+        top: `${( window.innerHeight - height ) /2 }px`,
+      }
     })
     const keys = ( event ) => {
-      //set keyboard shortcuts
       if (( event.metaKey || event.ctrlKey ) && event.shiftKey && event.code === 'KeyZ' ) {
-        const redo = document.getElementById( 'redo-button' )
+        const redo = document.getElementById( 'redo' )
         redo.click()
       } else if (( event.metaKey || event.ctrlKey ) && event.code === 'KeyZ' ) {
-        const undo = document.getElementById( 'undo-button' )
+        const undo = document.getElementById( 'undo' )
         undo.click()
       }
     }
@@ -73,36 +130,42 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     return () => {
       document.removeEventListener( 'keydown', keys )
     }
+  }, [])
+
+  useEffect(() => {
+    const layerParent = document.getElementById( 'layers' )
+    layers.forEach(( layer ) => {
+      layerParent.appendChild( layer.canvas )
+    })
   }, [layers])
 
-  const setClientPosition = e => {
-    clientPosition.current.x =  e.clientX,
-    clientPosition.current.y =  e.clientY
+  const setClientPosition = evt => {
+    clientPosition.current.x =  evt.clientX,
+    clientPosition.current.y =  evt.clientY
     return clientPosition.current 
   }
 
-  const setPosition = ( e ) => {
-    const rect = e.target.getBoundingClientRect()
+  const setPosition = ( evt ) => {
+    const rect = evt.target.getBoundingClientRect()
     const scale = Number(canvasScale)
-    position.x = ( e.clientX - rect.left - width * scale / 2 ) / ( width * scale / 2 )
-    position.y = ( height * scale / 2 - ( e.clientY - rect.top )) / ( height * scale / 2 )
+    position.x = ( evt.clientX - rect.left - width * scale / 2 ) / ( width * scale / 2 )
+    position.y = ( height * scale / 2 - ( evt.clientY - rect.top )) / ( height * scale / 2 )
     if ( pressure ) {
-      e.pressure === 0.5 ? ( position.pressure = 0.001 ) : ( position.pressure = e.pressure )
+      evt.pressure === 0.5 ? ( position.pressure = 0.001 ) : ( position.pressure = evt.pressure )
     } else {
       position.pressure = 1
     }
-    console.log(position)
     return position
   }
 
-  const draw = ( event, gl ) => {
-    if ( event.buttons !== 1 ) {
-      setPosition( event )
+  const draw = ( evt, gl ) => {
+    if ( evt.buttons !== 1 ) {
+      setPosition( evt )
       return
     }
     const glAttributes = getAttributes( gl )
     const lastPoint = JSON.parse(JSON.stringify( position ))
-    const currentPoint = setPosition( event )
+    const currentPoint = setPosition( evt )
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint )
     stroke.color = activeColor
     const drawColor = rgbToGL( colors[ stroke.color ])
@@ -119,40 +182,18 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     }
   }
 
-  const addLayer = () => {
-    const layerName = `layer ${layers.length + 1}`
-    const newCanvas = document.createElement( 'CANVAS' )
-    newCanvas.width = width
-    newCanvas.height = height
-    const gl = newCanvas.getContext( 'webgl', { antialias: false, preserveDrawingBuffer: true })
-
-    if ( !gl ) alert( 'Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox' )
-    if ( !initShaders( gl, VSHADER_SOURCE, FSHADER_SOURCE )) console.error( 'failed to initialize shaders' )
-
-    const newLayer = { id: newLayerNo, name: layerName, canvas: newCanvas, context: gl }
-
-    setLayers([...layers, newLayer])
-    setNewLayerNo( newLayerNo + 1 )
-    setActiveLayer(newLayer)
-  }
-
   const removeLayer = () => {
       // todo
       // cannot be undone
       // when removing layer, add layer to action history when action history is implemented?
   }
 
-  const setLayer = ( id ) => setActiveLayer( layers[Number( id )])
-  const setBrush = ( index ) => setActiveBrush( Number( index ))
-  const setColor = ( index ) => setActiveColor( Number( index ))
+  const redo = ( redoCache ) => {
+    if ( redoCache.length < 1 ) return
 
-  const redo = ( strokeFuture ) => {
-    console.log( strokeHistory, strokeFuture )
-    if ( strokeFuture.length < 1 ) return
-
-    const newStrokeFuture = [...strokeFuture ]
-    const nextStroke = newStrokeFuture.pop()
-    setStrokeFuture( newStrokeFuture )
+    const newRedoCache = [...redoCache ]
+    const nextStroke = newRedoCache.pop()
+    dispatch({ type: "redoCache", payload: newRedoCache })
     saveStroke( strokeHistory, nextStroke.stroke, nextStroke.layer )
 
     const gl = nextStroke.layer.context
@@ -164,27 +205,26 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
   }
 
   const undo = ( strokeHistory ) => {
-    if ( !strokeHistory[ activeLayer.id ] || strokeHistory[ activeLayer.id ].strokes.length < 1 ) return
+    if ( !strokeHistory[ layers[activeLayer].id ] || strokeHistory[ layers[activeLayer].id ].strokes.length < 1 ) return
     
     const newStrokeHistory = { ...strokeHistory }
-    const newStrokeFuture = [...strokeFuture ]
-    const stroke = newStrokeHistory[ activeLayer.id ].strokes.pop()
-    newStrokeFuture.push({ layer: activeLayer, stroke: stroke })
-    setStrokeHistory( newStrokeHistory )
-    setStrokeFuture( newStrokeFuture )
+    const newRedoCache = [...redoCache ]
+    const stroke = newStrokeHistory[ layers[activeLayer].id ].strokes.pop()
+    newRedoCache.push({ layer: layers[activeLayer], stroke: stroke })
+    dispatch({ type: "strokeHistory", payload: newStrokeHistory })
+    dispatch({ type: "redoCache", payload: newRedoCache })
 
-    const gl = strokeHistory[ activeLayer.id ].context
-    redraw( gl, colors, strokeHistory[ activeLayer.id ].strokes )
+    const gl = strokeHistory[layers[activeLayer].id].context
+    redraw( gl, colors, strokeHistory[layers[activeLayer].id].strokes )
   }
 
   const saveStroke = ( strokeHistory, stroke, layer ) => {
-    // console.log( 'saveStroke', strokeHistory )
     if ( stroke.points.length > 0 ) {
       const newStrokeHistory = { ...strokeHistory }
       newStrokeHistory[ layer.id] 
         ? newStrokeHistory[ layer.id ].strokes.push(stroke) 
         : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ stroke ] }
-      setStrokeHistory( newStrokeHistory )
+        dispatch({ type: "strokeHistory", payload: newStrokeHistory })
     }
   }
 
@@ -198,75 +238,70 @@ function Workspace({ name = 'untitled', height = '256', width = '256', image }) 
     saveLink.click()
   }
 
-  const zoomIn = () => {
-    console.log( canvasScale )
-    setCanvasScale( (Number(canvasScale) + 0.25).toString() )
-  }
-
-  const zoomOut = () => {
-    console.log( canvasScale )
-    setCanvasScale( (Number(canvasScale) - 0.25).toString() )
-  }
-
-  const pan = event => {
-    if ( event.buttons !== 1 ) { 
-      setClientPosition(event);
+  const pan = evt => {
+    if ( evt.buttons !== 1 ) { 
+      setClientPosition(evt);
       return
     }
     const pastPos = JSON.parse(JSON.stringify(clientPosition.current))
-    const nextPos = setClientPosition(event);
+    const nextPos = setClientPosition(evt);
     const newCanvasPos = { 
       left: Number(canvasPosition.left.slice(0, canvasPosition.left.length - 2)),
       top: Number(canvasPosition.top.slice(0, canvasPosition.top.length - 2))
     }
     newCanvasPos.left = `${newCanvasPos.left + nextPos.x - pastPos.x}px`
     newCanvasPos.top = `${newCanvasPos.top + nextPos.y - pastPos.y}px`
-    setCanvasPosition( newCanvasPos )
+    dispatch({ type: "canvasPosition", payload: newCanvasPos })
   }
 
+  const toolBar = toolButtons.map(( button, i ) =>
+    <ToolButton key={button.buttonText} buttonText={ button.buttonText } Icon={ button.svg } action={ button.action } 
+      dispatch={ dispatch } showTools={ showTools } state={ state[button.active] }/>
+  )
+
   return (
-    <div className="workspace" id={ name } onPointerMove={ panning ? pan : null } onPointerDown={ setClientPosition }>
+
+    <div className="workspace" onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
+      <div className='tools-right'> 
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } />
+        <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
+      </div>
       <div className="layers" id="layers" 
-        style={{ width: width, height: height, scale: canvasScale, left: canvasPosition.left, top: canvasPosition.top }}
+        style={{ width: width, height: height, 
+          scale: canvasScale, 
+          left: canvasPosition.left, 
+          top: canvasPosition.top, 
+          cursor: panning ? "grab" : null }}
         onPointerDown={ setPosition }
         onPointerEnter={ setPosition }
-        onPointerMove={ panning ? null : e => draw( e, activeLayer.context )}
-        onPointerUp={ e => saveStroke( strokeHistory, stroke, activeLayer )}
-        onPointerLeave={ e => saveStroke( strokeHistory, stroke, activeLayer )}
+        onPointerMove={ panning ? null : e => draw( e, layers[activeLayer].context )}
+        onPointerUp={ e => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
+        onPointerLeave={ e => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
       />
       <div id="app-info">
-        {/* <ThemeTest /> */}
       </div>
       <div className="tools">
         <h1>minxel.</h1>
         <div className='toolbox'>
-            <div className='toolbar'>
-              <button onClick={ saveFile }>
-                download image  <DownloadIcon  className="icon" /></button>
-              <button id="undo-button" onClick={ e => undo( strokeHistory )}> 
-                undo  <UndoIcon  className="icon" />
-              </button>
-              <button id="redo-button" onClick={ e => redo( strokeFuture )} >
-                redo  <RedoIcon className="icon"/>
-              </button>
-              <button id="zoom-in-button" onClick={ zoomIn } >
-                zoom in  <ZoomInIcon className="icon"/>
-              </button>
-              <button id="zoom-out-button" onClick={ zoomOut } >
-                zoom out  <ZoomOutIcon className="icon"/>
-              </button>
-              <button id="pan-button" onClick={ e => togglePanning(!panning) } >
-                pan canvas  <PanIcon className="icon"/>
-              </button>
-            </div>
-          <div className='tool-sample'>
-            <button id="pressure-button" onClick={ e => togglePressure( !pressure )}>
-              {`pen pressure: ${ pressure ? "on" : "off" }`}</button>
+          <div className='toolbar'>
+            <button onClick={ e => setShowTools( !showTools ) }>
+              <SettingsIcon  className="icon"/> settings  
+            </button>
+            <button onClick={ saveFile }>
+              download image  <DownloadIcon  className="icon"/>
+            </button>
+          </div>
+          <div className='tool-toggles'>
+            <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
+              clickFunction={ e => undo( strokeHistory ) } 
+              showTools={ showTools }/>
+            <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
+              clickFunction={ e => redo( redoCache ) } 
+              showTools={ showTools }/>
+            { toolBar }
           </div>
         </div>
-        <Palette colors={ colors } activeColor={ activeColor } setColors={ setColors } setColor={ setColor } strokeHistory={ strokeHistory } setStrokeHistory={ setStrokeHistory }/>
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } setBrushes={ setBrushes } setBrush={ setBrush }/>
-        <Layers layers={ layers } setLayers={ setLayers } addLayer={ addLayer } setLayer={ setLayer } activeLayer={ activeLayer } setActiveLayer={ setActiveLayer } stroke={ stroke }/>
+        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } strokeHistory={ strokeHistory } />
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
       <canvas id={ 'export-canvas' } style={{ display: 'none' }} width={ width } height={ height } />
