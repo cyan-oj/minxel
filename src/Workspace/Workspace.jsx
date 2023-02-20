@@ -147,6 +147,7 @@ function Workspace( props ) {
 
   useEffect(() => {
     const layerParent = document.getElementById( 'layers' )
+    layerParent.textContent = ""
     layers.forEach(( layer ) => {
       layerParent.appendChild( layer.canvas )
     })
@@ -195,12 +196,6 @@ function Workspace( props ) {
     }
   }
 
-  const removeLayer = ( index ) => {
-      // todo
-      // cannot be undone
-      // when removing layer, add layer to action history when action history is implemented?
-  }
-
   const redo = ( redoCache ) => {
     if ( redoCache.length < 1 ) return
 
@@ -219,7 +214,7 @@ function Workspace( props ) {
 
   const undo = ( strokeHistory ) => {
     if ( !strokeHistory[ layers[activeLayer].id ] || strokeHistory[ layers[activeLayer].id ].strokes.length < 1 ) return
-    
+
     const newStrokeHistory = { ...strokeHistory }
     const newRedoCache = [...redoCache ]
     const stroke = newStrokeHistory[ layers[activeLayer].id ].strokes.pop()
