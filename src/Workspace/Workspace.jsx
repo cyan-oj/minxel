@@ -9,11 +9,9 @@ import './Workspace.css'
 import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-sharp.svg'
 import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-sharp.svg'
 import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
-
 import { ReactComponent as ZoomInIcon } from '../assets/icons/outline-icons/expand-outline.svg'
 import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/contract-outline.svg'
 import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
-
 import { ReactComponent as SettingsIcon } from '../assets/icons/sharp-icons/settings-sharp.svg'
 import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
 
@@ -23,9 +21,9 @@ const defaultPalette = [
 ]
 
 const defaultBrushes = [ 
-  { name: "pen", type: "point", size: 3, spacing: 0.002 }, 
-  { name: "pen", type: "point", size: 30, spacing: 0.002 }, 
-  { name: "pen", type: "point", size: 100, spacing: 0.002 }
+  { name: "pen", type: "point", size: 2, spacing: 0.002 }, 
+  { name: "pen", type: "point", size: 16, spacing: 0.002 }, 
+  { name: "pen", type: "point", size: 64, spacing: 0.002 }
 ]
 
 const init = ( props ) => {
@@ -43,10 +41,11 @@ const init = ( props ) => {
     activeColor: 0,
     activeBrush: 0,
     activeLayer: 0,
+    brushSample: {},
     toolButtons: [
-      { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false },
-      { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false },
-      { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning" },
+      { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false, shortcutText: "ctrl + =" },
+      { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false, shortcutText: "ctrl + -"  },
+      { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning", shortcutText: "hold spacebar" },
       { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
     ],
     strokeHistory: {},
@@ -54,6 +53,7 @@ const init = ( props ) => {
   }
   const firstLayer = createLayer( props.width, props.height, 0 )
   initialState.layers.push( firstLayer )
+  initialState.brushSample = createLayer( 232, 100, -1, [1, 1, 1, 1] )
   return initialState
 }
 
@@ -68,8 +68,6 @@ const workSpaceReducer = ( state, action ) => {
       return { ...state, panning: !state.panning }
     case "togglePressure": 
       return { ...state, pressure: !state.pressure }
-    case "addColor":
-      return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length}
     case "layers":
       return { ...state, layers: [ ...payload ]}
     case "addLayer": 
@@ -90,6 +88,15 @@ const workSpaceReducer = ( state, action ) => {
       const colors = [...state.colors]
       colors[payload.index] = payload.color
       return {...state, colors: colors}
+    case "addColor":
+      return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length}
+    case "replaceBrush":
+      const brushes = [...state.brushes]
+      brushes[payload.index].size = payload.size
+      return { ...state, brushes: brushes }
+    case "addBrush":
+      const newBrush = { name: "pen", type: "point", size: payload, spacing: 0.002 }
+      return { ...state, brushes: [ ...state.brushes, newBrush ]}
     case "activeLayer":
       return { ...state, activeLayer: payload }
     default: return { ...state, [type]: payload }
@@ -121,18 +128,34 @@ function Workspace( props ) {
         top: `${( window.innerHeight - height ) /2 }px`,
       }
     })
-    const keys = ( event ) => {
+    const keysdown = ( event ) => {
       if (( event.metaKey || event.ctrlKey ) && event.shiftKey && event.code === 'KeyZ' ) {
         const redo = document.getElementById( 'redo' )
         redo.click()
       } else if (( event.metaKey || event.ctrlKey ) && event.code === 'KeyZ' ) {
         const undo = document.getElementById( 'undo' )
         undo.click()
+      } else if (( event.metaKey || event.ctrlKey ) && event.code === 'Equal' ) {
+        const zoomIn = document.getElementById( 'zoom in' )
+        zoomIn.click()
+      } else if (( event.metaKey || event.ctrlKey ) && event.code === 'Minus' ) {
+        const zoomOut = document.getElementById( 'zoom out' )
+        zoomOut.click()
+      } else if ( event.code === 'Space' ) {        
+        dispatch({ type: "panning", payload: true })
       }
     }
-    document.addEventListener( 'keydown', keys )
+
+    const keysup = ( event ) => {
+      if ( event.code === 'Space' ) {
+        dispatch({ type: "panning", payload: false })
+      }
+    }
+    document.addEventListener( 'keydown', keysdown )
+    document.addEventListener( 'keyup', keysup )
     return () => {
-      document.removeEventListener( 'keydown', keys )
+      document.removeEventListener( 'keydown', keysdown )
+      document.addEventListener( 'keyup', keysup )
     }
   }, [])
 
@@ -224,6 +247,7 @@ function Workspace( props ) {
         ? newStrokeHistory[ layer.id ].strokes.push( stroke ) 
         : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ stroke ] }
         dispatch({ type: "strokeHistory", payload: newStrokeHistory })
+        console.log(newStrokeHistory)
     }
   }
 
@@ -255,14 +279,14 @@ function Workspace( props ) {
 
   const toolBar = toolButtons.map(( button, i ) =>
     <ToolButton key={button.buttonText} buttonText={ button.buttonText } Icon={ button.svg } action={ button.action } 
-      dispatch={ dispatch } showTools={ showTools } state={ state[button.active] }/>
+      dispatch={ dispatch } showTools={ showTools } state={ state[button.active] } shortcutText={ button.shortcutText } />
   )
 
   return (
 
     <div className="workspace" onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className='tools-right'> 
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } />
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ state.brushSample } />
         <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
       </div>
       <div className="layers" id="layers" 

@@ -5,7 +5,7 @@ import "./Palette.css"
 import { redraw } from "../utils/glHelpers"
 
 function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
-  const [ showSettings, setShowSettings ] = useState( false );
+  const [ showSettings, setShowSettings ] = useState( false )
   const [ cacheColor, setCacheColor ] = useState( colors[activeColor] )
 
   useEffect(() => {

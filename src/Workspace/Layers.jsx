@@ -36,7 +36,7 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
           <SettingsIcon  className="unpin"/> settings  
         </button>
       </div>
-      <div className="tool-toggles">
+      <div className="tool-toggles" style={{ flexDirection: showTools ? "column" : "row" }}>
         <ToolButton buttonText={ "add layer" } Icon={ AddIcon }
           action={ "addLayer"} dispatch={ dispatch }
           showTools={ showTools }/>

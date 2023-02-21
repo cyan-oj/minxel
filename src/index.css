@@ -40,6 +40,7 @@ body {
 	margin: 0;
 	display: flex;
 	touch-action: none;
+	overflow: hidden;
 }
 
 h1 {
