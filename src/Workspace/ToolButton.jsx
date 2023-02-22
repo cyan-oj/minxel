@@ -27,7 +27,7 @@ function ToolButton({ buttonText, Icon, showTools, state = false, action, dispat
       </>
       }
       { (showTools || pinned) && 
-        <div id={ buttonText } onClick={ dispatch ? (e => dispatch({ type: action })) : clickFunction } >
+        <div id={ buttonText } onClick={ dispatch ? (() => dispatch({ type: action })) : clickFunction } >
           <Icon className={ state ? "icon-active" : "icon" }/>
         </div>
       }

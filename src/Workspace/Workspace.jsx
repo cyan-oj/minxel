@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useReducer } from 'react'
-import { getStroke, drawPoint, getAttributes, redraw, createLayer } from '../utils/glHelpers.js'
+import { getStroke, drawPoint, drawStroke, getAttributes, redraw, createLayer } from '../utils/glHelpers.js'
 import { rgbToGL } from '../utils/colorConvert.js'
 import Palette from './Palette.jsx'
 import Brushes from './Brushes.jsx'
@@ -61,6 +61,24 @@ const init = ( props ) => { // is there a way to lazy-assign? so that a user can
 const workSpaceReducer = ( state, action ) => {
   const { type, payload } = action
   switch ( type ) {
+    case "saveStroke": {
+      const { stroke, layer } = payload
+      if ( stroke.points.length < 0 ) return { ...state }
+      const layerHistory = state.strokeHistory[layer.id]
+      let newStrokeHistory ={}
+      if (layerHistory){
+        newStrokeHistory = { 
+          context: state.strokeHistory[layer.id].context,
+          strokes: [ ...state.strokeHistory[layer.id].strokes, stroke ] 
+        }
+      } else {
+        newStrokeHistory = {
+          context: layer.context,
+          strokes: [stroke]
+        }
+      }
+      return { ...state, strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory }}
+    }
     case "zoomIn": 
       return { ...state, canvasScale: (Number(state.canvasScale) * 1.25).toFixed(6).toString()}
     case "zoomOut": 
@@ -76,7 +94,6 @@ const workSpaceReducer = ( state, action ) => {
       const newCache = [ ...state.redoCache ]
       const stroke = newLayerHistory.pop()
       stroke.layer = newLayer;
-      console.log(stroke)
       newCache.push({ layer: state.layers[payload], stroke })
       const newStrokeHistory = {
         ...state.strokeHistory,
@@ -120,12 +137,12 @@ const workSpaceReducer = ( state, action ) => {
       return { ...state, layers: [ ...newLayers], activeLayer: 0, strokeHistory: newHistory, redoCache: [] }
     }
     case "replaceColor": { // payload: { color, index }
-      const colors = [...state.colors]
+      const colors = [ ...state.colors ]
       colors[payload.index] = payload.color
-      return {...state, colors: colors}
+      return { ...state, colors: colors}
     }
     case "addColor": // payload: color
-      return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length}
+      return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length }
     case "replaceBrush": { // payload: { size, index }
       const brushes = [ ...state.brushes ]
       brushes[payload.index].size = payload.size
@@ -238,7 +255,7 @@ function Workspace( props ) {
         position: [ x, y ],
         size: brushes[activeBrush].size * pressure
       }
-      drawPoint( gl, point.position, point.size, drawColor, glAttributes )
+      drawPoint( gl, glAttributes, point.position, point.size, drawColor )
       stroke.points.push( point )
     }
   }
@@ -247,29 +264,19 @@ function Workspace( props ) {
     if ( redoCache.length < 1 ) return
 
     // these are needed until saveStroke is independent
-    const newRedoCache = [...redoCache ]
+    const newRedoCache = [ ...redoCache ]
     const nextStroke = newRedoCache.pop()
 
     dispatch({ type: "redo" })
-    saveStroke( strokeHistory, nextStroke.stroke, nextStroke.layer )
+    dispatch({type: "saveStroke", payload: { stroke: nextStroke.stroke, layer: nextStroke.layer}})
 
     const gl = nextStroke.layer.context
     const glAttributes = getAttributes( gl )
     const drawColor = rgbToGL( colors[ nextStroke.stroke.color ])
-    nextStroke.stroke.points.forEach(( point ) => {
-      drawPoint( gl, point.position, point.size, drawColor, glAttributes )
-    })
+    drawStroke( gl, glAttributes, drawColor, nextStroke.stroke.points )
   }
 
-  const saveStroke = ( strokeHistory, stroke, layer ) => {
-    if ( stroke.points.length > 0 ) {
-      const newStrokeHistory = { ...strokeHistory }
-      newStrokeHistory[ layer.id] 
-        ? newStrokeHistory[ layer.id ].strokes.push( stroke ) 
-        : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ stroke ] }
-        dispatch({ type: "strokeHistory", payload: newStrokeHistory })
-    }
-  }
+  const saveStroke = ( stroke, layer ) => dispatch({ type: "saveStroke", payload: { stroke, layer }})
 
   const saveFile = () => {
     const exportCanvas = document.getElementById( 'export-canvas' )
@@ -318,8 +325,8 @@ function Workspace( props ) {
         onPointerDown={ setPosition }
         onPointerEnter={ setPosition }
         onPointerMove={ panning ? null : e => draw( e, layers[activeLayer].context )}
-        onPointerUp={() => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
-        onPointerLeave={() => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
+        onPointerUp={() => saveStroke( stroke, layers[activeLayer] )}
+        onPointerLeave={() => saveStroke( stroke, layers[activeLayer] )}
       />
       <div id="app-info">
       </div>

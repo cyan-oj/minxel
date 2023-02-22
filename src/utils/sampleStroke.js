@@ -1,5 +1,5 @@
   export const SAMPLE_STROKE = {
-    "color": 0,
+    "color": [ 0, 0, 0, 1 ],
     "points": [
       {
         "position": [

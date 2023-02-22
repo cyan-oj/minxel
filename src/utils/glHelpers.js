@@ -9,13 +9,6 @@ export const getStroke = ( point1, point2 ) => {
   return [ distance, angle, deltaP ]
 }
 
-export const drawPoint = ( gl, position, size, color, glAttributes ) => {
-  gl.vertexAttrib3f( glAttributes.a_Position, position[0], position[1], 0.0 )
-  gl.vertexAttrib1f( glAttributes.a_PointSize, size )
-  gl.uniform4f( glAttributes.u_FragColor, color[0], color[1], color[2], color[3] )
-  gl.drawArrays( gl.points, 0, 1 )
-}
-
 export const getAttributes = gl => {
   const glAttributes = {
     a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
@@ -25,18 +18,31 @@ export const getAttributes = gl => {
   return glAttributes
 }
 
+export const drawPoint = ( gl, glAttributes, position, size, color,  ) => {
+  gl.vertexAttrib3f( glAttributes.a_Position, position[0], position[1], 0.0 )
+  gl.vertexAttrib1f( glAttributes.a_PointSize, size )
+  gl.uniform4f( glAttributes.u_FragColor, color[0], color[1], color[2], color[3] )
+  gl.drawArrays( gl.points, 0, 1 )
+}
+
+export const drawStroke = ( gl, glAttributes, color, points ) => {
+  if ( !points || points.length < 1 ) return
+  for( let i = 0; i < points.length; i++ ){
+    const point = points[i]
+    drawPoint( gl, glAttributes, point.position, point.size, color )
+  }
+}
+
 export const redraw = ( gl, colors, strokes ) => {
   const glAttributes = getAttributes( gl ) 
   gl.clear( gl.COLOR_BUFFER_BIT )
   strokes.forEach( stroke => {
     const drawColor = rgbToGL( colors[stroke.color] )
-    stroke.points.forEach( point => {
-      drawPoint( gl, point.position, point.size, drawColor, glAttributes )
-    })
+    drawStroke( gl, glAttributes, drawColor, stroke.points  )
   })
 }
 
-export const createLayer = ( width, height, num, backgroundColor=[0.0, 0.0, 0.0, 0.0] ) => {
+export const createLayer = ( width, height, num, backgroundColor=[ 0.0, 0.0, 0.0, 0.0 ] ) => {
   const layerName = `layer ${num + 1}`
   const newCanvas = document.createElement( 'CANVAS' )
   newCanvas.width = width
