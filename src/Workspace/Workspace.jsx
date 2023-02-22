@@ -69,24 +69,29 @@ const workSpaceReducer = ( state, action ) => {
     case "togglePressure": 
       return { ...state, pressure: !state.pressure }
     case "undo": { // payload: activeLayer
-      const  newHistory = [ ...state.strokeHistory[payload].strokes ] 
+      const newLayer = { ...state.strokeHistory[payload] }
+      const newLayerHistory = [ ...newLayer.strokes ] 
+      if ( newLayerHistory.length < 1 ) return { ...state }
       const newCache = [ ...state.redoCache ]
-      const stroke = newHistory.pop()
+      const stroke = newLayerHistory.pop()
       newCache.push({ layer: state.layers[payload], stroke })
       const newStrokeHistory = {
         ...state.strokeHistory,
         [payload]: {
-          ...state.strokeHistory[payload],
-          strokes: [ ...newHistory ]
+          ...newLayer,
+          strokes: [ ...newLayerHistory ]
         }
       }
-      const gl = state.strokeHistory[payload].context
-      redraw( gl, state.colors, newHistory )
+      const gl = newLayer.context
+      redraw( gl, state.colors, newLayerHistory )
       return { 
         ...state, 
         strokeHistory: newStrokeHistory, 
         redoCache: newCache 
       }
+    }
+    case "redo": {
+
     }
     case "activeLayer": // index
       return { ...state, activeLayer: payload }
@@ -250,18 +255,6 @@ function Workspace( props ) {
     })
   }
 
-  const undo = ( layerID ) => {
-    if ( !strokeHistory[ layerID ].strokes || strokeHistory[ layerID ].strokes.length < 1 ) return
-    dispatch({ type: "undo", payload: layerID })
-    // const newStrokeHistory = { ...strokeHistory }
-    // const newRedoCache = [ ...redoCache ]
-    // const stroke = newStrokeHistory[ layers[activeLayer].id ].strokes.pop()
-    // newRedoCache.push({ layer: layers[activeLayer], stroke: stroke })
-    // dispatch({ type: "strokeHistory", payload: newStrokeHistory })
-    // dispatch({ type: "redoCache", payload: newRedoCache })
-    console.log("layer", strokeHistory[layerID])
-  }
-
   const saveStroke = ( strokeHistory, stroke, layer ) => {
     if ( stroke.points.length > 0 ) {
       const newStrokeHistory = { ...strokeHistory }
@@ -338,7 +331,7 @@ function Workspace( props ) {
           </div>
           <div className='tool-toggles' style={{ flexDirection: showTools ? "column" : "row" }}>
             <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
-              clickFunction={ e => undo( layers[activeLayer].id ) } 
+              clickFunction={ e => dispatch({ type: "undo", payload: activeLayer }) } 
               shortcutText={ "ctrl + Z" }
               showTools={ showTools }/>
             <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
