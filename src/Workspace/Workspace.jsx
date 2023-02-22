@@ -15,21 +15,28 @@ import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-ou
 import { ReactComponent as SettingsIcon } from '../assets/icons/sharp-icons/settings-sharp.svg'
 import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
 
-const defaultPalette = [
+const DEFAULT_PALETTE = [
   [ 0, 0, 0 ],
   [ 255, 255, 255 ],
 ]
 
-const defaultBrushes = [ 
+const DEFAULT_BRUSHES = [ 
   { name: "pen", type: "point", size: 2, spacing: 0.002 }, 
   { name: "pen", type: "point", size: 16, spacing: 0.002 }, 
   { name: "pen", type: "point", size: 64, spacing: 0.002 }
 ]
 
+const TOOL_BUTTONS = [
+  { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false, shortcutText: "ctrl + =" },
+  { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false, shortcutText: "ctrl + -"  },
+  { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning", shortcutText: "hold spacebar" },
+  { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
+]
+
 const init = ( props ) => { // is there a way to lazy-assign? so that a user can send in props and any not sent in go to defaults
   const initialState = {
-    colors: defaultPalette,
-    brushes: defaultBrushes,
+    colors: DEFAULT_PALETTE,
+    brushes: DEFAULT_BRUSHES,
     layers: [],
     width: props.width,
     height: props.height,
@@ -42,12 +49,6 @@ const init = ( props ) => { // is there a way to lazy-assign? so that a user can
     activeBrush: 0,
     activeLayer: 0,
     brushSample: {},
-    toolButtons: [
-      { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false, shortcutText: "ctrl + =" },
-      { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false, shortcutText: "ctrl + -"  },
-      { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning", shortcutText: "hold spacebar" },
-      { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
-    ],
     strokeHistory: {},
     redoCache: []
   }
@@ -70,10 +71,12 @@ const workSpaceReducer = ( state, action ) => {
       return { ...state, pressure: !state.pressure }
     case "undo": { // payload: activeLayer
       const newLayer = { ...state.strokeHistory[payload] }
+      if ( newLayer.strokes.length < 1 ) return { ...state }
       const newLayerHistory = [ ...newLayer.strokes ] 
-      if ( newLayerHistory.length < 1 ) return { ...state }
       const newCache = [ ...state.redoCache ]
       const stroke = newLayerHistory.pop()
+      stroke.layer = newLayer;
+      console.log(stroke)
       newCache.push({ layer: state.layers[payload], stroke })
       const newStrokeHistory = {
         ...state.strokeHistory,
@@ -91,11 +94,13 @@ const workSpaceReducer = ( state, action ) => {
       }
     }
     case "redo": {
-
+      const newCache = [ ...state.redoCache ]
+      newCache.pop()
+      return { ...state, redoCache: newCache }
     }
-    case "activeLayer": // index
+    case "activeLayer": // payload: index
       return { ...state, activeLayer: payload }
-    case "layers": // [ new layer arrangement ]
+    case "layers": // payload: [ new layer arrangement ]
       return { ...state, layers: [ ...payload ]}
     case "addLayer": { 
       const newLayer = createLayer( state.width, state.height, state.newLayerNo )
@@ -107,11 +112,12 @@ const workSpaceReducer = ( state, action ) => {
       }
     }
     case "deleteLayer": { // payload: index
-      const newLayers = [...state.layers]
-      const newHistory = { ...state.History }
+      if ( state.layers.length <= 1 ) return { ...state }
+      const newLayers = [ ...state.layers ]
+      const newHistory = { ...state.strokeHistory }
       const [ removed ] = newLayers.splice( payload, 1 )
       delete newHistory[removed.id]
-      return { ...state, layers: [ ...newLayers], activeLayer: 0, strokeHistory: newStrokeHistory }
+      return { ...state, layers: [ ...newLayers], activeLayer: 0, strokeHistory: newHistory, redoCache: [] }
     }
     case "replaceColor": { // payload: { color, index }
       const colors = [...state.colors]
@@ -138,8 +144,7 @@ function Workspace( props ) {
     colors, brushes, layers,
     width, height,
     panning, pressure, canvasScale, canvasPosition, 
-    activeColor, activeBrush, activeLayer, 
-    toolButtons, 
+    activeColor, activeBrush, activeLayer,  
     strokeHistory, redoCache 
   } = state
 
@@ -174,7 +179,6 @@ function Workspace( props ) {
         dispatch({ type: "panning", payload: true })
       }
     }
-
     const keysup = ( event ) => {
       if ( event.code === 'Space' ) {
         dispatch({ type: "panning", payload: false })
@@ -242,9 +246,11 @@ function Workspace( props ) {
   const redo = ( redoCache ) => {
     if ( redoCache.length < 1 ) return
 
+    // these are needed until saveStroke is independent
     const newRedoCache = [...redoCache ]
     const nextStroke = newRedoCache.pop()
-    dispatch({ type: "redoCache", payload: newRedoCache })
+
+    dispatch({ type: "redo" })
     saveStroke( strokeHistory, nextStroke.stroke, nextStroke.layer )
 
     const gl = nextStroke.layer.context
@@ -262,7 +268,6 @@ function Workspace( props ) {
         ? newStrokeHistory[ layer.id ].strokes.push( stroke ) 
         : newStrokeHistory[ layer.id ] = { context: layer.context, strokes: [ stroke ] }
         dispatch({ type: "strokeHistory", payload: newStrokeHistory })
-        console.log(newStrokeHistory)
     }
   }
 
@@ -292,7 +297,7 @@ function Workspace( props ) {
     dispatch({ type: "canvasPosition", payload: newCanvasPos })
   }
 
-  const toolBar = toolButtons.map(( button, i ) =>
+  const toolBar = TOOL_BUTTONS.map(( button, i ) =>
     <ToolButton key={button.buttonText} buttonText={ button.buttonText } Icon={ button.svg } action={ button.action } 
       dispatch={ dispatch } showTools={ showTools } state={ state[button.active] } shortcutText={ button.shortcutText } />
   )
@@ -313,8 +318,8 @@ function Workspace( props ) {
         onPointerDown={ setPosition }
         onPointerEnter={ setPosition }
         onPointerMove={ panning ? null : e => draw( e, layers[activeLayer].context )}
-        onPointerUp={ e => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
-        onPointerLeave={ e => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
+        onPointerUp={() => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
+        onPointerLeave={() => saveStroke( strokeHistory, stroke, layers[activeLayer] )}
       />
       <div id="app-info">
       </div>
@@ -322,20 +327,21 @@ function Workspace( props ) {
         <h1>minxel.</h1>
         <div className='toolbox'>
           <div className='toolbar'>
-            <button onClick={ e => setShowTools( !showTools ) }>
+            <button onClick={() => setShowTools( !showTools ) }>
               <SettingsIcon  className="unpin"/> settings  
             </button>
+            <button onClick={() => console.log( state )}> log state </button>
             <button onClick={ saveFile }>
               download image  <DownloadIcon  className="icon"/>
             </button>
           </div>
           <div className='tool-toggles' style={{ flexDirection: showTools ? "column" : "row" }}>
             <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
-              clickFunction={ e => dispatch({ type: "undo", payload: activeLayer }) } 
+              clickFunction={() => dispatch({ type: "undo", payload: layers[activeLayer].id }) } 
               shortcutText={ "ctrl + Z" }
               showTools={ showTools }/>
             <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
-              clickFunction={ e => redo( redoCache ) } 
+              clickFunction={() => redo( redoCache ) } 
               shortcutText={ "ctrl + Shift + Z" }
               showTools={ showTools }/>
             { toolBar }

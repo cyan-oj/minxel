@@ -44,7 +44,7 @@ export const createLayer = ( width, height, num, backgroundColor=[0.0, 0.0, 0.0,
   const gl = newCanvas.getContext( 'webgl', { antialias: false, preserveDrawingBuffer: true })
   gl.clearColor(...backgroundColor);
   gl.clear(gl.COLOR_BUFFER_BIT)
-  if ( !gl ) alert( 'Your browser does not support WebGL. Try using another browser, such as the most recent version of Mozilla Firefox' )
+  if ( !gl ) alert( 'Your browser does not support WebGL. Try updating or using another browser, such as the most recent version of Mozilla Firefox' )
   if ( !initShaders( gl, VSHADER_SOURCE, FSHADER_SOURCE )) console.error( 'failed to initialize shaders' )
   const newLayer = { id: num, name: layerName, canvas: newCanvas, context: gl }
   return newLayer
