@@ -2,12 +2,9 @@ import { useEffect, useState } from "react"
 import { ReactComponent as PinnedIcon } from '../assets/icons/outline-icons/pin-sharp.svg'
 import { ReactComponent as UnPinnedIcon } from '../assets/icons/outline-icons/pin-outline.svg'
 
-function ToolButton({ buttonText, Icon, showTools, state = false, action, dispatch, clickFunction, shortcutText = "" }) {
+function ToolButton({ buttonText, Icon, showTools, active = false, clickFunction, shortcutText = "" }) {
   const [ pinned, setPinned ] = useState( true );
-
-  useEffect(() => {
-
-  }, [pinned, state])
+  useEffect(() => {}, [pinned, active])
 
   return (
     <div className="tool-button">
@@ -27,8 +24,8 @@ function ToolButton({ buttonText, Icon, showTools, state = false, action, dispat
       </>
       }
       { (showTools || pinned) && 
-        <div id={ buttonText } onClick={ dispatch ? (() => dispatch({ type: action })) : clickFunction } >
-          <Icon className={ state ? "icon-active" : "icon" }/>
+        <div id={ buttonText } onClick={ clickFunction } >
+          <Icon className={ active ? "icon-active" : "icon" }/>
         </div>
       }
     </div>

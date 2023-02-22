@@ -26,13 +26,6 @@ const DEFAULT_BRUSHES = [
   { name: "pen", type: "point", size: 64, spacing: 0.002 }
 ]
 
-const TOOL_BUTTONS = [
-  { buttonText: "zoom in", action: "zoomIn", svg: ZoomInIcon, active: false, shortcutText: "ctrl + =" },
-  { buttonText: "zoom out", action: "zoomOut", svg: ZoomOutIcon, active: false, shortcutText: "ctrl + -"  },
-  { buttonText: "pan canvas", action: "togglePanning", svg: PanIcon, active: "panning", shortcutText: "hold spacebar" },
-  { buttonText: "pen pressure", action: "togglePressure", svg: PenIcon, active: "pressure" }
-]
-
 const init = ( props ) => { // is there a way to lazy-assign? so that a user can send in props and any not sent in go to defaults
   const initialState = {
     colors: DEFAULT_PALETTE,
@@ -63,7 +56,7 @@ const workSpaceReducer = ( state, action ) => {
   switch ( type ) {
     case "saveStroke": {
       const { stroke, layer } = payload
-      if ( stroke.points.length < 0 ) return { ...state }
+      if ( stroke.points.length < 1 ) return { ...state }
       const layerHistory = state.strokeHistory[layer.id]
       let newStrokeHistory ={}
       if (layerHistory){
@@ -304,11 +297,6 @@ function Workspace( props ) {
     dispatch({ type: "canvasPosition", payload: newCanvasPos })
   }
 
-  const toolBar = TOOL_BUTTONS.map(( button, i ) =>
-    <ToolButton key={button.buttonText} buttonText={ button.buttonText } Icon={ button.svg } action={ button.action } 
-      dispatch={ dispatch } showTools={ showTools } state={ state[button.active] } shortcutText={ button.shortcutText } />
-  )
-
   return (
 
     <div className="workspace" onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
@@ -351,7 +339,23 @@ function Workspace( props ) {
               clickFunction={() => redo( redoCache ) } 
               shortcutText={ "ctrl + Shift + Z" }
               showTools={ showTools }/>
-            { toolBar }
+            <ToolButton buttonText={ "zoom in"} Icon={ ZoomInIcon }
+              clickFunction={() => dispatch({ type: "zoomIn" })}
+              shortcutText= "ctrl + ="
+              showTools={ showTools }/>
+            <ToolButton buttonText={ "zoom out"} Icon={ ZoomOutIcon }
+              clickFunction={() => dispatch({ type: "zoomOut" })}
+              shortcutText= "ctrl + -"
+              showTools={ showTools }/>
+            <ToolButton buttonText={ "pan canvas"} Icon={ PanIcon }
+              clickFunction={() => dispatch({ type: "togglePanning" })}
+              active={ panning }
+              shortcutText="hold spacebar"
+              showTools={ showTools }/>
+            <ToolButton buttonText={ "pen pressure"} Icon={ PenIcon }
+              clickFunction={() => dispatch({ type: "togglePressure" })}
+              active={ pressure }
+              showTools={ showTools }/>
           </div>
         </div>
         <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } strokeHistory={ strokeHistory } />

@@ -38,7 +38,7 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
       </div>
       <div className="tool-toggles" style={{ flexDirection: showTools ? "column" : "row" }}>
         <ToolButton buttonText={ "add layer" } Icon={ AddIcon }
-          action={ "addLayer"} dispatch={ dispatch }
+          clickFunction={() => dispatch({ type: "addLayer" })}
           showTools={ showTools }/>
         <ToolButton buttonText={ "delete layer"} Icon={ TrashIcon} 
           clickFunction={() => dispatch({ type: "deleteLayer", payload: activeLayer })}
