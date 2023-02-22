@@ -26,13 +26,13 @@ const defaultBrushes = [
   { name: "pen", type: "point", size: 64, spacing: 0.002 }
 ]
 
-const init = ( props ) => {
+const init = ( props ) => { // is there a way to lazy-assign? so that a user can send in props and any not sent in go to defaults
   const initialState = {
     colors: defaultPalette,
     brushes: defaultBrushes,
     layers: [],
-    width: props.width || 256,
-    height: props.height || 256,
+    width: props.width,
+    height: props.height,
     newLayerNo: 1,
     panning: false,
     pressure: false,
@@ -68,9 +68,31 @@ const workSpaceReducer = ( state, action ) => {
       return { ...state, panning: !state.panning }
     case "togglePressure": 
       return { ...state, pressure: !state.pressure }
-    case "layers":
+    case "undo": { // payload: activeLayer
+      const  newHistory = [ ...state.strokeHistory[payload].strokes ] 
+      const newCache = [ ...state.redoCache ]
+      const stroke = newHistory.pop()
+      newCache.push({ layer: state.layers[payload], stroke })
+      const newStrokeHistory = {
+        ...state.strokeHistory,
+        [payload]: {
+          ...state.strokeHistory[payload],
+          strokes: [ ...newHistory ]
+        }
+      }
+      const gl = state.strokeHistory[payload].context
+      redraw( gl, state.colors, newHistory )
+      return { 
+        ...state, 
+        strokeHistory: newStrokeHistory, 
+        redoCache: newCache 
+      }
+    }
+    case "activeLayer": // index
+      return { ...state, activeLayer: payload }
+    case "layers": // [ new layer arrangement ]
       return { ...state, layers: [ ...payload ]}
-    case "addLayer": 
+    case "addLayer": { 
       const newLayer = createLayer( state.width, state.height, state.newLayerNo )
       return { 
         ...state, 
@@ -78,27 +100,29 @@ const workSpaceReducer = ( state, action ) => {
         activeLayer: state.layers.length,
         newLayerNo: state.newLayerNo + 1
       }
-    case "deleteLayer":
+    }
+    case "deleteLayer": { // payload: index
       const newLayers = [...state.layers]
-      const newStrokeHistory = { ...state.strokeHistory }
+      const newHistory = { ...state.History }
       const [ removed ] = newLayers.splice( payload, 1 )
-      delete newStrokeHistory[removed.id]
+      delete newHistory[removed.id]
       return { ...state, layers: [ ...newLayers], activeLayer: 0, strokeHistory: newStrokeHistory }
-    case "replaceColor":
+    }
+    case "replaceColor": { // payload: { color, index }
       const colors = [...state.colors]
       colors[payload.index] = payload.color
       return {...state, colors: colors}
-    case "addColor":
+    }
+    case "addColor": // payload: color
       return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length}
-    case "replaceBrush":
-      const brushes = [...state.brushes]
+    case "replaceBrush": { // payload: { size, index }
+      const brushes = [ ...state.brushes ]
       brushes[payload.index].size = payload.size
       return { ...state, brushes: brushes }
-    case "addBrush":
+    }
+    case "addBrush": // payload: size
       const newBrush = { name: "pen", type: "point", size: payload, spacing: 0.002 }
       return { ...state, brushes: [ ...state.brushes, newBrush ]}
-    case "activeLayer":
-      return { ...state, activeLayer: payload }
     default: return { ...state, [type]: payload }
   }
 }
@@ -226,18 +250,16 @@ function Workspace( props ) {
     })
   }
 
-  const undo = ( strokeHistory ) => {
-    if ( !strokeHistory[ layers[activeLayer].id ] || strokeHistory[ layers[activeLayer].id ].strokes.length < 1 ) return
-
-    const newStrokeHistory = { ...strokeHistory }
-    const newRedoCache = [ ...redoCache ]
-    const stroke = newStrokeHistory[ layers[activeLayer].id ].strokes.pop()
-    newRedoCache.push({ layer: layers[activeLayer], stroke: stroke })
-    dispatch({ type: "strokeHistory", payload: newStrokeHistory })
-    dispatch({ type: "redoCache", payload: newRedoCache })
-
-    const gl = strokeHistory[layers[activeLayer].id].context
-    redraw( gl, colors, strokeHistory[layers[activeLayer].id].strokes )
+  const undo = ( layerID ) => {
+    if ( !strokeHistory[ layerID ].strokes || strokeHistory[ layerID ].strokes.length < 1 ) return
+    dispatch({ type: "undo", payload: layerID })
+    // const newStrokeHistory = { ...strokeHistory }
+    // const newRedoCache = [ ...redoCache ]
+    // const stroke = newStrokeHistory[ layers[activeLayer].id ].strokes.pop()
+    // newRedoCache.push({ layer: layers[activeLayer], stroke: stroke })
+    // dispatch({ type: "strokeHistory", payload: newStrokeHistory })
+    // dispatch({ type: "redoCache", payload: newRedoCache })
+    console.log("layer", strokeHistory[layerID])
   }
 
   const saveStroke = ( strokeHistory, stroke, layer ) => {
@@ -316,7 +338,7 @@ function Workspace( props ) {
           </div>
           <div className='tool-toggles' style={{ flexDirection: showTools ? "column" : "row" }}>
             <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
-              clickFunction={ e => undo( strokeHistory ) } 
+              clickFunction={ e => undo( layers[activeLayer].id ) } 
               shortcutText={ "ctrl + Z" }
               showTools={ showTools }/>
             <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
