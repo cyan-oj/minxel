@@ -3,7 +3,7 @@ import { getStroke, drawPoint, drawStroke, getAttributes, createLayer } from '..
 import { rgbToGL } from '../../utils/colorConvert.js'
 import { workSpaceReducer } from './WorkspaceReducer.js'
 import Palette from '../Palette.jsx'
-import Brushes from '../Brushes.jsx'
+import Brushes from '../Brushes/Brushes.jsx'
 import Layers from '../Layers/Layers.jsx'
 import ToolButton from './ToolButton.jsx'
 import './Workspace.css'

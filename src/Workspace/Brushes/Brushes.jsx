@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-import { drawPoint, getAttributes } from "../utils/glHelpers"
-import { SAMPLE_STROKE } from "../utils/sampleStroke"
+import { drawPoint, getAttributes } from "../../utils/glHelpers"
+import { SAMPLE_STROKE } from "../../utils/sampleStroke"
 
 import "./Brushes.css"
 

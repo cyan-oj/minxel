@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { colorString } from "../utils/colorConvert"
+import { colorString } from "../../utils/colorConvert"
 import convert from "color-convert"
 
 function ColorSliders ({ setNewColor, cacheColorText, newColorText="new color", cacheColor }) {
