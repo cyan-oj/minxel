@@ -64,7 +64,6 @@ export const workSpaceReducer = ( state, action ) => {
       return { ...state, redoCache: newCache, strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory } }
     }
     case "activeLayer": // payload: index
-      console.log(payload)
       return { ...state, activeLayer: payload }
     case "layers": // payload: [ new layer arrangement ]
       return { ...state, layers: [ ...payload ]}
@@ -74,7 +73,6 @@ export const workSpaceReducer = ( state, action ) => {
       const newLayer = { ...newLayers[index] }
       newLayer.visible = !visible
       newLayers[index] = newLayer
-      console.log(visible)
       return { ...state, layers: [ ...newLayers ]}
     case "addLayer": { 
       const newLayer = createLayer( state.width, state.height, state.newLayerNo )
