@@ -238,16 +238,16 @@ function Workspace( props ) {
           <div className='tool-toggles' style={{ flexDirection: showTools ? 'column' : 'row' }}>
             <ToolButton buttonText={ 'eraser' } Icon={ EraserIcon } 
               clickFunction={() => dispatch({ type: 'toggleEraser' }) } 
-              shortcutText={ 'E' }
+              shortcutText={ 'e' }
               active={ erasing }
               showTools={ showTools }/>
             <ToolButton buttonText={ 'undo' } Icon={ UndoIcon } 
               clickFunction={() => dispatch({ type: 'undo', payload: layers[activeLayer].id }) } 
-              shortcutText={ 'ctrl + Z' }
+              shortcutText={ 'ctrl + z' }
               showTools={ showTools }/>
             <ToolButton buttonText={ 'redo' } Icon={ RedoIcon } 
               clickFunction={() => redo( redoCache ) } 
-              shortcutText={ 'ctrl + Shift + Z' }
+              shortcutText={ 'ctrl + shift + Z' }
               showTools={ showTools }/>
             <ToolButton buttonText={ 'zoom in'} Icon={ ZoomInIcon }
               clickFunction={() => dispatch({ type: 'zoomIn' })}
