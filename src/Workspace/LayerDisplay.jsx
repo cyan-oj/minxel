@@ -4,8 +4,10 @@ function LayerDisplay({ layer, width, height, visible }) {
   const layerID = useRef(`layer ${layer.id}`)
 
   useEffect(() => {
-    const parent = document.getElementById( layerID.current )
-    parent.appendChild( layer.canvas )
+    if ( visible ){
+      const parent = document.getElementById( layerID.current )
+      parent.appendChild( layer.canvas )
+    }
   }, [visible])
 
   return (

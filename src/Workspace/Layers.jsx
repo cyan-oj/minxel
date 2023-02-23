@@ -25,7 +25,7 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
     <div key={ layer.id } draggable
       onDragStart={ () => dragStart( idx )}
       onDragEnter={ e => dragEnter( idx, Number(e.target.id), layers )}>
-      <LayerPreview id={ idx } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } />
+      <LayerPreview id={ idx } layer={ layer } stroke={ stroke } activeLayer={ activeLayer } dispatch={ dispatch } />
     </div>
   )
 

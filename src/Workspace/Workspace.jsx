@@ -127,6 +127,7 @@ function Workspace( props ) {
   }
 
   const draw = ( evt, gl ) => {
+    // don't draw on invisible layer!
     if ( evt.buttons !== 1 ) {
       setPosition( evt )
       return

@@ -65,6 +65,14 @@ export const workSpaceReducer = ( state, action ) => {
       return { ...state, activeLayer: payload }
     case "layers": // payload: [ new layer arrangement ]
       return { ...state, layers: [ ...payload ]}
+    case "toggleVisibility": //payload: index, visible
+      const { index, visible } = payload
+      const newLayers = [ ...state.layers ]
+      const newLayer = { ...newLayers[index] }
+      newLayer.visible = !visible
+      newLayers[index] = newLayer
+      console.log(visible)
+      return { ...state, layers: [ ...newLayers ]}
     case "addLayer": { 
       const newLayer = createLayer( state.width, state.height, state.newLayerNo )
       return { 
