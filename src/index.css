@@ -3,12 +3,12 @@
 	--base: rgba(220, 220, 220);
 	--alt: rgba(245, 245, 245);	
 	--highlight: rgba(255, 255, 255);
-	--accent: rgb(51, 35, 97);
-	--active: rgb(154, 188, 253);
+	--accent: rgb(70, 70, 86);
+	--active: rgb(196, 217, 255);
 	--main: rgba(120, 120, 120);
 	--emphasis: rgba(80, 80, 80);
 	--shadow: rgba(0, 0, 0, 0.4);
-	--transluscent: rgba(245, 245, 245, 0.6);
+	--transluscent: rgba(245, 245, 245, 0.65);
 	font-family: Courier, monospace;
 	font-size: 20px;
 	font-weight: 500;
@@ -51,7 +51,7 @@ button {
 	font-weight: 500;
 	font-family: inherit;
 	color: var(--main);
-	border: solid 1px var(--alt);
+	border: none;
 	cursor: pointer;
 	margin: 0.1em 0.4em;
 	padding: 0.1em 0.4em;
@@ -161,4 +161,14 @@ input[type='range']::-moz-range-thumb {
 }
 .unpin {
 	background-color: transparent;
+}
+.named-icon {
+	border-radius: 4px;
+	background-color: var(--accent);
+	color: var(--active);
+}
+.named-icon-active {
+	border-radius: 4px;
+	background-color: var(--active);
+	color: var(--accent);
 }

@@ -1,12 +1,12 @@
-import { useRef, useState } from "react"
-import LayerPreview from "./LayerPreview"
-import "./Layers.css"
-import { ReactComponent as AddIcon } from "../../assets/icons/outline-icons/add-outline.svg"
-import { ReactComponent as TrashIcon } from "../../assets/icons/outline-icons/trash-outline.svg"
+import { useRef, useState } from 'react'
+import LayerPreview from './LayerPreview'
+import './Layers.css'
+import { ReactComponent as AddIcon } from '../../assets/icons/outline-icons/add-outline.svg'
+import { ReactComponent as TrashIcon } from '../../assets/icons/outline-icons/trash-outline.svg'
 import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
 import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
 import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
-import ToolButton from "../Workspace/ToolButton"
+import ToolButton from '../Workspace/ToolButton'
 
 function Layers({ layers, stroke, activeLayer, dispatch }) {
   const [ showTools, setShowTools ] = useState( false )
@@ -19,8 +19,8 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
     const dropLayer = layers.splice( currentLayer, 1 )[0]
     layers.splice( index, 0, dropLayer )
     dragLayer.current = index
-    dispatch({ type: "layers", payload: layers })
-    dispatch({ type: "activeLayer", payload: targetID })
+    dispatch({ type: 'layers', payload: layers })
+    dispatch({ type: 'activeLayer', payload: targetID })
   }
 
   const layerControls = layers.map(( layer, idx ) => 
@@ -32,23 +32,23 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
   )
 
   return (
-    <div className="toolbox" id="layer-controls">
-      <div className="toolbar"
+    <div className='toolbox' id='layer-controls'>
+      <div className='toolbar'
         onClick={() => setShowTools( !showTools )}>
-        <SettingsIcon className="unpin"/>
+        <SettingsIcon className='unpin'/>
         layer tools
-        { showTools ? <CaretDown className="unpin"/> : <CaretForward className="unpin"/>}
+        { showTools ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/>}
       </div>
-      <div className="tool-toggles" style={{ flexDirection: showTools ? "column" : "row" }}>
-        <ToolButton buttonText={ "add layer" } Icon={ AddIcon }
-          clickFunction={() => dispatch({ type: "addLayer" })}
+      <div className='tool-toggles' style={{ flexDirection: showTools ? 'column' : 'row' }}>
+        <ToolButton buttonText={ 'add layer' } Icon={ AddIcon }
+          clickFunction={() => dispatch({ type: 'addLayer' })}
           showTools={ showTools }/>
-        <ToolButton buttonText={ "delete layer"} Icon={ TrashIcon} 
-          clickFunction={() => dispatch({ type: "deleteLayer", payload: activeLayer })}
+        <ToolButton buttonText={ 'delete layer'} Icon={ TrashIcon} 
+          clickFunction={() => dispatch({ type: 'deleteLayer', payload: activeLayer })}
           showTools={ showTools }/>
       </div>
-      <div className="tool-sample" id="layer-sample" 
-        onMouseUp={ e => dispatch({ type: "activeLayer", payload: Number(e.target.id) })}>
+      <div className='tool-sample' id='layer-sample' 
+        onMouseUp={ e => dispatch({ type: 'activeLayer', payload: Number(e.target.id) })}>
         { layerControls }
       </div>
     </div>

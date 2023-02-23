@@ -33,7 +33,7 @@ const DEFAULT_BRUSHES = [
 
 const init = ( props ) => { // is there a way to lazy-assign? so that a user can send in props and any not sent in go to defaults
   const initialState = {
-    colors: DEFAULT_PALETTE,
+    colors: props.colors ? props.colors : DEFAULT_PALETTE, // todo: test this
     brushes: DEFAULT_BRUSHES,
     layers: [],
     width: props.width,
@@ -103,7 +103,7 @@ function Workspace( props ) {
       } 
     }
     const keysup = ( event ) => {
-      if ( event.code === 'Space' ) dispatch({ type: "panning", payload: false })
+      if ( event.code === 'Space' ) dispatch({ type: 'panning', payload: false })
     }
     document.addEventListener( 'keydown', keysdown )
     document.addEventListener( 'keyup', keysup )
@@ -170,7 +170,7 @@ function Workspace( props ) {
     drawStroke( gl, glAttributes, drawColor, nextStroke.stroke.points )
   }
 
-  const saveStroke = ( stroke, layer ) => dispatch({ type: "saveStroke", payload: { stroke, layer }})
+  const saveStroke = ( stroke, layer ) => dispatch({ type: 'saveStroke', payload: { stroke, layer }})
 
   const saveFile = () => {
     const exportCanvas = document.getElementById( 'export-canvas' )
@@ -195,7 +195,7 @@ function Workspace( props ) {
     }
     newCanvasPos.left = `${newCanvasPos.left + nextPos.x - pastPos.x}px`
     newCanvasPos.top = `${newCanvasPos.top + nextPos.y - pastPos.y}px`
-    dispatch({ type: "canvasPosition", payload: newCanvasPos })
+    dispatch({ type: 'canvasPosition', payload: newCanvasPos })
   }
 
   const layerDisplay = layers.map ( layer =>
@@ -203,69 +203,69 @@ function Workspace( props ) {
   )
 
   return (
-    <div className="workspace" onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
+    <div className='workspace' onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
       <div className='tools-right'> 
         <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ state.brushSample } />
         <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
       </div>
-      <div className="layers" id="layers" 
+      <div className='layers' id='layers' 
         style={{ width: width, height: height, 
           scale: canvasScale, 
           left: canvasPosition.left, 
           top: canvasPosition.top, 
-          cursor: panning ? "grab" : null }}
+          cursor: panning ? 'grab' : null }}
         onPointerDown={ setPosition }
         onPointerEnter={ setPosition }
         onPointerMove={ panning ? null : e => draw( e, layers[activeLayer].context )}
         onPointerUp={() => saveStroke( stroke, layers[activeLayer] )}
         onPointerLeave={() => saveStroke( stroke, layers[activeLayer] )}
       >{ layerDisplay }</div>
-      <div id="app-info">
+      <div id='app-info'>
       </div>
-      <div className="tools">
+      <div className='tools'>
         <h1>minxel.</h1>
         <div className='toolbox'>
           <div className='toolbar'>
-            <button onClick={() => console.log( state )}> log state </button>
+            {/* <button onClick={() => console.log( state )}> log state </button> */}
             <button onClick={ saveFile }>
-              download image  <DownloadIcon  className="icon"/>
+              download image  <DownloadIcon  className='icon'/>
             </button>
           </div>
-          <div className="toolbar"
+          <div className='toolbar'
             onClick={() => setShowTools( !showTools )}>
-            <SettingsIcon className="unpin"/>
+            <SettingsIcon className='unpin'/>
             tools 
-            { showTools ? <CaretDown className="unpin"/> : <CaretForward className="unpin"/>}
+            { showTools ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/>}
           </div>
-          <div className='tool-toggles' style={{ flexDirection: showTools ? "column" : "row" }}>
-            <ToolButton buttonText={ "eraser" } Icon={ EraserIcon } 
-              clickFunction={() => dispatch({ type: "toggleEraser" }) } 
-              shortcutText={ "E" }
+          <div className='tool-toggles' style={{ flexDirection: showTools ? 'column' : 'row' }}>
+            <ToolButton buttonText={ 'eraser' } Icon={ EraserIcon } 
+              clickFunction={() => dispatch({ type: 'toggleEraser' }) } 
+              shortcutText={ 'E' }
               active={ erasing }
               showTools={ showTools }/>
-            <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
-              clickFunction={() => dispatch({ type: "undo", payload: layers[activeLayer].id }) } 
-              shortcutText={ "ctrl + Z" }
+            <ToolButton buttonText={ 'undo' } Icon={ UndoIcon } 
+              clickFunction={() => dispatch({ type: 'undo', payload: layers[activeLayer].id }) } 
+              shortcutText={ 'ctrl + Z' }
               showTools={ showTools }/>
-            <ToolButton buttonText={ "redo" } Icon={ RedoIcon } 
+            <ToolButton buttonText={ 'redo' } Icon={ RedoIcon } 
               clickFunction={() => redo( redoCache ) } 
-              shortcutText={ "ctrl + Shift + Z" }
+              shortcutText={ 'ctrl + Shift + Z' }
               showTools={ showTools }/>
-            <ToolButton buttonText={ "zoom in"} Icon={ ZoomInIcon }
-              clickFunction={() => dispatch({ type: "zoomIn" })}
-              shortcutText= "ctrl + ="
+            <ToolButton buttonText={ 'zoom in'} Icon={ ZoomInIcon }
+              clickFunction={() => dispatch({ type: 'zoomIn' })}
+              shortcutText= 'ctrl + ='
               showTools={ showTools }/>
-            <ToolButton buttonText={ "zoom out"} Icon={ ZoomOutIcon }
-              clickFunction={() => dispatch({ type: "zoomOut" })}
-              shortcutText= "ctrl + -"
+            <ToolButton buttonText={ 'zoom out'} Icon={ ZoomOutIcon }
+              clickFunction={() => dispatch({ type: 'zoomOut' })}
+              shortcutText= 'ctrl + -'
               showTools={ showTools }/>
-            <ToolButton buttonText={ "pan canvas"} Icon={ PanIcon }
-              clickFunction={() => dispatch({ type: "togglePanning" })}
+            <ToolButton buttonText={ 'pan canvas'} Icon={ PanIcon }
+              clickFunction={() => dispatch({ type: 'togglePanning' })}
               active={ panning }
-              shortcutText="hold spacebar"
+              shortcutText='hold spacebar'
               showTools={ showTools }/>
-            <ToolButton buttonText={ "pen pressure"} Icon={ PenIcon }
-              clickFunction={() => dispatch({ type: "togglePressure" })}
+            <ToolButton buttonText={ 'pen pressure'} Icon={ PenIcon }
+              clickFunction={() => dispatch({ type: 'togglePressure' })}
               active={ pressure }
               showTools={ showTools }/>
           </div>

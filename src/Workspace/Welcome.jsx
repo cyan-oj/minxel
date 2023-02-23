@@ -6,12 +6,12 @@ function Welcome() {
 
 
   return (
-    <div className="toolbox">
-      <div className="toolbar"> 
+    <div className='toolbox'>
+      <div className='toolbar'> 
         <h4>Theme Testing Box</h4>
-        <UndoIcon className="icon" />
+        <UndoIcon className='icon' />
         undo
-        <RedoIcon className="icon" />
+        <RedoIcon className='icon' />
         redo
       </div>
       <div className='tooltip'>this is a preview of how a tooltip might display!</div>

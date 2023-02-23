@@ -31,7 +31,8 @@ canvas {
   margin-bottom: 16px;
   box-sizing: border-box;
 }
-.toolbar {
+.toolbar, .toolbar-clear {
+  box-sizing: border-box;
   background-color: var(--alt);
   display: flex;
   flex-wrap: wrap;
@@ -39,6 +40,14 @@ canvas {
   align-items: center;
   width: 100%;
   cursor: pointer;
+}
+.toolbar-clear {
+  background-color: transparent;
+  padding: 4px 16px 8px;
+  /* justify-content: space-around; */
+}
+.toolbar-clear:hover {
+  background-color: var(--alt);
 }
 .tool-sample {
   display: flex;
