@@ -161,9 +161,7 @@ function Workspace( props ) {
     if ( redoCache.length < 1 ) return
     const redoCacheDup = [ ...redoCache ]
     const nextStroke = redoCacheDup.pop()
-
     dispatch({ type: "redo" })
-
     const gl = nextStroke.layer.context
     const glAttributes = getAttributes( gl )
     const drawColor = rgbToGL( colors[ nextStroke.stroke.color ])
