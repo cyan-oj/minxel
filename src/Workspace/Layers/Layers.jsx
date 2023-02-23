@@ -4,6 +4,8 @@ import "./Layers.css"
 import { ReactComponent as AddIcon } from "../../assets/icons/outline-icons/add-outline.svg"
 import { ReactComponent as TrashIcon } from "../../assets/icons/outline-icons/trash-outline.svg"
 import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
+import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
+import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
 import ToolButton from "../Workspace/ToolButton"
 
 function Layers({ layers, stroke, activeLayer, dispatch }) {
@@ -31,10 +33,11 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
 
   return (
     <div className="toolbox" id="layer-controls">
-      <div className="toolbar" >
-        <button onClick={ e => setShowTools( !showTools ) }>
-          <SettingsIcon  className="unpin"/> settings  
-        </button>
+      <div className="toolbar"
+        onClick={() => setShowTools( !showTools )}>
+        <SettingsIcon className="unpin"/>
+        layer tools
+        { showTools ? <CaretDown className="unpin"/> : <CaretForward className="unpin"/>}
       </div>
       <div className="tool-toggles" style={{ flexDirection: showTools ? "column" : "row" }}>
         <ToolButton buttonText={ "add layer" } Icon={ AddIcon }

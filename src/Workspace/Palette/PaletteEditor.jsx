@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { redraw } from "../utils/glHelpers"
+import { redraw } from "../../utils/glHelpers"
 import ColorSliders from "./ColorSliders";
 
 function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispatch, cacheColor}) {

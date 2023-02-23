@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import { drawPoint, getAttributes } from "../../utils/glHelpers"
 import { SAMPLE_STROKE } from "../../utils/sampleStroke"
+import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
+import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
+import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
 
 import "./Brushes.css"
 
@@ -48,8 +51,11 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
       <div className="tool-sample" id="brushes">
       { brushList }
       </div>
-      <div className="toolbar" onClick={() => setShowSettings(!showSettings)}>
-          brush menu
+      <div className="toolbar"
+        onClick={() => setShowSettings( !showSettings )}>
+        <SettingsIcon className="unpin"/>
+        brush menu 
+        { showSettings ? <CaretDown className="unpin"/> : <CaretForward className="unpin"/>}
       </div>
       <div className="tool-editor" style={{ display:showSettings ? "contents" : "none" }}>
         <div id="brush-preview" />

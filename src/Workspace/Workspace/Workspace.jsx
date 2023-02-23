@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useReducer } from 'react'
 import { getStroke, drawPoint, drawStroke, getAttributes, createLayer } from '../../utils/glHelpers.js'
 import { rgbToGL } from '../../utils/colorConvert.js'
 import { workSpaceReducer } from './WorkspaceReducer.js'
-import Palette from '../Palette.jsx'
+import Palette from '../Palette/Palette.jsx'
 import Brushes from '../Brushes/Brushes.jsx'
 import Layers from '../Layers/Layers.jsx'
 import ToolButton from './ToolButton.jsx'
@@ -15,6 +15,8 @@ import { ReactComponent as ZoomOutIcon } from '../../assets/icons/outline-icons/
 import { ReactComponent as PanIcon } from '../../assets/icons/outline-icons/move-outline.svg'
 import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
 import { ReactComponent as PenIcon } from '../../assets/icons/outline-icons/pencil-outline.svg'
+import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
+import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
 import LayerDisplay from '../Layers/LayerDisplay.jsx'
 
 const DEFAULT_PALETTE = [
@@ -220,13 +222,16 @@ function Workspace( props ) {
         <h1>minxel.</h1>
         <div className='toolbox'>
           <div className='toolbar'>
-            <button onClick={() => setShowTools( !showTools ) }>
-              <SettingsIcon  className="unpin"/> settings  
-            </button>
             <button onClick={() => console.log( state )}> log state </button>
             <button onClick={ saveFile }>
               download image  <DownloadIcon  className="icon"/>
             </button>
+          </div>
+          <div className="toolbar"
+            onClick={() => setShowTools( !showTools )}>
+            <SettingsIcon className="unpin"/>
+            tools 
+            { showTools ? <CaretDown className="unpin"/> : <CaretForward className="unpin"/>}
           </div>
           <div className='tool-toggles' style={{ flexDirection: showTools ? "column" : "row" }}>
             <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
