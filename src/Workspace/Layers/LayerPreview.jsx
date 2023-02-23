@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import "./Layers.css"
-import { ReactComponent as EyeIcon } from '../assets/icons/sharp-icons/eye-sharp.svg'
-import { ReactComponent as EyeOffIcon } from '../assets/icons/sharp-icons/eye-off-sharp.svg'
+import { ReactComponent as EyeIcon } from '../../assets/icons/sharp-icons/eye-sharp.svg'
+import { ReactComponent as EyeOffIcon } from '../../assets/icons/sharp-icons/eye-off-sharp.svg'
 
 function LayerPreview( { layer, id, stroke, activeLayer, dispatch } ) {
   const preview = useRef();

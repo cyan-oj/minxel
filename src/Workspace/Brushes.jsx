@@ -45,18 +45,22 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
 
   return (
     <div className="toolbox" >
-      <div className="tool-sample">
+      <div className="tool-sample" id="brushes">
       { brushList }
       </div>
       <div className="toolbar" onClick={() => setShowSettings(!showSettings)}>
-          brush size presets
+          brush menu
       </div>
-      <div className="tool-editor" style={{ display:showSettings ? "block" : "none" }}>
+      <div className="tool-editor" style={{ display:showSettings ? "contents" : "none" }}>
         <div id="brush-preview" />
-        <input type="range" min="1" max="64" value={ brushes[activeBrush].size }
-          onChange={ e => dispatch({ type: "replaceBrush", payload: { size: e.target.value, index: activeBrush }})}
-        />
-        <button onClick={ e => dispatch({ type: "addBrush", payload: brushes[activeBrush].size })}>add Brush Preset</button>
+        <div className="sliders">
+          <input type="range" min="1" max="64" value={ brushes[activeBrush].size }
+            onChange={ e => dispatch({ type: "replaceBrush", payload: { size: e.target.value, index: activeBrush }})}
+          />
+        </div>
+        <div className="toolbar">
+          <button onClick={ e => dispatch({ type: "addBrush", payload: brushes[activeBrush].size })}>add Brush Preset</button>
+        </div>
       </div>
     </div>
   )

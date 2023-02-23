@@ -53,7 +53,7 @@ function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
 
   return (
     <div className="toolbox" >
-      <div className="tool-sample">
+      <div className="tool-sample" id="palette">
         { colorsList }
       </div>
       <div className="toolbar"

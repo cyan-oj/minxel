@@ -1,5 +1,4 @@
 .color-preview {
-  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -7,39 +6,38 @@
   width: 100%;
   height: 48px;
   color: var(--base);
-  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-shadow: 1px 1px 4px var(--emphasis);
+  text-shadow: 1px 1px 4px black;
 }
 
 .swatch {
-  height: 52px;
-  width: 52px;
+  aspect-ratio: 1/1;
+  width: 25%;
+  padding-bottom: 25%;
   margin: 0;
   padding: 0;
   border: none;
   font-size: 32px;
 }
 .swatch:hover {
-  border: none;
-  width: 60px;
-  height: 60px;
-  margin: -4px;
+  width: 27%;
+  margin: -1%;
 }
 
 #active-swatch {
-  border: 1px solid var(--alt);
-  border-radius: 2px;
-  width: 64px;
-  height: 64px;
-  margin: -6px;
+  width: 30%;
+  margin: -2.5%;
   z-index: 10;
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
+}
+
+#palette{
+  margin-bottom: 12px;
 }
 
 #editor-labels {
   display: flex;
   justify-content: space-around;
 }
-

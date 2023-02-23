@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { ReactComponent as PinnedIcon } from '../assets/icons/outline-icons/pin-sharp.svg'
-import { ReactComponent as UnPinnedIcon } from '../assets/icons/outline-icons/pin-outline.svg'
+import { ReactComponent as PinnedIcon } from '../../assets/icons/outline-icons/pin-sharp.svg'
+import { ReactComponent as UnPinnedIcon } from '../../assets/icons/outline-icons/pin-outline.svg'
 
 function ToolButton({ buttonText, Icon, showTools, active = false, clickFunction, shortcutText = "" }) {
   const [ pinned, setPinned ] = useState( true );

@@ -1,4 +1,5 @@
 :root {
+	--dark: rgb(0, 0, 0);
 	--base: rgba(220, 220, 220);
 	--alt: rgba(245, 245, 245);	
 	--highlight: rgba(255, 255, 255);
@@ -7,33 +8,17 @@
 	--main: rgba(120, 120, 120);
 	--emphasis: rgba(80, 80, 80);
 	--shadow: rgba(0, 0, 0, 0.4);
-	--canvas-bg: rgba(245, 245, 245, 0.6);	;
-
+	--transluscent: rgba(245, 245, 245, 0.6);
 	font-family: Courier, monospace;
 	font-size: 20px;
-	line-height: 24px;
 	font-weight: 500;
-	color-scheme: light dark;
 	color: var(--main);
-
 	background-color: var(--base);
 	background-image: 
 		linear-gradient(45deg,var(--highlight) 25%, transparent 25%, transparent 75%, var(--highlight) 75%, var(--highlight)),
 		linear-gradient(45deg, var(--highlight) 25%, transparent 25%, transparent 75%, var(--highlight) 75%, var(--highlight));
 	background-size: 40px 40px;
 	background-position: 0 0, 20px 20px;
-}
-@media (prefers-color-scheme: dark) {
-	:root {
-		--highlight: rgba(70, 70, 70);
-		--alt: rgba(45, 45, 45);	
-		--base: rgba(20, 20, 20);
-		--accent: rgb(57, 106, 127);
-		--active: rgb(115, 184, 234);
-		--main: rgba(200, 200, 200);
-		--emphasis: rgba(215, 215, 215);
-		--shadow: rgba(0, 0, 0, 0.4);
-	}
 }
 
 body {
@@ -42,11 +27,10 @@ body {
 	touch-action: none;
 	overflow: hidden;
 }
-
 h1 {
 	font-size: 2em;
 	margin: -0.5em 0.1em 0.4em;
-	color: var(--emphasis);
+	color: black;
 }
 h4 {
 	margin: -0.2em 0.1em 0.4em;
@@ -58,32 +42,28 @@ p {
 
 button {
 	display: flex;
+	box-sizing: border-box;
 	align-items: center;
 	justify-content: center;;
 	font-size: 1em;
 	font-weight: 500;
 	font-family: inherit;
 	color: var(--main);
-	background-color: var(--alt);
 	border: solid 1px var(--alt);
 	cursor: pointer;
 	margin: 0.1em 0.4em;
 	padding: 0.1em 0.4em;
-	position: relative;
 }
 button:hover {
 	z-index: 20;
-	padding: 0.2em 0.4em;
-	margin: 0em 0.4em;
 	background-color: var(--highlight);
-	border-radius: 3px;
 }
 
 input[type='range'] {
 	-webkit-appearance: none;
 	width: 100%;
-	height: 16px;
-	margin: 2px 0px;
+	height: 6px;
+	margin: 4px 0px;
 	background: var(--main);
 	border: none;
 	border-radius: 0;
@@ -92,23 +72,27 @@ input[type='range'] {
 
 input[type='range']::-webkit-slider-thumb {
 	-webkit-appearance: none;
-	width: 8px;
-	height: 24px;
-	background: var(--main);
+	width: 20px;
+	height: 20px;
+	background: var(--dark);
 	border: none;
-	border-radius: 0;
+	border-radius: 12px;
 }
 
 input[type='range']::-moz-range-thumb {
 	-webkit-appearance: none;
-	width: 8px;
-	height: 24px;
-	background: var(--main);
+	width: 20px;
+	height: 20px;
+	background: var(--dark);
 	border: none;
-	border-radius: 0;
+	border-radius: 12px;
+}
+.sliders {
+	margin: 8px 0px;
+	width: 100%;
 }
 
-#welcome {
+/* #welcome {
 	position: absolute;
 	background-color: var(--base);
 	border-radius: 4px;
@@ -132,7 +116,7 @@ input[type='range']::-moz-range-thumb {
 	display: flex;
 	justify-content: space-between;
 	margin: 4px 12px;
-}
+} */
 
 .ratio {
 	flex-basis: 300px;

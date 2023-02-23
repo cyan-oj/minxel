@@ -1,26 +1,33 @@
+#brushes {
+  margin-bottom: 16px;
+}
 .brush {
-  height: 36px;
-  width: 36px;
-  font-size: 15px;
-  margin: 2px;
+  aspect-ratio: 1/1;
+  width: 23%;
+  padding-bottom: 24%;
+  margin: 1%;
+  padding: 0;
   border: none;
+  font-size: 24px;
 }
 .brush:hover {
-  border: none;
-  width: 44px;
-  height: 44px;
-  margin: -2px;
+  width: 27%;
+  margin: -1%;
 }
 .brush#addBrush {
   border: solid 1px var(--base);
 }
 
 #active-brush {
-  border: 1px solid var(--base);
+  width: 29%;
+  margin: -2%;
+  z-index: 10;
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
+  /* border: 1px solid var(--base);
   border-radius: 2px;
   width: 48px;
   height: 48px;
   margin: -4px;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
-  z-index: 10;
+  z-index: 10; */
 }

@@ -1,4 +1,4 @@
-import { createLayer, redraw } from "../utils/glHelpers"
+import { createLayer, redraw } from "../../utils/glHelpers"
 
 export const workSpaceReducer = ( state, action ) => {
   const { type, payload } = action
@@ -59,7 +59,7 @@ export const workSpaceReducer = ( state, action ) => {
         context: state.strokeHistory[layer.id].context,
         strokes: [ ...state.strokeHistory[layer.id].strokes, stroke ] 
       }
-      return { ...state, redoCache: newCache, strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory }}
+      return { ...state, redoCache: newCache, strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory } }
     }
     case "activeLayer": // payload: index
       return { ...state, activeLayer: payload }
@@ -93,7 +93,7 @@ export const workSpaceReducer = ( state, action ) => {
     case "replaceColor": { // payload: { color, index }
       const colors = [ ...state.colors ]
       colors[payload.index] = payload.color
-      return { ...state, colors: colors}
+      return { ...state, colors: colors }
     }
     case "addColor": // payload: color
       return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length }

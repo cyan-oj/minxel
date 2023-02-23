@@ -1,10 +1,10 @@
 import { useRef, useState } from "react"
 import LayerPreview from "./LayerPreview"
 import "./Layers.css"
-import { ReactComponent as AddIcon } from "../assets/icons/outline-icons/add-outline.svg"
-import { ReactComponent as TrashIcon } from "../assets/icons/outline-icons/trash-outline.svg"
-import { ReactComponent as SettingsIcon } from '../assets/icons/sharp-icons/settings-sharp.svg'
-import ToolButton from "./ToolButton"
+import { ReactComponent as AddIcon } from "../../assets/icons/outline-icons/add-outline.svg"
+import { ReactComponent as TrashIcon } from "../../assets/icons/outline-icons/trash-outline.svg"
+import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
+import ToolButton from "../Workspace/ToolButton"
 
 function Layers({ layers, stroke, activeLayer, dispatch }) {
   const [ showTools, setShowTools ] = useState( false )

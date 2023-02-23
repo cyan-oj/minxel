@@ -1,21 +1,21 @@
 import { useState, useEffect, useRef, useReducer } from 'react'
-import { getStroke, drawPoint, drawStroke, getAttributes, redraw, createLayer } from '../utils/glHelpers.js'
-import { rgbToGL } from '../utils/colorConvert.js'
+import { getStroke, drawPoint, drawStroke, getAttributes, createLayer } from '../../utils/glHelpers.js'
+import { rgbToGL } from '../../utils/colorConvert.js'
 import { workSpaceReducer } from './WorkspaceReducer.js'
-import Palette from './Palette.jsx'
-import Brushes from './Brushes.jsx'
-import Layers from './Layers.jsx'
+import Palette from '../Palette.jsx'
+import Brushes from '../Brushes.jsx'
+import Layers from '../Layers/Layers.jsx'
 import ToolButton from './ToolButton.jsx'
 import './Workspace.css'
-import { ReactComponent as UndoIcon } from '../assets/icons/sharp-icons/arrow-undo-sharp.svg'
-import { ReactComponent as RedoIcon } from '../assets/icons/sharp-icons/arrow-redo-sharp.svg'
-import { ReactComponent as DownloadIcon } from '../assets/icons/sharp-icons/download-sharp.svg'
-import { ReactComponent as ZoomInIcon } from '../assets/icons/outline-icons/expand-outline.svg'
-import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/contract-outline.svg'
-import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
-import { ReactComponent as SettingsIcon } from '../assets/icons/sharp-icons/settings-sharp.svg'
-import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
-import LayerDisplay from './LayerDisplay.jsx'
+import { ReactComponent as UndoIcon } from '../../assets/icons/sharp-icons/arrow-undo-sharp.svg'
+import { ReactComponent as RedoIcon } from '../../assets/icons/sharp-icons/arrow-redo-sharp.svg'
+import { ReactComponent as DownloadIcon } from '../../assets/icons/sharp-icons/download-sharp.svg'
+import { ReactComponent as ZoomInIcon } from '../../assets/icons/outline-icons/expand-outline.svg'
+import { ReactComponent as ZoomOutIcon } from '../../assets/icons/outline-icons/contract-outline.svg'
+import { ReactComponent as PanIcon } from '../../assets/icons/outline-icons/move-outline.svg'
+import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
+import { ReactComponent as PenIcon } from '../../assets/icons/outline-icons/pencil-outline.svg'
+import LayerDisplay from '../Layers/LayerDisplay.jsx'
 
 const DEFAULT_PALETTE = [
   [ 0, 0, 0 ],
@@ -49,7 +49,7 @@ const init = ( props ) => { // is there a way to lazy-assign? so that a user can
   }
   const firstLayer = createLayer( props.width, props.height, 0 )
   initialState.layers.push( firstLayer )
-  initialState.brushSample = createLayer( 232, 100, -1, [1, 1, 1, 1] )
+  initialState.brushSample = createLayer( 240, 100, -1, [1, 1, 1, 1] )
   return initialState
 }
 
