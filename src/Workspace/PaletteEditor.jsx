@@ -26,7 +26,7 @@ function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispa
     <div className="tool-editor" id="palette-editor" style={{ display:showSettings ? "block" : "none" }}>
       <ColorSliders setNewColor={ setNewColor } cacheColorText={ "previous color"} cacheColor={ cacheColor }/>
       <div className="toolbar">
-        <button onClick={ e => dispatch({ type: "addColor", payload: newColor })}>+</button>
+        <button onClick={() => dispatch({ type: "addColor", payload: newColor })}>+</button>
         <button onClick={() => replaceColor( cacheColor, activeColor )}>revert</button>
       </div>
     </div>

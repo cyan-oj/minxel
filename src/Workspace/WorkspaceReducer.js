@@ -1,4 +1,4 @@
-import { redraw } from "../utils/glHelpers"
+import { createLayer, redraw } from "../utils/glHelpers"
 
 export const workSpaceReducer = ( state, action ) => {
   const { type, payload } = action

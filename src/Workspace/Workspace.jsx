@@ -15,6 +15,7 @@ import { ReactComponent as ZoomOutIcon } from '../assets/icons/outline-icons/con
 import { ReactComponent as PanIcon } from '../assets/icons/outline-icons/move-outline.svg'
 import { ReactComponent as SettingsIcon } from '../assets/icons/sharp-icons/settings-sharp.svg'
 import { ReactComponent as PenIcon } from '../assets/icons/outline-icons/pencil-outline.svg'
+import LayerDisplay from './LayerDisplay.jsx'
 
 const DEFAULT_PALETTE = [
   [ 0, 0, 0 ],
@@ -106,14 +107,6 @@ function Workspace( props ) {
     }
   }, [])
 
-  useEffect(() => {
-    const layerParent = document.getElementById( 'layers' )
-    layerParent.textContent = ""
-    layers.forEach(( layer ) => {
-      layerParent.appendChild( layer.canvas )
-    })
-  }, [layers])
-
   const setClientPosition = evt => {
     clientPosition.current.x =  evt.clientX,
     clientPosition.current.y =  evt.clientY
@@ -198,11 +191,9 @@ function Workspace( props ) {
     dispatch({ type: "canvasPosition", payload: newCanvasPos })
   }
 
-  // const layerDisplay = layers.map ( layer =>
-  //   <div>
-  //     {layer.canvas}
-  //   </div>
-  // )
+  const layerDisplay = layers.map ( layer =>
+    <LayerDisplay key={ layer.id } layer={ layer } width={ width } height={ height } visible={ layer.visible } />
+  )
 
   return (
     <div className="workspace" onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
@@ -221,7 +212,7 @@ function Workspace( props ) {
         onPointerMove={ panning ? null : e => draw( e, layers[activeLayer].context )}
         onPointerUp={() => saveStroke( stroke, layers[activeLayer] )}
         onPointerLeave={() => saveStroke( stroke, layers[activeLayer] )}
-      />
+      >{ layerDisplay }</div>
       <div id="app-info">
       </div>
       <div className="tools">
