@@ -17,11 +17,12 @@ import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/s
 import { ReactComponent as PenIcon } from '../../assets/icons/outline-icons/pencil-outline.svg'
 import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
 import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
+import { ReactComponent as EraserIcon } from '../../assets/icons/sharp-icons/eraser.svg'
 import LayerDisplay from '../Layers/LayerDisplay.jsx'
 
 const DEFAULT_PALETTE = [
   [ 0, 0, 0 ],
-  [ 255, 255, 255 ],
+  [ 255, 255, 255 ]
 ]
 
 const DEFAULT_BRUSHES = [ 
@@ -38,6 +39,7 @@ const init = ( props ) => { // is there a way to lazy-assign? so that a user can
     width: props.width,
     height: props.height,
     newLayerNo: 1,
+    erasing: false,
     panning: false,
     pressure: false,
     canvasScale: '1.0',
@@ -60,7 +62,8 @@ function Workspace( props ) {
   const { 
     colors, brushes, layers,
     width, height,
-    panning, pressure, canvasScale, canvasPosition, 
+    panning, pressure, erasing,
+    canvasScale, canvasPosition, 
     activeColor, activeBrush, activeLayer,  
     strokeHistory, redoCache 
   } = state
@@ -92,14 +95,15 @@ function Workspace( props ) {
       } else if (( event.metaKey || event.ctrlKey ) && event.code === 'Minus' ) {
         const zoomOut = document.getElementById( 'zoom out' )
         zoomOut.click()
+      } else if ( event.code === 'KeyE' ) {
+        const eraser = document.getElementById( 'eraser' )
+        eraser.click()
       } else if ( event.code === 'Space' ) {        
         dispatch({ type: "panning", payload: true })
-      }
+      } 
     }
     const keysup = ( event ) => {
-      if ( event.code === 'Space' ) {
-        dispatch({ type: "panning", payload: false })
-      }
+      if ( event.code === 'Space' ) dispatch({ type: "panning", payload: false })
     }
     document.addEventListener( 'keydown', keysdown )
     document.addEventListener( 'keyup', keysup )
@@ -129,7 +133,7 @@ function Workspace( props ) {
   }
 
   const draw = ( evt, gl ) => {
-    // don't draw on invisible layer!
+    // todo: don't draw on invisible layer!
     if ( evt.buttons !== 1 ) {
       setPosition( evt )
       return
@@ -139,7 +143,7 @@ function Workspace( props ) {
     const currentPoint = setPosition( evt )
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint )
     stroke.color = activeColor
-    const drawColor = rgbToGL( colors[ stroke.color ])
+    const drawColor = erasing ? [0] : rgbToGL( colors[ stroke.color ])
     for ( let i = 0; i < dist; i += brushes[activeBrush].spacing ) {
       const x = lastPoint.x + Math.sin( angle ) * i
       const y = lastPoint.y + Math.cos( angle ) * i
@@ -234,6 +238,11 @@ function Workspace( props ) {
             { showTools ? <CaretDown className="unpin"/> : <CaretForward className="unpin"/>}
           </div>
           <div className='tool-toggles' style={{ flexDirection: showTools ? "column" : "row" }}>
+            <ToolButton buttonText={ "eraser" } Icon={ EraserIcon } 
+              clickFunction={() => dispatch({ type: "toggleEraser" }) } 
+              shortcutText={ "E" }
+              active={ erasing }
+              showTools={ showTools }/>
             <ToolButton buttonText={ "undo" } Icon={ UndoIcon } 
               clickFunction={() => dispatch({ type: "undo", payload: layers[activeLayer].id }) } 
               shortcutText={ "ctrl + Z" }

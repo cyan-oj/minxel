@@ -46,7 +46,7 @@ function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
   const colorsList = colors.map(( color, index ) => 
     <button key={ index } className="swatch" 
       style={{ backgroundColor: colorString(color), color: colorString( color )}} value={ index } 
-      id={( color === colors[activeColor]) ? "active-swatch" : null }
+      id={( index == activeColor ) ? "active-swatch" : null }
       draggable
       onDragStart={ e => dragStart( index )}
       onDragEnter={ e => dragEnter( index )}

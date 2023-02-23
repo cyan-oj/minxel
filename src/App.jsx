@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Workspace from './Workspace/Workspace/Workspace'
 
 function App() {	
-	const [showWorkspace, setShowWorkspace] = useState( true ) //todo: set true in prod
+	const [showWorkspace, setShowWorkspace] = useState( false ) //todo: set true in prod
 	const [ width, setWidth ] = useState( 512 )
 	const [ height, setHeight ] = useState( 512 )
 	const [ backgroundColor, setBackgroundColor ] = useState([ 100, 100, 100 ])

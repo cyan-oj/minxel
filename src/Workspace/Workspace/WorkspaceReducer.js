@@ -29,6 +29,8 @@ export const workSpaceReducer = ( state, action ) => {
       return { ...state, panning: !state.panning }
     case "togglePressure": 
       return { ...state, pressure: !state.pressure }
+    case "toggleEraser": 
+      return { ...state, erasing: !state.erasing }
     case "undo": { // payload: activeLayer
       const newLayer = { ...state.strokeHistory[payload] }
       if ( newLayer.strokes.length < 1 ) return { ...state }
