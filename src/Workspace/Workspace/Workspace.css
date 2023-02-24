@@ -44,7 +44,6 @@ canvas {
 .toolbar-clear {
   background-color: transparent;
   padding: 4px 16px 8px;
-  /* justify-content: space-around; */
 }
 .toolbar-clear:hover {
   background-color: var(--alt);

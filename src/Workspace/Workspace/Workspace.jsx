@@ -33,7 +33,7 @@ const DEFAULT_BRUSHES = [
 
 const init = ( props ) => { // is there a way to lazy-assign? so that a user can send in props and any not sent in go to defaults
   const initialState = {
-    colors: props.colors ? props.colors : DEFAULT_PALETTE, // todo: test this
+    colors: props.colors ? props.colors : DEFAULT_PALETTE, 
     brushes: DEFAULT_BRUSHES,
     layers: [],
     width: props.width,
@@ -225,14 +225,11 @@ function Workspace( props ) {
         <div className='toolbox'>
           <div className='toolbar'>
             {/* <button onClick={() => console.log( state )}> log state </button> */}
-            <button onClick={ saveFile }>
-              download image  <DownloadIcon  className='icon'/>
-            </button>
           </div>
           <div className='toolbar'
             onClick={() => setShowTools( !showTools )}>
             <SettingsIcon className='unpin'/>
-            tools 
+            tools
             { showTools ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/>}
           </div>
           <div className='tool-toggles' style={{ flexDirection: showTools ? 'column' : 'row' }}>
@@ -265,6 +262,9 @@ function Workspace( props ) {
             <ToolButton buttonText={ 'pen pressure'} Icon={ PenIcon }
               clickFunction={() => dispatch({ type: 'togglePressure' })}
               active={ pressure }
+              showTools={ showTools }/>
+            <ToolButton buttonText={ 'download image'} Icon={ DownloadIcon }
+              clickFunction={ saveFile }
               showTools={ showTools }/>
           </div>
         </div>

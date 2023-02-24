@@ -32,6 +32,7 @@ export const workSpaceReducer = ( state, action ) => {
     case "toggleEraser": 
       return { ...state, erasing: !state.erasing }
     case "undo": { // payload: activeLayer
+      if ( Object.keys(state.strokeHistory).length < 1 ) return { ...state }
       const newLayer = { ...state.strokeHistory[payload] }
       if ( newLayer.strokes.length < 1 ) return { ...state }
       const newLayerHistory = [ ...newLayer.strokes ] 
