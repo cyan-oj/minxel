@@ -18,6 +18,7 @@ import { ReactComponent as PenIcon } from '../../assets/icons/outline-icons/penc
 import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
 import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
 import { ReactComponent as EraserIcon } from '../../assets/icons/sharp-icons/eraser.svg'
+import mark from '../../assets/github-mark.png'
 import LayerDisplay from '../Layers/LayerDisplay.jsx'
 
 const DEFAULT_PALETTE = [
@@ -202,10 +203,6 @@ function Workspace( props ) {
 
   return (
     <div className='workspace' onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
-      <div className='tools-right'> 
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ state.brushSample } />
-        <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
-      </div>
       <div className='layers' id='layers' 
         style={{ width: width, height: height, 
           scale: canvasScale, 
@@ -218,10 +215,19 @@ function Workspace( props ) {
         onPointerUp={() => saveStroke( stroke, layers[activeLayer] )}
         onPointerLeave={() => saveStroke( stroke, layers[activeLayer] )}
       >{ layerDisplay }</div>
+      <div className='tools-right'> 
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ state.brushSample } />
+        <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
+      </div>
       <div id='app-info'>
       </div>
       <div className='tools'>
-        <h1>minxel.</h1>
+        <div className='header'>
+          <h1>minxel.</h1>
+          <a href="https://github.com/cyan-oj/minxel">
+            <img src={ mark } alt="github-logo" className='header-icon'/>
+          </a>
+        </div>
         <div className='toolbox'>
           <div className='toolbar'>
             {/* <button onClick={() => console.log( state )}> log state </button> */}

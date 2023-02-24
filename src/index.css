@@ -172,3 +172,21 @@ input[type='range']::-moz-range-thumb {
 	background-color: var(--active);
 	color: var(--accent);
 }
+.named-icon-active:hover {
+	border-radius: 4px;
+	background-color: var(--active);
+	color: var(--accent);
+}
+
+.header {
+	box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+.header-icon {
+	width: 36px;
+	height: 36px
+}

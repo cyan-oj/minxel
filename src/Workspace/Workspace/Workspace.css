@@ -16,7 +16,6 @@ canvas {
   top: 24px;
   text-align: center;
   width: 256px;
-  z-index: 10;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 .tools-right {
