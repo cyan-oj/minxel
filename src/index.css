@@ -114,6 +114,7 @@ input[type='range']::-moz-range-thumb {
 	z-index: 100;
 	display: flex;
 	flex-direction: column;
+	max-width: 800px;
 	filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
 #welcome-settings{
@@ -134,8 +135,12 @@ input[type='range']::-moz-range-thumb {
 	display: flex; 
 	flex-direction: row;
 }
+#startup-settings {
+	max-width: 300px;
+}
 #startup-message {
 	margin: auto;
+	padding: 0px 32px;
 }
 .welcome-slider {
 	display: flex;
