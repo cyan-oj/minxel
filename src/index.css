@@ -61,6 +61,17 @@ button:hover {
 	background-color: var(--highlight);
 }
 
+input[type='number'] {
+	-webkit-appearance: none;
+	border: none;
+	border-radius: 2px;
+	padding: 4px 4px 4px 8px;
+	font-family: inherit;
+}
+input[type='number']:focus-visible {
+	outline: 2px solid var(--accent);
+}
+
 input[type='range'] {
 	-webkit-appearance: none;
 	width: 100%;
@@ -71,7 +82,6 @@ input[type='range'] {
 	border-radius: 0;
 	cursor: pointer;
 }
-
 input[type='range']::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	width: 20px;
@@ -80,7 +90,6 @@ input[type='range']::-webkit-slider-thumb {
 	border: none;
 	border-radius: 12px;
 }
-
 input[type='range']::-moz-range-thumb {
 	-webkit-appearance: none;
 	width: 20px;
@@ -110,14 +119,34 @@ input[type='range']::-moz-range-thumb {
 #welcome-settings{
 	display: flex;
 	width: 100%;
-	flex-direction: row;
+	flex-direction: column;
 	justify-content: space-around;
+	align-items: stretch;
 }
 
 #welcome-settings > label {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	margin: 4px 12px;
+}
+#startup {
+	display: flex; 
+	flex-direction: row;
+}
+#startup-message {
+	margin: auto;
+}
+.welcome-slider {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 4px 0px;
+}
+.welcome-label {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	margin: 6px 0px;
 }
 
 .ratio {
