@@ -1,6 +1,7 @@
 import { rgbToGL } from "./colorConvert"
 import { FRAG_SHADER, FSHADER_SOURCE, VERT_SHADER } from '../utils/shaders.js'
 import { initShaders } from '../WebGLUtils/cuon-utils.js'
+import { Matrix4 } from "../WebGLUtils/cuon-matrix-utils"
 
 const BRUSH_VERTICES = new Float32Array([
   -0.1, 0.1,
@@ -65,10 +66,11 @@ export const drawPoint = ( gl, glAttributes, modelMatrix, color ) => {
 
 // refactor for square
 export const drawStroke = ( gl, glAttributes, color, points ) => {
+  console.log(points)
   if ( !points || points.length < 1 ) return
   for( let i = 0; i < points.length; i++ ){
     const point = points[i]
-    drawPoint( gl, glAttributes, point.position, point.size, color )
+    drawPoint( gl, glAttributes, point, color )
   }
 }
 

@@ -74,7 +74,6 @@ function Workspace( props ) {
   const clientPosition = useRef({ x: 0, y: 0 })
   const stroke = { 
     color: activeColor,
-    brush: brushes[activeBrush], 
     points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
   
@@ -145,25 +144,22 @@ function Workspace( props ) {
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint )
 
     const glAttributes = getAttributes( gl )
-    const modelMatrix = new Matrix4()
     
     stroke.color = activeColor
     stroke.brush = brushes[activeBrush]
     const drawColor = erasing ? [0] : rgbToGL( colors[ stroke.color ])
-
+    
     for ( let i = 0; i < dist; i += stroke.brush.spacing ) {
       const x = lastPoint.x + Math.sin( angle ) * i
       const y = lastPoint.y + Math.cos( angle ) * i
       const pressure = lastPoint.pressure + deltaP / (dist / i)
+      const modelMatrix = new Matrix4()
       modelMatrix.setTranslate( x, y, 0.0 )
       modelMatrix.rotate( brushes[activeBrush].angle, 0, 0, 1 )
       modelMatrix.scale( pressure * stroke.brush.ratio, pressure )
-      const point = {
-        position: [ x, y ],
-        size: stroke.brush.scale * pressure
-      }
       drawPoint( gl, glAttributes, modelMatrix, drawColor )
-      stroke.points.push( point )
+      // console.log(point)
+      stroke.points.push( modelMatrix )
     }
   }
 
@@ -239,7 +235,7 @@ function Workspace( props ) {
         </div>
         <div className='toolbox'>
           <div className='toolbar'>
-            {/* <button onClick={() => console.log( state )}> log state </button> */}
+            <button onClick={() => console.log( state )}> log state </button>
           </div>
           <div className='toolbar'
             onClick={() => setShowTools( !showTools )}>
