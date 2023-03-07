@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useReducer } from 'react'
 import { getStroke, drawPoint, drawStroke, getAttributes, createLayer } from '../../utils/glHelpers.js'
+import { Matrix4 } from '../../WebGLUtils/cuon-matrix-utils'
 import { rgbToGL } from '../../utils/colorConvert.js'
 import { workSpaceReducer } from './WorkspaceReducer.js'
 import Palette from '../Palette/Palette.jsx'
@@ -27,9 +28,8 @@ const DEFAULT_PALETTE = [
 ]
 
 const DEFAULT_BRUSHES = [ 
-  { name: "pen", type: "point", size: 2, spacing: 0.002 }, 
-  { name: "pen", type: "point", size: 16, spacing: 0.002 }, 
-  { name: "pen", type: "point", size: 64, spacing: 0.002 }
+  { ratio: 1, scale: 1, angle: 0, spacing: 0.003},
+  { ratio: 0.5, scale: 1, angle: 30, spacing: 0.003}
 ]
 
 const init = ( props ) => { // is there a way to lazy-assign? so that a user can send in props and any not sent in go to defaults
@@ -72,7 +72,10 @@ function Workspace( props ) {
   const [ showTools, setShowTools ] = useState( false );
 
   const clientPosition = useRef({ x: 0, y: 0 })
-  const stroke = { color: activeColor, points: [] }
+  const stroke = { 
+    color: activeColor,
+    brush: brushes[activeBrush], 
+    points: [] }
   const position = { x: 0, y: 0, pressure: 0 }
   
   useEffect(() => {
@@ -135,25 +138,31 @@ function Workspace( props ) {
 
   const draw = ( evt, gl ) => {
     // todo: don't draw on invisible layer!
-    if ( evt.buttons !== 1 ) {
-      setPosition( evt )
-      return
-    }
-    const glAttributes = getAttributes( gl )
-    const lastPoint = JSON.parse(JSON.stringify( position ))
+    const lastPoint = { ...position }
     const currentPoint = setPosition( evt )
+    if ( evt.buttons !== 1 ) return
+
     const [ dist, angle, deltaP ] = getStroke( lastPoint, currentPoint )
+
+    const glAttributes = getAttributes( gl )
+    const modelMatrix = new Matrix4()
+    
     stroke.color = activeColor
+    stroke.brush = brushes[activeBrush]
     const drawColor = erasing ? [0] : rgbToGL( colors[ stroke.color ])
-    for ( let i = 0; i < dist; i += brushes[activeBrush].spacing ) {
+
+    for ( let i = 0; i < dist; i += stroke.brush.spacing ) {
       const x = lastPoint.x + Math.sin( angle ) * i
       const y = lastPoint.y + Math.cos( angle ) * i
       const pressure = lastPoint.pressure + deltaP / (dist / i)
+      modelMatrix.setTranslate( x, y, 0.0 )
+      modelMatrix.rotate( brushes[activeBrush].angle, 0, 0, 1 )
+      modelMatrix.scale( pressure * stroke.brush.ratio, pressure )
       const point = {
         position: [ x, y ],
-        size: brushes[activeBrush].size * pressure
+        size: stroke.brush.scale * pressure
       }
-      drawPoint( gl, glAttributes, point.position, point.size, drawColor )
+      drawPoint( gl, glAttributes, modelMatrix, drawColor )
       stroke.points.push( point )
     }
   }

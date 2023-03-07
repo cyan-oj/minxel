@@ -21,10 +21,10 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
     const gl = brushSample.context
     const glAttributes = getAttributes( gl )
     gl.clear(gl.COLOR_BUFFER_BIT)
-    for ( let i = 0; i < SAMPLE_STROKE.points.length; i++ ){
-      const point = SAMPLE_STROKE.points[i]
-      drawPoint( gl, glAttributes, point.position, point.size * ( brushes[activeBrush].size / 64 ), [ 0, 0, 0, 1 ])
-    }
+    // for ( let i = 0; i < SAMPLE_STROKE.points.length; i++ ){
+    //   const point = SAMPLE_STROKE.points[i]
+    //   drawPoint( gl, glAttributes, point.position, point.size * ( brushes[activeBrush].size / 64 ), [ 0, 0, 0, 1 ])
+    // }
   }, [ brushes, activeBrush ])
 
   const dragStart = ( index ) => dragBrush.current = index
