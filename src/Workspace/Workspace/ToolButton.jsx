@@ -4,7 +4,8 @@ import { ReactComponent as UnPinnedIcon } from '../../assets/icons/outline-icons
 
 function ToolButton({ buttonText, Icon, showTools, active = false, clickFunction, shortcutText = '' }) {
   const [ pinned, setPinned ] = useState( true );
-  useEffect(() => {}, [pinned, active])
+
+  useEffect(() => {}, [ pinned, active ])
 
   return (
     <div className='tool-button'>
