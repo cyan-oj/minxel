@@ -36,7 +36,7 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample, brushThumbnails 
   }
 
   const brushList = brushes.map(( brush, index ) => 
-    <button key={ index } value={ index } className='brush'
+    <div key={ index } value={ index } className='brush'
     id={( index == activeBrush ) ? 'active-brush' : null }
     draggable
     onDragStart={() => dragStart( index )}
@@ -44,7 +44,7 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample, brushThumbnails 
     onMouseUp={ e => dispatch({ type: 'activeBrush', payload: index })}
     >
       <BrushPreview brushes={ brushes } brush={ brush } canvas={ brushThumbnails[index] } />
-    </button>  
+    </div>  
   )
 
   return (

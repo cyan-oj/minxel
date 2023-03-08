@@ -29,7 +29,7 @@ const DEFAULT_PALETTE = [
 
 const DEFAULT_BRUSHES = [ 
   { ratio: 1, scale: 1, angle: 0, spacing: 0.002},
-  { ratio: 0.5, scale: 1, angle: 6, spacing: 0.002},
+  { ratio: 0.5, scale: 1, angle: 6, spacing: 0.002}
 ]
 
 const init = ( props ) => { 
@@ -55,10 +55,10 @@ const init = ( props ) => {
   }
   const firstLayer = createLayer( props.width, props.height, 0 )
   initialState.layers.push( firstLayer )
-  initialState.brushSample = createLayer( 240, 100, -1, [1, 1, 1, 1] )
+  initialState.brushSample = createLayer( 240, 100, -1, [1, 1, 1, 0] )
 
   for ( let i = 0; i < initialState.brushes.length; i++ ) {
-    const canvas = createLayer( 50, 50, -1, [ 1, 1, 1, 0 ])
+    const canvas = createLayer( 50, 50, -1 )
     initialState.brushThumbnails.push(canvas)
   }
 
