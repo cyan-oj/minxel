@@ -10,15 +10,6 @@ const BRUSH_VERTICES = new Float32Array([
   0.1,  -0.1
 ]) 
 
-// export const getAttributes = gl => {
-//   const glAttributes = {
-//     a_Position: gl.getAttribLocation( gl.program, 'a_Position' ),
-//     a_PointSize: gl.getAttribLocation( gl.program, 'a_PointSize' ),
-//     u_FragColor: gl.getUniformLocation( gl.program, 'u_FragColor' )
-//   }
-//   return glAttributes
-// }
-
 export const getAttributes = ( gl ) => {
   const glAttributes = {
     u_ModelMatrix: gl.getUniformLocation(gl.program, 'u_ModelMatrix'),
@@ -48,14 +39,6 @@ export const initVertexBuffers = ( gl, vertices, a_Position ) => {
   return vertices.length/2
 }
 
-
-// export const drawPoint = ( gl, glAttributes, position, size, color,  ) => {
-//   gl.vertexAttrib3f( glAttributes.a_Position, position[0], position[1], 0.0 )
-//   gl.vertexAttrib1f( glAttributes.a_PointSize, size )
-//   gl.uniform4f( glAttributes.u_FragColor, color[0], color[1], color[2], color[3] )
-//   gl.drawArrays( gl.points, 0, 1 )
-// }
-
 export const drawPoint = ( gl, glAttributes, modelMatrix, color ) => {
   const points = initVertexBuffers(gl, BRUSH_VERTICES, glAttributes.a_Position);
   if (!points) console.error('failed to set vertex positions')
@@ -64,7 +47,6 @@ export const drawPoint = ( gl, glAttributes, modelMatrix, color ) => {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
 }
 
-// refactor for square
 export const drawStroke = ( gl, glAttributes, color, points ) => {
   console.log(points)
   if ( !points || points.length < 1 ) return
@@ -74,7 +56,6 @@ export const drawStroke = ( gl, glAttributes, color, points ) => {
   }
 }
 
-// refactor for square
 export const redraw = ( gl, colors, strokes ) => {
   const glAttributes = getAttributes( gl ) 
   gl.clear( gl.COLOR_BUFFER_BIT )

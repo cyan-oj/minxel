@@ -21,10 +21,7 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
     const gl = brushSample.context
     const glAttributes = getAttributes( gl )
     gl.clear(gl.COLOR_BUFFER_BIT)
-    // for ( let i = 0; i < SAMPLE_STROKE.points.length; i++ ){
-    //   const point = SAMPLE_STROKE.points[i]
-    //   drawPoint( gl, glAttributes, point.position, point.size * ( brushes[activeBrush].size / 64 ), [ 0, 0, 0, 1 ])
-    // }
+    // todo: new stroke preview sample
   }, [ brushes, activeBrush ])
 
   const dragStart = ( index ) => dragBrush.current = index
@@ -44,7 +41,7 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
       onDragStart={() => dragStart( index )}
       onDragEnter={() => dragEnter( index, brushes )}
       onMouseUp={ e => dispatch({ type: 'activeBrush', payload: e.target.value })}
-    >{brush.size}</button>  
+    >{brush.scale}</button>  
   )
 
   return (
@@ -61,13 +58,13 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
       <div className='tool-editor' style={{ display:showSettings ? 'contents' : 'none' }}>
         <div id='brush-preview' />
         <div className='sliders'>
-          <input type='range' min='1' max='64' value={ brushes[activeBrush].size }
-            onChange={ e => dispatch({ type: 'replaceBrush', payload: { size: e.target.value, index: activeBrush }})}
+          <input type='range' min='0.01' step="0.01" max='5' value={ brushes[activeBrush].scale }
+            onChange={ e => dispatch({ type: 'replaceBrush', payload: { scale: e.target.value, index: activeBrush }})}
           />
         </div>
         <div className='tool-sample'>
           <div className='toolbar-clear' 
-            onClick={ e => dispatch({ type: 'addBrush', payload: brushes[activeBrush].size })}>
+            onClick={ e => dispatch({ type: 'addBrush', payload: brushes[activeBrush].scale })}>
             <AddIcon className='icon'/>
             add preset</div>
         </div>

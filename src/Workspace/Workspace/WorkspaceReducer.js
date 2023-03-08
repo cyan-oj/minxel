@@ -101,7 +101,7 @@ export const workSpaceReducer = ( state, action ) => {
       return { ...state, colors: [ ...state.colors, payload ], activeColor: state.colors.length }
     case "replaceBrush": { // payload: { size, index }
       const brushes = [ ...state.brushes ]
-      brushes[payload.index].size = payload.size
+      brushes[payload.index].scale = payload.scale
       return { ...state, brushes: brushes }
     }
     case "addBrush": // payload: size

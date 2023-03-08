@@ -29,10 +29,12 @@ const DEFAULT_PALETTE = [
 
 const DEFAULT_BRUSHES = [ 
   { ratio: 1, scale: 1, angle: 0, spacing: 0.003},
-  { ratio: 0.5, scale: 1, angle: 30, spacing: 0.003}
+  { ratio: 0.5, scale: 1, angle: 45, spacing: 0.003},
+  { ratio: 0.5, scale: 1, angle: 26.565, spacing: 0.003},
+  { ratio: 1, scale: 1, angle: -26.565, spacing: 0.003}
 ]
 
-const init = ( props ) => { // is there a way to lazy-assign? so that a user can send in props and any not sent in go to defaults
+const init = ( props ) => { 
   const initialState = {
     colors: props.colors ? props.colors : DEFAULT_PALETTE, 
     brushes: DEFAULT_BRUSHES,
@@ -155,10 +157,9 @@ function Workspace( props ) {
       const pressure = lastPoint.pressure + deltaP / (dist / i)
       const modelMatrix = new Matrix4()
       modelMatrix.setTranslate( x, y, 0.0 )
-      modelMatrix.rotate( brushes[activeBrush].angle, 0, 0, 1 )
-      modelMatrix.scale( pressure * stroke.brush.ratio, pressure )
+      modelMatrix.rotate( stroke.brush.angle, 0, 0, 1 )
+      modelMatrix.scale( stroke.brush.scale * pressure * stroke.brush.ratio, stroke.brush.scale * pressure )
       drawPoint( gl, glAttributes, modelMatrix, drawColor )
-      // console.log(point)
       stroke.points.push( modelMatrix )
     }
   }
