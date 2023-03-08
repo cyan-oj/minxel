@@ -3,13 +3,13 @@ import { redraw } from '../../utils/glHelpers'
 import ColorSliders from './ColorSliders';
 import { ReactComponent as AddIcon } from '../../assets/icons/outline-icons/add-outline.svg'
 import { ReactComponent as UndoIcon } from '../../assets/icons/sharp-icons/arrow-undo-sharp.svg'
+import { ReactComponent as SwapIcon } from '../../assets/icons/sharp-icons/swap-horizontal-sharp.svg'
 
 function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispatch, cacheColor}) {
   const [ newColor, setNewColor ] = useState( colors[activeColor] )
 
-  useEffect(() => {
-    replaceColor(newColor, activeColor)
-  }, [newColor])
+
+  // useEffect(() => {}, [activeColor])
 
   const replaceColor = ( color, index ) => { 
     dispatch({ 
@@ -32,6 +32,10 @@ function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispa
           onClick={() => dispatch({ type: 'addColor', payload: newColor })}>
           <AddIcon className='icon'/> 
           add color</div>
+        <div className='toolbar-clear' 
+          onClick={() => replaceColor( newColor, activeColor )}>
+          <SwapIcon className='icon'/>
+          replace color</div>
         <div className='toolbar-clear' 
           onClick={() => replaceColor( cacheColor, activeColor )}>
           <UndoIcon className='icon'/>
