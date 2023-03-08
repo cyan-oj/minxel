@@ -49,12 +49,19 @@ const init = ( props ) => {
     activeBrush: 0,
     activeLayer: 0,
     brushSample: {},
+    brushThumbnails: [],
     strokeHistory: {},
     redoCache: []
   }
   const firstLayer = createLayer( props.width, props.height, 0 )
   initialState.layers.push( firstLayer )
   initialState.brushSample = createLayer( 240, 100, -1, [1, 1, 1, 1] )
+
+  for ( let i = 0; i < initialState.brushes.length; i++ ) {
+    const canvas = createLayer( 50, 50, -1, [ 1, 1, 1, 1 ])
+    initialState.brushThumbnails.push(canvas)
+  }
+
   return initialState
 }
 
@@ -63,6 +70,7 @@ function Workspace( props ) {
   const { 
     colors, brushes, layers,
     width, height,
+    brushSample, brushThumbnails,
     panning, pressure, erasing,
     canvasScale, canvasPosition, 
     activeColor, activeBrush, activeLayer,  
@@ -220,7 +228,7 @@ function Workspace( props ) {
         onPointerLeave={() => saveStroke( stroke, layers[activeLayer] )}
       >{ layerDisplay }</div>
       <div className='tools-right'> 
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ state.brushSample } />
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ brushSample } brushThumbnails={ brushThumbnails } />
         <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
       </div>
       <div id='app-info'>

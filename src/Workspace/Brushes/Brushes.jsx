@@ -7,8 +7,9 @@ import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/c
 import { ReactComponent as AddIcon } from '../../assets/icons/outline-icons/add-outline.svg'
 
 import './Brushes.css'
+import BrushPreview from './BrushPreview'
 
-function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
+function Brushes({ brushes, activeBrush, dispatch, brushSample, brushThumbnails }) {
   const [ showSettings, setShowSettings ] = useState( false )
   const dragBrush = useRef()
 
@@ -36,12 +37,14 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
 
   const brushList = brushes.map(( brush, index ) => 
     <button key={ index } value={ index } className='brush'
-      id={( index == activeBrush ) ? 'active-brush' : null }
-      draggable
-      onDragStart={() => dragStart( index )}
-      onDragEnter={() => dragEnter( index, brushes )}
-      onMouseUp={ e => dispatch({ type: 'activeBrush', payload: e.target.value })}
-    >{brush.scale}</button>  
+    id={( index == activeBrush ) ? 'active-brush' : null }
+    draggable
+    onDragStart={() => dragStart( index )}
+    onDragEnter={() => dragEnter( index, brushes )}
+    onMouseUp={ e => dispatch({ type: 'activeBrush', payload: index })}
+    >
+      <BrushPreview brushes={ brushes } brush={ brush } canvas={ brushThumbnails[index] } />
+    </button>  
   )
 
   return (

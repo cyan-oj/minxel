@@ -1,11 +1,10 @@
 import { rgbToGL } from "./colorConvert"
-import { FRAG_SHADER, FSHADER_SOURCE, VERT_SHADER } from '../utils/shaders.js'
+import { FRAG_SHADER, VERT_SHADER } from '../utils/shaders.js'
 import { initShaders } from '../WebGLUtils/cuon-utils.js'
 import { Matrix4 } from "../WebGLUtils/cuon-matrix-utils"
 
 export const ANGLE_VALUES = [
-  -180, -161.565, -135, 116.565, 90, 71.565, 45, 26.565,
-  0, 26.565, 45, 71.565, 90, 116.565, 135, 161.565, 180
+  0, -26.565, -45, -71.565, -90, -116.565, -135, -161.565, -180
 ]
 
 const BRUSH_VERTICES = new Float32Array([
@@ -53,7 +52,6 @@ export const drawPoint = ( gl, glAttributes, modelMatrix, color ) => {
 }
 
 export const drawStroke = ( gl, glAttributes, color, points ) => {
-  console.log(points)
   if ( !points || points.length < 1 ) return
   for( let i = 0; i < points.length; i++ ){
     const point = points[i]

@@ -8,9 +8,6 @@ import { ReactComponent as SwapIcon } from '../../assets/icons/sharp-icons/swap-
 function PaletteEditor({ colors, activeColor, showSettings, strokeHistory, dispatch, cacheColor}) {
   const [ newColor, setNewColor ] = useState( colors[activeColor] )
 
-
-  // useEffect(() => {}, [activeColor])
-
   const replaceColor = ( color, index ) => { 
     dispatch({ 
       type: 'replaceColor', 
