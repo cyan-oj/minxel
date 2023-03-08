@@ -58,7 +58,7 @@ const init = ( props ) => {
   initialState.brushSample = createLayer( 240, 100, -1, [1, 1, 1, 1] )
 
   for ( let i = 0; i < initialState.brushes.length; i++ ) {
-    const canvas = createLayer( 50, 50, -1, [ 1, 1, 1, 1 ])
+    const canvas = createLayer( 50, 50, -1, [ 1, 1, 1, 0 ])
     initialState.brushThumbnails.push(canvas)
   }
 

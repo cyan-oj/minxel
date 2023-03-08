@@ -47,7 +47,7 @@ export const drawPoint = ( gl, glAttributes, modelMatrix, color ) => {
   const points = initVertexBuffers(gl, BRUSH_VERTICES, glAttributes.a_Position);
   if (!points) console.error('failed to set vertex positions')
   gl.uniformMatrix4fv( glAttributes.u_ModelMatrix, false, modelMatrix.elements )
-  gl.uniform4f(glAttributes.u_FragColor, color[0], color[1], color[2], 1)
+  gl.uniform4f(glAttributes.u_FragColor, color[0], color[1], color[2], color[3])
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
 }
 
