@@ -123,8 +123,14 @@ export const workSpaceReducer = ( state, action ) => {
       return { ...state, brushes: brushes }
     }
     case "addBrush": // payload: size
-      const newBrush = { name: "pen", type: "point", size: payload, spacing: 0.002 }
-      return { ...state, brushes: [ ...state.brushes, newBrush ]}
+      const newBrush = { ...payload }
+      const newBrushThumbnail = createLayer( 50, 50, -1 )
+      return { 
+        ...state, 
+        brushes: [ ...state.brushes, newBrush ],
+        brushThumbnails: [ ...state.brushThumbnails, newBrushThumbnail ],
+        activeBrush: state.brushes.length
+      }
     default: return { ...state, [type]: payload }
   }
 }

@@ -73,7 +73,7 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample, brushThumbnails 
         </div>
         <div className='tool-sample'>
           <div className='toolbar-clear' 
-            onClick={ e => dispatch({ type: 'addBrush', payload: brushes[activeBrush].scale })}>
+            onClick={ e => dispatch({ type: 'addBrush', payload: brushes[activeBrush] })}>
             <AddIcon className='icon'/>
             add preset</div>
         </div>
