@@ -3,6 +3,11 @@ import { FRAG_SHADER, FSHADER_SOURCE, VERT_SHADER } from '../utils/shaders.js'
 import { initShaders } from '../WebGLUtils/cuon-utils.js'
 import { Matrix4 } from "../WebGLUtils/cuon-matrix-utils"
 
+export const ANGLE_VALUES = [
+  -180, -161.565, -135, 116.565, 90, 71.565, 45, 26.565,
+  0, 26.565, 45, 71.565, 90, 116.565, 135, 161.565, 180
+]
+
 const BRUSH_VERTICES = new Float32Array([
   -0.1, 0.1,
   -0.1, -0.1, 

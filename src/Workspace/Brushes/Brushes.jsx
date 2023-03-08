@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { drawPoint, getAttributes } from '../../utils/glHelpers'
+import { ANGLE_VALUES, drawPoint, getAttributes } from '../../utils/glHelpers'
 import { SAMPLE_STROKE } from '../../utils/sampleStroke'
 import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
 import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
@@ -59,7 +59,13 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample }) {
         <div id='brush-preview' />
         <div className='sliders'>
           <input type='range' min='0.01' step="0.01" max='5' value={ brushes[activeBrush].scale }
-            onChange={ e => dispatch({ type: 'replaceBrush', payload: { scale: e.target.value, index: activeBrush }})}
+            onChange={ e => dispatch({ type: 'brushScale', payload: { scale: e.target.value, index: activeBrush }})}
+          />
+          <input type='range' min='0' max={ ANGLE_VALUES.length - 1 } value={ brushes[activeBrush].angle }
+            onChange={ e => dispatch({ type: 'brushAngle', payload: { angle: e.target.value, index: activeBrush }})}
+          />
+          <input type='range' min='0.01' step=".01" max="1" value={ brushes[activeBrush].ratio }
+            onChange={ e => dispatch({ type: 'brushRatio', payload: { ratio: e.target.value, index: activeBrush }})}
           />
         </div>
         <div className='tool-sample'>

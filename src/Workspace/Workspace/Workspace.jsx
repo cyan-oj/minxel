@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useReducer } from 'react'
-import { getStroke, drawPoint, drawStroke, getAttributes, createLayer } from '../../utils/glHelpers.js'
+import { getStroke, drawPoint, drawStroke, getAttributes, createLayer, ANGLE_VALUES } from '../../utils/glHelpers.js'
 import { Matrix4 } from '../../WebGLUtils/cuon-matrix-utils'
 import { rgbToGL } from '../../utils/colorConvert.js'
 import { workSpaceReducer } from './WorkspaceReducer.js'
@@ -28,10 +28,8 @@ const DEFAULT_PALETTE = [
 ]
 
 const DEFAULT_BRUSHES = [ 
-  { ratio: 1, scale: 1, angle: 0, spacing: 0.003},
-  { ratio: 0.5, scale: 1, angle: 45, spacing: 0.003},
-  { ratio: 0.5, scale: 1, angle: 26.565, spacing: 0.003},
-  { ratio: 1, scale: 1, angle: -26.565, spacing: 0.003}
+  { ratio: 1, scale: 1, angle: 0, spacing: 0.002},
+  { ratio: 0.5, scale: 1, angle: 6, spacing: 0.002},
 ]
 
 const init = ( props ) => { 
@@ -157,7 +155,7 @@ function Workspace( props ) {
       const pressure = lastPoint.pressure + deltaP / (dist / i)
       const modelMatrix = new Matrix4()
       modelMatrix.setTranslate( x, y, 0.0 )
-      modelMatrix.rotate( stroke.brush.angle, 0, 0, 1 )
+      modelMatrix.rotate( ANGLE_VALUES[stroke.brush.angle], 0, 0, 1 )
       modelMatrix.scale( stroke.brush.scale * pressure * stroke.brush.ratio, stroke.brush.scale * pressure )
       drawPoint( gl, glAttributes, modelMatrix, drawColor )
       stroke.points.push( modelMatrix )

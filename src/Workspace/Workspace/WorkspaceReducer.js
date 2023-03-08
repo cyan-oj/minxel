@@ -104,6 +104,24 @@ export const workSpaceReducer = ( state, action ) => {
       brushes[payload.index].scale = payload.scale
       return { ...state, brushes: brushes }
     }
+    case "brushScale":{
+      const brushes = [ ...state.brushes ]
+      const brush = brushes[payload.index]
+      brush.scale = payload.scale
+      return { ...state, brushes: brushes }
+    }
+    case "brushAngle":{
+      const brushes = [ ...state.brushes ]
+      const brush = brushes[payload.index]
+      brush.angle = payload.angle
+      return { ...state, brushes: brushes }
+    }
+    case "brushRatio":{
+      const brushes = [ ...state.brushes ]
+      const brush = brushes[payload.index]
+      brush.ratio = payload.ratio
+      return { ...state, brushes: brushes }
+    }
     case "addBrush": // payload: size
       const newBrush = { name: "pen", type: "point", size: payload, spacing: 0.002 }
       return { ...state, brushes: [ ...state.brushes, newBrush ]}
