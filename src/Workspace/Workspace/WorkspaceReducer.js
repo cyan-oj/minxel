@@ -122,7 +122,7 @@ export const workSpaceReducer = ( state, action ) => {
       brush.ratio = payload.ratio
       return { ...state, brushes: brushes }
     }
-    case "addBrush": // payload: size
+    case "addBrush":
       const newBrush = { ...payload }
       const newBrushThumbnail = createLayer( 50, 50, -1 )
       return { 
