@@ -3,10 +3,9 @@ import LayerPreview from './LayerPreview'
 import './Layers.css'
 import { ReactComponent as AddIcon } from '../../assets/icons/outline-icons/add-outline.svg'
 import { ReactComponent as TrashIcon } from '../../assets/icons/outline-icons/trash-outline.svg'
-import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
-import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
-import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
+import { ReactComponent as LayersIcon } from '../../assets/icons/sharp-icons/layers-sharp.svg'
 import ToolButton from '../Workspace/ToolButton'
+import MenuToggle from '../Workspace/MenuToggle'
 
 function Layers({ layers, stroke, activeLayer, dispatch }) {
   const [ showTools, setShowTools ] = useState( false )
@@ -32,26 +31,24 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
   )
 
   return (
-    <div className='toolbox' id='layer-controls'>
-      <div className='toolbar'
-        onClick={() => setShowTools( !showTools )}>
-        <SettingsIcon className='unpin'/>
-        layer tools
-        { showTools ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/>}
+  <>
+    <MenuToggle menuText="layers"
+      Icon={ LayersIcon } show={ showTools } setShow={ setShowTools }/>
+    <ToolButton buttonText={ 'add layer' } Icon={ AddIcon }
+      clickFunction={() => dispatch({ type: 'addLayer' })}
+      showTools={ showTools }/>
+    <ToolButton buttonText={ 'delete layer'} Icon={ TrashIcon} 
+      clickFunction={() => dispatch({ type: 'deleteLayer', payload: activeLayer })}
+      showTools={ showTools }/>
+    { showTools &&
+      <div className='toolbox' id='layer-controls'>
+        <div className='tool-sample' id='layer-sample' 
+          onMouseUp={ e => dispatch({ type: 'activeLayer', payload: Number(e.target.id) })}>
+          { layerControls }
+        </div>
       </div>
-      <div className='tool-toggles' style={{ flexDirection: showTools ? 'column' : 'row' }}>
-        <ToolButton buttonText={ 'add layer' } Icon={ AddIcon }
-          clickFunction={() => dispatch({ type: 'addLayer' })}
-          showTools={ showTools }/>
-        <ToolButton buttonText={ 'delete layer'} Icon={ TrashIcon} 
-          clickFunction={() => dispatch({ type: 'deleteLayer', payload: activeLayer })}
-          showTools={ showTools }/>
-      </div>
-      <div className='tool-sample' id='layer-sample' 
-        onMouseUp={ e => dispatch({ type: 'activeLayer', payload: Number(e.target.id) })}>
-        { layerControls }
-      </div>
-    </div>
+    }  
+  </>
   )
 }
 

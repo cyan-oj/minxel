@@ -3,9 +3,10 @@ import PaletteEditor from './PaletteEditor'
 import { colorString } from '../../utils/colorConvert'
 import './Palette.css'
 import { redraw } from '../../utils/glHelpers'
-import { ReactComponent as SettingsIcon } from '../../assets/icons/sharp-icons/settings-sharp.svg'
+import { ReactComponent as PaletteIcon } from '../../assets/icons/sharp-icons/color-palette-sharp.svg'
 import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
 import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
+import MenuToggle from '../Workspace/MenuToggle'
 
 function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
   const [ showSettings, setShowSettings ] = useState( false )
@@ -55,22 +56,16 @@ function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
   )
 
   return (
-    <div className='toolbox' >
-      <div className='tool-sample' id='palette'>
-        { colorsList }
-      </div>
-      <div className='toolbar'
-          onClick={() => setShowSettings( !showSettings )}>
-        <SettingsIcon className='unpin'/>
-        color menu 
-        { showSettings ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/>}
-      </div>
+    <>
+      <MenuToggle menuText="color menu"
+        Icon={ PaletteIcon } show={ showSettings } setShow={ setShowSettings }/>
+      { colorsList }
       <PaletteEditor 
         colors={ colors } activeColor={ activeColor } removeColor={ removeColor }
         strokeHistory={ strokeHistory } dispatch={ dispatch }
         showSettings={ showSettings } cacheColor={ cacheColor } setCacheColor={ setCacheColor }
       />
-    </div>
+    </>
   )
 }
 

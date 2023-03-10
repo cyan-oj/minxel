@@ -21,6 +21,7 @@ import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/c
 import { ReactComponent as EraserIcon } from '../../assets/icons/sharp-icons/eraser.svg'
 import mark from '../../assets/github-mark.png'
 import LayerDisplay from '../Layers/LayerDisplay.jsx'
+import MenuToggle from './MenuToggle.jsx'
 
 const DEFAULT_PALETTE = [
   [ 0, 0, 0 ],
@@ -227,12 +228,6 @@ function Workspace( props ) {
         onPointerUp={() => saveStroke( stroke, layers[activeLayer] )}
         onPointerLeave={() => saveStroke( stroke, layers[activeLayer] )}
       >{ layerDisplay }</div>
-      <div className='tools-right'> 
-        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ brushSample } brushThumbnails={ brushThumbnails } />
-        <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
-      </div>
-      <div id='app-info'>
-      </div>
       <div className='tools'>
         <div className='header'>
           <h1>minxel.</h1>
@@ -240,52 +235,44 @@ function Workspace( props ) {
             <img src={ mark } alt="github-logo" className='header-icon'/>
           </a>
         </div>
-        <div className='toolbox'>
-          <div className='toolbar'>
-            <button onClick={() => console.log( state )}> log state </button>
-          </div>
-          <div className='toolbar'
-            onClick={() => setShowTools( !showTools )}>
-            <SettingsIcon className='unpin'/>
-            tools
-            { showTools ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/>}
-          </div>
-          <div className='tool-toggles' style={{ flexDirection: showTools ? 'column' : 'row' }}>
-            <ToolButton buttonText={ 'eraser' } Icon={ EraserIcon } 
-              clickFunction={() => dispatch({ type: 'toggleEraser' }) } 
-              shortcutText={ 'e' }
-              active={ erasing }
-              showTools={ showTools }/>
-            <ToolButton buttonText={ 'undo' } Icon={ UndoIcon } 
-              clickFunction={() => dispatch({ type: 'undo', payload: layers[activeLayer].id }) } 
-              shortcutText={ 'ctrl + z' }
-              showTools={ showTools }/>
-            <ToolButton buttonText={ 'redo' } Icon={ RedoIcon } 
-              clickFunction={() => redo( redoCache ) } 
-              shortcutText={ 'ctrl + shift + Z' }
-              showTools={ showTools }/>
-            <ToolButton buttonText={ 'zoom in'} Icon={ ZoomInIcon }
-              clickFunction={() => dispatch({ type: 'zoomIn' })}
-              shortcutText= 'ctrl + ='
-              showTools={ showTools }/>
-            <ToolButton buttonText={ 'zoom out'} Icon={ ZoomOutIcon }
-              clickFunction={() => dispatch({ type: 'zoomOut' })}
-              shortcutText= 'ctrl + -'
-              showTools={ showTools }/>
-            <ToolButton buttonText={ 'pan canvas'} Icon={ PanIcon }
-              clickFunction={() => dispatch({ type: 'togglePanning' })}
-              active={ panning }
-              shortcutText='hold spacebar'
-              showTools={ showTools }/>
-            <ToolButton buttonText={ 'pen pressure'} Icon={ PenIcon }
-              clickFunction={() => dispatch({ type: 'togglePressure' })}
-              active={ pressure }
-              showTools={ showTools }/>
-            <ToolButton buttonText={ 'download image'} Icon={ DownloadIcon }
-              clickFunction={ saveFile }
-              showTools={ showTools }/>
-          </div>
-        </div>
+        <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ brushSample } brushThumbnails={ brushThumbnails } />
+        <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
+          <button onClick={() => console.log( state )}> log state </button>
+          <MenuToggle menuText="tools"
+            Icon={ SettingsIcon } show={ showTools } setShow={ setShowTools }/>
+          <ToolButton buttonText={ 'eraser' } Icon={ EraserIcon } 
+            clickFunction={() => dispatch({ type: 'toggleEraser' }) } 
+            shortcutText={ 'e' }
+            active={ erasing }
+            showTools={ showTools }/>
+          <ToolButton buttonText={ 'undo' } Icon={ UndoIcon } 
+            clickFunction={() => dispatch({ type: 'undo', payload: layers[activeLayer].id }) } 
+            shortcutText={ 'ctrl + z' }
+            showTools={ showTools }/>
+          <ToolButton buttonText={ 'redo' } Icon={ RedoIcon } 
+            clickFunction={() => redo( redoCache ) } 
+            shortcutText={ 'ctrl + shift + Z' }
+            showTools={ showTools }/>
+          <ToolButton buttonText={ 'zoom in'} Icon={ ZoomInIcon }
+            clickFunction={() => dispatch({ type: 'zoomIn' })}
+            shortcutText= 'ctrl + ='
+            showTools={ showTools }/>
+          <ToolButton buttonText={ 'zoom out'} Icon={ ZoomOutIcon }
+            clickFunction={() => dispatch({ type: 'zoomOut' })}
+            shortcutText= 'ctrl + -'
+            showTools={ showTools }/>
+          <ToolButton buttonText={ 'pan canvas'} Icon={ PanIcon }
+            clickFunction={() => dispatch({ type: 'togglePanning' })}
+            active={ panning }
+            shortcutText='hold spacebar'
+            showTools={ showTools }/>
+          <ToolButton buttonText={ 'pen pressure'} Icon={ PenIcon }
+            clickFunction={() => dispatch({ type: 'togglePressure' })}
+            active={ pressure }
+            showTools={ showTools }/>
+          <ToolButton buttonText={ 'download image'} Icon={ DownloadIcon }
+            clickFunction={ saveFile }
+            showTools={ showTools }/>
         <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } strokeHistory={ strokeHistory } />
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
