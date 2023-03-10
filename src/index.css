@@ -166,6 +166,19 @@ input[type='range']::-moz-range-thumb {
 	border: solid 1px var(--alt)
 }
 
+.header {
+	box-sizing: border-box;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: center;
+	width: 100%;
+}
+.header-icon {
+	width: 36px;
+	height: 36px
+}
+
 .icon, .icon-active, .pin, .unpin {
 	display: flex;
 	align-items: center;
@@ -173,8 +186,8 @@ input[type='range']::-moz-range-thumb {
 	border-radius: 4px;
 	fill: var(--active);
 	stroke: var(--active);
-	width: 18px;
-	height: 18px;
+	width: 32px;
+	height: 32px;
 	padding: 5px;
 	margin: 2px 4px;
 }
@@ -195,32 +208,4 @@ input[type='range']::-moz-range-thumb {
 }
 .unpin {
 	background-color: transparent;
-}
-.named-icon {
-	border-radius: 4px;
-	background-color: var(--accent);
-	color: var(--active);
-}
-.named-icon-active {
-	border-radius: 4px;
-	background-color: var(--active);
-	color: var(--accent);
-}
-.named-icon-active:hover {
-	border-radius: 4px;
-	background-color: var(--active);
-	color: var(--accent);
-}
-
-.header {
-	box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-}
-.header-icon {
-	width: 36px;
-	height: 36px
 }

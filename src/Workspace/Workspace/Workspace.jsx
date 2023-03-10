@@ -229,15 +229,16 @@ function Workspace( props ) {
         onPointerLeave={() => saveStroke( stroke, layers[activeLayer] )}
       >{ layerDisplay }</div>
       <div className='tools'>
-        <div className='header'>
+        {/* <div className='header'>
           <h1>minxel.</h1>
           <a href="https://github.com/cyan-oj/minxel">
             <img src={ mark } alt="github-logo" className='header-icon'/>
           </a>
-        </div>
+        </div> */}
+        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } strokeHistory={ strokeHistory } />
         <Brushes brushes={ brushes } activeBrush={ activeBrush } dispatch={ dispatch } brushSample={ brushSample } brushThumbnails={ brushThumbnails } />
         <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke }/>
-          <button onClick={() => console.log( state )}> log state </button>
+          {/* <button onClick={() => console.log( state )}> log state </button> */}
           <MenuToggle menuText="tools"
             Icon={ SettingsIcon } show={ showTools } setShow={ setShowTools }/>
           <ToolButton buttonText={ 'eraser' } Icon={ EraserIcon } 
@@ -273,7 +274,6 @@ function Workspace( props ) {
           <ToolButton buttonText={ 'download image'} Icon={ DownloadIcon }
             clickFunction={ saveFile }
             showTools={ showTools }/>
-        <Palette colors={ colors } activeColor={ activeColor } dispatch={ dispatch } strokeHistory={ strokeHistory } />
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
       <canvas id={ 'export-canvas' } style={{ display: 'none' }} width={ width } height={ height } />

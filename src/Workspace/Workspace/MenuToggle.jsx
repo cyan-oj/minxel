@@ -8,7 +8,7 @@ function MenuToggle({ menuText, Icon, show = false, setShow }) {
       onClick={() => setShow( !show )} >
       <Icon className='unpin'/>
       { show ? menuText : null }
-      { show ? <CaretDown className='unpin'/> : null }
+      { show ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/> }
     </div>
   )
 }

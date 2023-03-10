@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import PaletteEditor from './PaletteEditor'
 import { colorString } from '../../utils/colorConvert'
-import './Palette.css'
+// import './Palette.css'
 import { redraw } from '../../utils/glHelpers'
 import { ReactComponent as PaletteIcon } from '../../assets/icons/sharp-icons/color-palette-sharp.svg'
-import { ReactComponent as CaretDown } from '../../assets/icons/sharp-icons/caret-down-sharp.svg'
-import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/caret-forward-sharp.svg'
 import MenuToggle from '../Workspace/MenuToggle'
 
 function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
