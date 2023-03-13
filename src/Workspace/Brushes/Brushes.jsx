@@ -9,8 +9,7 @@ import './Brushes.css'
 import BrushPreview from './BrushPreview'
 import MenuToggle from '../Workspace/MenuToggle'
 
-function Brushes({ brushes, activeBrush, dispatch, brushSample, brushThumbnails }) {
-  const [ showSettings, setShowSettings ] = useState( false )
+function Brushes({ brushes, activeBrush, dispatch, brushSample, brushThumbnails, showSettings }) {
   const dragBrush = useRef()
 
   useEffect(() => {
@@ -49,8 +48,6 @@ function Brushes({ brushes, activeBrush, dispatch, brushSample, brushThumbnails 
 
   return (
   <>
-    <MenuToggle menuText="brush menu"
-      Icon={ BrushIcon } show={ showSettings } setShow={ setShowSettings } />
     { brushList }
     <div className='tool-editor' style={{ display:showSettings ? 'contents' : 'none' }}>
       <div id='brush-preview' />

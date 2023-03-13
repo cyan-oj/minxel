@@ -4,11 +4,11 @@ import { ReactComponent as CaretForward } from '../../assets/icons/sharp-icons/c
 function MenuToggle({ menuText, Icon, show = false, setShow }) {
 
   return (
-    <div className={ show ? 'menu-toggle-active' : 'menu-toggle-inactive'}
+    <div className={ show ? 'menu-toggle-active' : 'menu-toggle'}
       onClick={() => setShow( !show )} >
       <Icon className='unpin'/>
-      { show ? menuText : null }
-      { show ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/> }
+      {/* { show ? menuText : null } */}
+      {/* { show ? <CaretDown className='unpin'/> : <CaretForward className='unpin'/> } */}
     </div>
   )
 }

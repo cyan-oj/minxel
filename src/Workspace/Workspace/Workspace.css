@@ -21,20 +21,9 @@ canvas {
   align-content: flex-start;
   filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
-/* .tools-right {
-  left: auto;
-  right: 12px;
-}
-.toolbox{
-  display: flex;
-  flex-wrap: wrap;
-  background-color: var(--transluscent);
-  margin: 8px;
-  margin-bottom: 16px;
+.toolbar, .toolbar-clear{
   box-sizing: border-box;
-} */
-.toolbar, .toolbar-clear, .menu-toggle-active {
-  box-sizing: border-box;
+  width: 100%;
   background-color: var(--alt);
   display: flex;
   flex-wrap: wrap;
@@ -49,20 +38,12 @@ canvas {
 .toolbar-clear:hover {
   background-color: var(--alt);
 }
-/* .tool-sample {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-} */
 
-.layers {
-  position: relative;
-  background-color: var(--transluscent);
-  filter: drop-shadow(0 0 1.4mm var(--shadow));
+.menu-toggle {
+  background-color: var(--base);
 }
-.layers > * {
-  position: absolute;
-  margin: auto
+.menu-toggle-active {
+ background-color: var(--highlight);
 }
 
 .tool-toggles {
@@ -83,4 +64,18 @@ canvas {
 }
 .shortcut {
   font-size: 12px;
+}
+.layers {
+  position: relative;
+  background-color: var(--transluscent);
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
+}
+.layers > * {
+  position: absolute;
+  margin: auto
+}
+
+.break {
+  height: 1px;
+  width: 100%
 }

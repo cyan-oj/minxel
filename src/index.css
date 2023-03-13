@@ -186,10 +186,10 @@ input[type='range']::-moz-range-thumb {
 	border-radius: 4px;
 	fill: var(--active);
 	stroke: var(--active);
-	width: 32px;
-	height: 32px;
-	padding: 5px;
-	margin: 2px 4px;
+	width: 30px;
+	height: 30px;
+	padding: 4px;
+	margin: 2px;
 }
 .icon:hover {
 	background-color: var(--active);

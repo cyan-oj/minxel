@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import PaletteEditor from './PaletteEditor'
 import { colorString } from '../../utils/colorConvert'
-// import './Palette.css'
+import './Palette.css'
 import { redraw } from '../../utils/glHelpers'
 import { ReactComponent as PaletteIcon } from '../../assets/icons/sharp-icons/color-palette-sharp.svg'
 import MenuToggle from '../Workspace/MenuToggle'
 
-function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
-  const [ showSettings, setShowSettings ] = useState( false )
+function Palette({ colors, activeColor, dispatch, strokeHistory, showSettings, max = 16 }) {
+  // const [ showSettings, setShowSettings ] = useState( false )
   const [ cacheColor, setCacheColor ] = useState( colors[activeColor] )
 
   useEffect(() => {
@@ -54,16 +54,14 @@ function Palette({ colors, activeColor, dispatch, strokeHistory, max = 16 }) {
   )
 
   return (
-    <>
-      <MenuToggle menuText="color menu"
-        Icon={ PaletteIcon } show={ showSettings } setShow={ setShowSettings }/>
-      { colorsList }
-      <PaletteEditor 
-        colors={ colors } activeColor={ activeColor } removeColor={ removeColor }
-        strokeHistory={ strokeHistory } dispatch={ dispatch }
-        showSettings={ showSettings } cacheColor={ cacheColor } setCacheColor={ setCacheColor }
-      />
-    </>
+  <>
+    { colorsList }
+    <PaletteEditor 
+      colors={ colors } activeColor={ activeColor } removeColor={ removeColor }
+      strokeHistory={ strokeHistory } dispatch={ dispatch }
+      showSettings={ showSettings } cacheColor={ cacheColor } setCacheColor={ setCacheColor }
+    />
+  </>
   )
 }
 

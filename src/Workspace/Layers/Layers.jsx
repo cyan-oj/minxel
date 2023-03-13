@@ -3,12 +3,11 @@ import LayerPreview from './LayerPreview'
 import './Layers.css'
 import { ReactComponent as AddIcon } from '../../assets/icons/outline-icons/add-outline.svg'
 import { ReactComponent as TrashIcon } from '../../assets/icons/outline-icons/trash-outline.svg'
-import { ReactComponent as LayersIcon } from '../../assets/icons/sharp-icons/layers-sharp.svg'
 import ToolButton from '../Workspace/ToolButton'
 import MenuToggle from '../Workspace/MenuToggle'
 
-function Layers({ layers, stroke, activeLayer, dispatch }) {
-  const [ showTools, setShowTools ] = useState( false )
+function Layers({ layers, stroke, activeLayer, dispatch, showTools }) {
+  // const [ showTools, setShowTools ] = useState( false )
   const dragLayer = useRef()
 
   const dragStart = ( index ) => dragLayer.current = index
@@ -32,8 +31,6 @@ function Layers({ layers, stroke, activeLayer, dispatch }) {
 
   return (
   <>
-    <MenuToggle menuText="layers"
-      Icon={ LayersIcon } show={ showTools } setShow={ setShowTools }/>
     <ToolButton buttonText={ 'add layer' } Icon={ AddIcon }
       clickFunction={() => dispatch({ type: 'addLayer' })}
       showTools={ showTools }/>
