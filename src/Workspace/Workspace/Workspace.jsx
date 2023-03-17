@@ -192,8 +192,8 @@ function Workspace( props ) {
     const exportContext = exportCanvas.getContext( '2d' )
     layers.forEach(( layer ) => exportContext.drawImage( layer.canvas, 0, 0 ))
     const saveLink = document.getElementById( 'save-link' )
-    saveLink.setAttribute( 'download', 'minxel.png' )
-    saveLink.setAttribute( 'href', exportCanvas.toDataURL( 'image/png' ).replace( 'image/png', 'image/octet-stream' ))
+    saveLink.setAttribute( 'download', 'minxel.gif' )
+    saveLink.setAttribute( 'href', exportCanvas.toDataURL( 'image/gif' ).replace( 'image/gif', 'image/octet-stream' ))
     saveLink.click()
   }
 

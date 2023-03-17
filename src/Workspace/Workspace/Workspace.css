@@ -39,13 +39,6 @@ canvas {
   background-color: var(--alt);
 }
 
-.menu-toggle {
-  background-color: var(--base);
-}
-.menu-toggle-active {
- background-color: var(--highlight);
-}
-
 .tool-toggles {
   display: flex;
   padding: 4px 8px;

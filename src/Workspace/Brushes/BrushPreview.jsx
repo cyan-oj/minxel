@@ -6,7 +6,6 @@ function BrushPreview({ brushes, brush, canvas }) {
   const preview = useRef();
 
   useEffect(() => {
-    console.log("initial render UE")
     const parent = preview.current
     parent.appendChild( canvas.canvas )
   }, [])
