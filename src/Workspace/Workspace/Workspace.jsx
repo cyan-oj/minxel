@@ -5,7 +5,6 @@ import {
   drawStroke,
   getAttributes,
   createLayer,
-  ANGLE_VALUES,
 } from "../../utils/glHelpers.js";
 import { rgbToGL } from "../../utils/colorConvert.js";
 import { workSpaceReducer } from "./WorkspaceReducer.js";
