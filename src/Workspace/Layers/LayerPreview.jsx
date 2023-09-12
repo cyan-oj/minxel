@@ -3,12 +3,12 @@ import './Layers.css'
 import { ReactComponent as EyeIcon } from '../../assets/icons/sharp-icons/eye-sharp.svg'
 import { ReactComponent as EyeOffIcon } from '../../assets/icons/sharp-icons/eye-off-sharp.svg'
 
-function LayerPreview( { layer, id, stroke, activeLayer, dispatch } ) {
+function LayerPreview({ layer, id, stroke, activeLayer, dispatch }) {
   const preview = useRef();
 
   useEffect(() => {
     const ctx = preview.current.getContext( '2d' )
-    ctx.clearRect(0, 0, 50, 50)
+    ctx.clearRect( 0, 0, 50, 50 )
     ctx.drawImage( layer.canvas, 0, 0, 50, 50 )
   }, [ stroke, activeLayer ])
 

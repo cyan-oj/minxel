@@ -3,7 +3,7 @@ import { ANGLE_VALUES, drawPoint, getAttributes } from "../../utils/glHelpers";
 import { Matrix4 } from "../../WebGLUtils/cuon-matrix-utils";
 
 function BrushPreview({ brushes, brush, canvas }) {
-  const preview = useRef();
+  const preview = useRef()
 
   useEffect(() => {
     const parent = preview.current

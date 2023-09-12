@@ -214,11 +214,14 @@ function Workspace( props ) {
   }
 
   const layerDisplay = layers.map ( layer =>
-    <LayerDisplay key={ layer.id } layer={ layer } width={ width } height={ height } visible={ layer.visible } />
+    <LayerDisplay key={ layer.id } layer={ layer } 
+      width={ width } height={ height } visible={ layer.visible } />
   )
 
   return (
-    <div className='workspace' onPointerMove={ panning ? pan : null } onPointerDown={ panning ? setClientPosition : null }>
+    <div className='workspace' 
+      onPointerMove={ panning ? pan : null } 
+      onPointerDown={ panning ? setClientPosition : null }>
       <div className='layers' id='layers' 
         style={{ width: width, height: height, 
           scale: canvasScale, 
@@ -285,7 +288,7 @@ function Workspace( props ) {
         <MenuToggle menuText="layers"
           Icon={ LayersIcon } show={ showLayers } setShow={ setShowLayers }/>
         <Layers dispatch={ dispatch } layers={ layers } activeLayer={ activeLayer } stroke={ stroke } showTools={ showLayers }/>
-          {/* <button onClick={() => console.log( state )}> log state </button> */}
+          <button onClick={() => console.log( state )}> log state </button>
       </div>
       <a id={ 'save-link' } href="#" style={{ display: 'none' }} />
       <canvas id={ 'export-canvas' } style={{ display: 'none' }} width={ width } height={ height } />
