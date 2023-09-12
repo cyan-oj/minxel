@@ -45,14 +45,12 @@ export const initVertexBuffers = (gl, vertices, a_Position) => {
 };
 
 export const drawPoint = (gl, glAttributes, transforms, color) => {
-  const points = initVertexBuffers(gl, BRUSH_VERTICES, glAttributes.a_Position);
   RECT_MATRIX.setTranslate(transforms.translate.x, transforms.translate.y, 0.0);
   RECT_MATRIX.rotate(transforms.rotate, 0, 0, 1);
   RECT_MATRIX.scale(
     transforms.pressure * transforms.ratio * transforms.scale,
     transforms.pressure * transforms.scale
   );
-  if (!points) console.error("failed to set vertex positions");
   gl.uniformMatrix4fv(glAttributes.u_ModelMatrix, false, RECT_MATRIX.elements);
   gl.uniform4f(
     glAttributes.u_FragColor,
@@ -67,8 +65,7 @@ export const drawPoint = (gl, glAttributes, transforms, color) => {
 export const drawStroke = (gl, glAttributes, color, points) => {
   if (!points || points.length < 1) return;
   for (let i = 0; i < points.length; i++) {
-    const point = points[i];
-    drawPoint(gl, glAttributes, point, color);
+    drawPoint(gl, glAttributes, points[i], color);
   }
 };
 
@@ -77,6 +74,7 @@ export const redraw = (gl, colors, strokes) => {
   gl.clear(gl.COLOR_BUFFER_BIT);
   strokes.forEach((stroke) => {
     const drawColor = rgbToGL(colors[stroke.color]);
+    console.log(stroke.points);
     drawStroke(gl, glAttributes, drawColor, stroke.points);
   });
 };
@@ -103,6 +101,11 @@ export const createLayer = (
     );
   if (!initShaders(gl, VERT_SHADER, FRAG_SHADER))
     console.error("failed to initialize shaders");
+
+  const glAttributes = getAttributes(gl);
+  if (!initVertexBuffers(gl, BRUSH_VERTICES, glAttributes.a_Position))
+    console.error("failed to initializer vertex buffer");
+
   const newLayer = {
     id: num,
     name: layerName,

@@ -7,7 +7,6 @@ import {
   createLayer,
   ANGLE_VALUES,
 } from "../../utils/glHelpers.js";
-import { Matrix4 } from "../../WebGLUtils/cuon-matrix-utils";
 import { rgbToGL } from "../../utils/colorConvert.js";
 import { workSpaceReducer } from "./WorkspaceReducer.js";
 import Palette from "../Palette/Palette.jsx";
