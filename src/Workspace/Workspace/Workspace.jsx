@@ -5,6 +5,7 @@ import {
   drawStroke,
   getAttributes,
   createLayer,
+  redraw,
 } from "../../utils/glHelpers.js";
 import { rgbToGL } from "../../utils/colorConvert.js";
 import { workSpaceReducer } from "./WorkspaceReducer.js";
@@ -89,8 +90,8 @@ function Workspace(props) {
     // activeColor,
     activeBrush,
     activeLayer,
-    strokeHistory,
-    redoCache,
+    // strokeHistory,
+    // redoCache,
   } = state;
 
   const [showTools, setShowTools] = useState(false);
@@ -104,12 +105,20 @@ function Workspace(props) {
     props.colors ? props.colors : DEFAULT_PALETTE
   );
 
+  const [strokeHistory, setStrokeHistory] = useState({});
+  const [redoCache, setRedoCache] = useState([]);
+
   const clientPosition = useRef({ x: 0, y: 0 });
   const stroke = {
     color: activeColor,
     points: [],
   };
   const position = { x: 0, y: 0, pressure: 0 };
+
+  useEffect(() => {
+    console.log(strokeHistory);
+    console.log(redoCache);
+  }, [redoCache, strokeHistory]);
 
   useEffect(() => {
     dispatch({
@@ -208,19 +217,75 @@ function Workspace(props) {
     }
   };
 
+  const undo = (layer) => {
+    console.log(layer);
+    console.log(strokeHistory);
+    if (Object.keys(strokeHistory).length < 1) return;
+    const newLayer = { ...strokeHistory[layer] };
+    if (newLayer.strokes.length < 1) return;
+
+    const newLayerHistory = [...newLayer.strokes];
+
+    const newCache = [...redoCache];
+    const stroke = newLayerHistory.pop();
+    stroke.layer = newLayer;
+    newCache.push({
+      layer: layers[layer],
+      stroke,
+    });
+    const newStrokeHistory = {
+      ...strokeHistory,
+      [layer]: {
+        ...newLayer,
+        strokes: [...newLayerHistory],
+      },
+    };
+    const gl = newLayer.context;
+    redraw(gl, colors, newLayerHistory);
+    setStrokeHistory(newStrokeHistory);
+    setRedoCache(newCache);
+  };
+
   const redo = (redoCache) => {
+    console.log(redoCache);
     if (redoCache.length < 1) return;
-    const redoCacheDup = [...redoCache];
-    const nextStroke = redoCacheDup.pop();
-    dispatch({ type: "redo" });
+    const newCache = [...redoCache];
+    const nextStroke = newCache.pop();
+    console.log("nextStroke", nextStroke);
+
+    const { stroke, layer } = nextStroke;
+
+    const newStrokeHistory = {
+      context: strokeHistory[layer.id].context,
+      strokes: [...strokeHistory[layer.id].strokes, stroke],
+    };
+
+    setStrokeHistory({ ...strokeHistory, [layer.id]: newStrokeHistory });
+    setRedoCache(newCache);
+
     const gl = nextStroke.layer.context;
     const glAttributes = getAttributes(gl);
     const drawColor = rgbToGL(colors[nextStroke.stroke.color]);
     drawStroke(gl, glAttributes, drawColor, nextStroke.stroke.points);
   };
 
-  const saveStroke = (stroke, layer) =>
-    dispatch({ type: "saveStroke", payload: { stroke, layer } });
+  const saveStroke = (stroke, layer) => {
+    if (stroke.points.length < 1) return;
+    const layerHistory = strokeHistory[layer.id];
+    let newStrokeHistory = {};
+    if (layerHistory) {
+      newStrokeHistory = {
+        context: strokeHistory[layer.id].context,
+        strokes: [...strokeHistory[layer.id].strokes, stroke],
+      };
+    } else {
+      newStrokeHistory = {
+        context: layer.context,
+        strokes: [stroke],
+      };
+    }
+    setStrokeHistory({ ...strokeHistory, [layer.id]: newStrokeHistory });
+  };
 
   const saveFile = () => {
     const exportCanvas = document.getElementById("export-canvas");
@@ -316,9 +381,7 @@ function Workspace(props) {
         <ToolButton
           buttonText={"undo"}
           Icon={UndoIcon}
-          clickFunction={() =>
-            dispatch({ type: "undo", payload: layers[activeLayer].id })
-          }
+          clickFunction={() => undo(layers[activeLayer].id)}
           shortcutText={"ctrl + z"}
           showTools={showTools}
         />

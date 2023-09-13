@@ -4,27 +4,27 @@ export const workSpaceReducer = (state, action) => {
   const { type, payload } = action;
   console.log(state);
   switch (type) {
-    case "saveStroke": {
-      const { stroke, layer } = payload;
-      if (stroke.points.length < 1) return { ...state };
-      const layerHistory = state.strokeHistory[layer.id];
-      let newStrokeHistory = {};
-      if (layerHistory) {
-        newStrokeHistory = {
-          context: state.strokeHistory[layer.id].context,
-          strokes: [...state.strokeHistory[layer.id].strokes, stroke],
-        };
-      } else {
-        newStrokeHistory = {
-          context: layer.context,
-          strokes: [stroke],
-        };
-      }
-      return {
-        ...state,
-        strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory },
-      };
-    }
+    // case "saveStroke": {
+    //   const { stroke, layer } = payload;
+    //   if (stroke.points.length < 1) return { ...state };
+    //   const layerHistory = state.strokeHistory[layer.id];
+    //   let newStrokeHistory = {};
+    //   if (layerHistory) {
+    //     newStrokeHistory = {
+    //       context: state.strokeHistory[layer.id].context,
+    //       strokes: [...state.strokeHistory[layer.id].strokes, stroke],
+    //     };
+    //   } else {
+    //     newStrokeHistory = {
+    //       context: layer.context,
+    //       strokes: [stroke],
+    //     };
+    //   }
+    //   return {
+    //     ...state,
+    //     strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory },
+    //   };
+    // }
     case "zoomIn":
       return {
         ...state,
@@ -66,19 +66,19 @@ export const workSpaceReducer = (state, action) => {
         redoCache: newCache,
       };
     }
-    case "redo": {
-      const newCache = [...state.redoCache];
-      const { stroke, layer } = newCache.pop();
-      const newStrokeHistory = {
-        context: state.strokeHistory[layer.id].context,
-        strokes: [...state.strokeHistory[layer.id].strokes, stroke],
-      };
-      return {
-        ...state,
-        redoCache: newCache,
-        strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory },
-      };
-    }
+    // case "redo": {
+    //   const newCache = [...state.redoCache];
+    //   const { stroke, layer } = newCache.pop();
+    //   const newStrokeHistory = {
+    //     context: state.strokeHistory[layer.id].context,
+    //     strokes: [...state.strokeHistory[layer.id].strokes, stroke],
+    //   };
+    //   return {
+    //     ...state,
+    //     redoCache: newCache,
+    //     strokeHistory: { ...state.strokeHistory, [layer.id]: newStrokeHistory },
+    //   };
+    // }
     case "activeLayer": // payload: index
       return { ...state, activeLayer: payload };
     case "layers": // payload: [ new layer arrangement ]

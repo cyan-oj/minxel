@@ -74,7 +74,6 @@ export const redraw = (gl, colors, strokes) => {
   gl.clear(gl.COLOR_BUFFER_BIT);
   strokes.forEach((stroke) => {
     const drawColor = rgbToGL(colors[stroke.color]);
-    console.log(stroke.points);
     drawStroke(gl, glAttributes, drawColor, stroke.points);
   });
 };
