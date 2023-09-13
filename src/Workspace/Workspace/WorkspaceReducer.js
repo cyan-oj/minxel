@@ -4,10 +4,6 @@ export const workSpaceReducer = (state, action) => {
   const { type, payload } = action;
   console.log(state);
   switch (type) {
-    case "getState": {
-      console.log(state);
-      return { ...state };
-    }
     case "saveStroke": {
       const { stroke, layer } = payload;
       if (stroke.points.length < 1) return { ...state };
@@ -118,18 +114,18 @@ export const workSpaceReducer = (state, action) => {
         redoCache: [],
       };
     }
-    case "replaceColor": {
-      // payload: { color, index }
-      const colors = [...state.colors];
-      colors[payload.index] = payload.color;
-      return { ...state, colors: colors };
-    }
-    case "addColor": // payload: color
-      return {
-        ...state,
-        colors: [...state.colors, payload],
-        activeColor: state.colors.length,
-      };
+    // case "replaceColor": {
+    //   // payload: { color, index }
+    //   const colors = [...state.colors];
+    //   colors[payload.index] = payload.color;
+    //   return { ...state, colors: colors };
+    // }
+    // case "addColor": // payload: color
+    //   return {
+    //     ...state,
+    //     colors: [...state.colors, payload],
+    //     activeColor: state.colors.length,
+    //   };
     case "replaceBrush": {
       // payload: { size, index }
       const brushes = [...state.brushes];

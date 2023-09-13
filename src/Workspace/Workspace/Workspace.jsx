@@ -74,7 +74,7 @@ const init = (props) => {
 function Workspace(props) {
   const [state, dispatch] = useReducer(workSpaceReducer, props, init);
   const {
-    colors,
+    // colors,
     brushes,
     layers,
     width,
@@ -86,7 +86,7 @@ function Workspace(props) {
     erasing,
     canvasScale,
     canvasPosition,
-    activeColor,
+    // activeColor,
     activeBrush,
     activeLayer,
     strokeHistory,
@@ -97,6 +97,12 @@ function Workspace(props) {
   const [brushSettings, showBrushSettings] = useState(false);
   const [paletteSettings, showPaletteSettings] = useState(false);
   const [showLayers, setShowLayers] = useState(false);
+
+  const [activeColor, setActiveColor] = useState(0);
+
+  const [colors, setColors] = useState(
+    props.colors ? props.colors : DEFAULT_PALETTE
+  );
 
   const clientPosition = useRef({ x: 0, y: 0 });
   const stroke = {
@@ -367,8 +373,9 @@ function Workspace(props) {
         />
         <Palette
           colors={colors}
+          setColors={setColors}
           activeColor={activeColor}
-          dispatch={dispatch}
+          setActiveColor={setActiveColor}
           strokeHistory={strokeHistory}
           showSettings={paletteSettings}
         />
