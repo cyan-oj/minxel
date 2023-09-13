@@ -41,7 +41,7 @@ function PaletteEditor({
         cacheColor={cacheColor}
       />
       <div className="tool-sample">
-        <div className="toolbar-clear" onClick={() => addColor(color)}>
+        <div className="toolbar-clear" onClick={() => addColor(newColor)}>
           <AddIcon className="icon" />
           add color
         </div>
