@@ -187,7 +187,6 @@ function Workspace(props) {
   };
 
   const draw = (evt, gl) => {
-    // todo: don't draw on invisible layer!
     const lastPoint = { ...position };
     const currentPoint = setPosition(evt);
     if (evt.buttons !== 1) return;
@@ -355,7 +354,9 @@ function Workspace(props) {
         onPointerDown={setPosition}
         onPointerEnter={setPosition}
         onPointerMove={
-          panning ? null : (e) => draw(e, layers[activeLayer].context)
+          !panning && layers[activeLayer].visible
+            ? (e) => draw(e, layers[activeLayer].context)
+            : null
         }
         onPointerUp={() =>
           saveStroke(
