@@ -11,6 +11,7 @@ import MenuToggle from "../Workspace/MenuToggle";
 
 function Brushes({
   brushes,
+  setBrushes,
   activeBrush,
   dispatch,
   brushSample,
@@ -18,7 +19,7 @@ function Brushes({
   showSettings,
 }) {
   const dragBrush = useRef();
-  console.log("Brushes Renders");
+  // console.log("Brushes Renders");
 
   useEffect(() => {
     const brushPreview = document.getElementById("brush-preview");
@@ -34,12 +35,12 @@ function Brushes({
 
   const dragStart = (index) => (dragBrush.current = index);
 
-  const dragEnter = (index, brushes) => {
+  const dragEnter = (index, brushs) => {
     const currentBrush = dragBrush.current;
-    const dropBrush = brushes.splice(currentBrush, 1)[0];
-    brushes.splice(index, 0, dropBrush);
+    const dropBrush = brushs.splice(currentBrush, 1)[0];
+    brushs.splice(index, 0, dropBrush);
     dragBrush.current = index;
-    dispatch({ type: "brushes", payload: brushes });
+    setBrushes(brushs);
   };
 
   const brushList = brushes.map((brush, index) => (
@@ -53,11 +54,12 @@ function Brushes({
       onDragEnter={() => dragEnter(index, brushes)}
       onMouseUp={(e) => dispatch({ type: "activeBrush", payload: index })}
     >
-      <BrushPreview
+      {/* <BrushPreview
         brushes={brushes}
         brush={brush}
         canvas={brushThumbnails[index]}
-      />
+      /> */}
+      hi
     </div>
   ));
 

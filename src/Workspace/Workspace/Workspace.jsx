@@ -41,8 +41,8 @@ const DEFAULT_BRUSHES = [
 
 const init = (props) => {
   const initialState = {
-    colors: props.colors ? props.colors : DEFAULT_PALETTE,
-    brushes: DEFAULT_BRUSHES,
+    // colors: props.colors ? props.colors : DEFAULT_PALETTE,
+    // brushes: DEFAULT_BRUSHES,
     layers: [],
     width: props.width,
     height: props.height,
@@ -52,31 +52,32 @@ const init = (props) => {
     pressure: false,
     canvasScale: "1.0",
     canvasPosition: { left: "0px", top: "0px" },
-    activeColor: 0,
+    // activeColor: 0,
     activeBrush: 0,
     activeLayer: 0,
     brushSample: {},
     brushThumbnails: [],
-    strokeHistory: {},
-    redoCache: [],
+    // strokeHistory: {},
+    // redoCache: [],
   };
   const firstLayer = createLayer(props.width, props.height, 0);
   initialState.layers.push(firstLayer);
   initialState.brushSample = createLayer(240, 100, -1, [1, 1, 1, 0]);
 
-  for (let i = 0; i < initialState.brushes.length; i++) {
-    const canvas = createLayer(50, 50, -1);
-    initialState.brushThumbnails.push(canvas);
-  }
+  // for (let i = 0; i < initialState.brushes.length; i++) {
+  //   const canvas = createLayer(50, 50, -1);
+  //   initialState.brushThumbnails.push(canvas);
+  // }
 
   return initialState;
 };
 
 function Workspace(props) {
+  console.log("workspace renders");
   const [state, dispatch] = useReducer(workSpaceReducer, props, init);
   const {
     // colors,
-    brushes,
+    // brushes,
     layers,
     width,
     height,
@@ -104,21 +105,19 @@ function Workspace(props) {
   const [colors, setColors] = useState(
     props.colors ? props.colors : DEFAULT_PALETTE
   );
+  const [brushes, setBrushes] = useState(
+    props.brushes ? props.brushes : DEFAULT_BRUSHES
+  );
 
-  const [strokeHistory, setStrokeHistory] = useState({});
+  const strokeHistory = useRef({});
   const [redoCache, setRedoCache] = useState([]);
 
   const clientPosition = useRef({ x: 0, y: 0 });
-  const stroke = {
+  const brushStroke = {
     color: activeColor,
     points: [],
   };
   const position = { x: 0, y: 0, pressure: 0 };
-
-  useEffect(() => {
-    console.log(strokeHistory);
-    console.log(redoCache);
-  }, [redoCache, strokeHistory]);
 
   useEffect(() => {
     dispatch({
@@ -197,70 +196,71 @@ function Workspace(props) {
 
     const glAttributes = getAttributes(gl);
 
-    stroke.color = activeColor;
-    stroke.brush = brushes[activeBrush];
-    const drawColor = erasing ? [0] : rgbToGL(colors[stroke.color]);
+    brushStroke.color = activeColor;
+    brushStroke.brush = brushes[activeBrush];
+    const drawColor = erasing ? [0] : rgbToGL(colors[brushStroke.color]);
 
-    for (let i = 0; i < dist; i += stroke.brush.spacing) {
+    for (let i = 0; i < dist; i += brushStroke.brush.spacing) {
       const x = lastPoint.x + Math.sin(angle) * i;
       const y = lastPoint.y + Math.cos(angle) * i;
       const pressure = lastPoint.pressure + deltaP / (dist / i);
       const transforms = {
         translate: { x, y },
-        rotate: stroke.brush.angle,
-        scale: stroke.brush.scale,
-        ratio: stroke.brush.ratio,
+        rotate: brushStroke.brush.angle,
+        scale: brushStroke.brush.scale,
+        ratio: brushStroke.brush.ratio,
         pressure: pressure,
       };
       drawPoint(gl, glAttributes, transforms, drawColor);
-      stroke.points.push(transforms);
+      brushStroke.points.push(transforms);
     }
   };
 
-  const undo = (layer) => {
-    console.log(layer);
-    console.log(strokeHistory);
-    if (Object.keys(strokeHistory).length < 1) return;
-    const newLayer = { ...strokeHistory[layer] };
+  const undo = (layer, history) => {
+    // debugger;
+    if (Object.keys(history).length < 1) return;
+    const newLayer = { ...history[layer] };
     if (newLayer.strokes.length < 1) return;
 
     const newLayerHistory = [...newLayer.strokes];
-
     const newCache = [...redoCache];
     const stroke = newLayerHistory.pop();
+
     stroke.layer = newLayer;
     newCache.push({
       layer: layers[layer],
       stroke,
     });
+    console.log("redo cache", newCache);
+
     const newStrokeHistory = {
-      ...strokeHistory,
+      ...history,
       [layer]: {
         ...newLayer,
         strokes: [...newLayerHistory],
       },
     };
+
     const gl = newLayer.context;
     redraw(gl, colors, newLayerHistory);
-    setStrokeHistory(newStrokeHistory);
+    strokeHistory.current = newStrokeHistory;
     setRedoCache(newCache);
   };
 
-  const redo = (redoCache) => {
-    console.log(redoCache);
-    if (redoCache.length < 1) return;
-    const newCache = [...redoCache];
+  const redo = (cache, history) => {
+    if (cache.length < 1) return;
+
+    const newCache = [...cache];
     const nextStroke = newCache.pop();
-    console.log("nextStroke", nextStroke);
 
     const { stroke, layer } = nextStroke;
 
     const newStrokeHistory = {
-      context: strokeHistory[layer.id].context,
-      strokes: [...strokeHistory[layer.id].strokes, stroke],
+      context: history[layer.id].context,
+      strokes: [...history[layer.id].strokes, stroke],
     };
 
-    setStrokeHistory({ ...strokeHistory, [layer.id]: newStrokeHistory });
+    strokeHistory.current = { ...history, [layer.id]: newStrokeHistory };
     setRedoCache(newCache);
 
     const gl = nextStroke.layer.context;
@@ -269,14 +269,15 @@ function Workspace(props) {
     drawStroke(gl, glAttributes, drawColor, nextStroke.stroke.points);
   };
 
-  const saveStroke = (stroke, layer) => {
+  const saveStroke = (stroke, layer, history) => {
     if (stroke.points.length < 1) return;
-    const layerHistory = strokeHistory[layer.id];
+    // const history = { ...strokeHistory.current };
+    const layerHistory = history[layer.id];
     let newStrokeHistory = {};
     if (layerHistory) {
       newStrokeHistory = {
-        context: strokeHistory[layer.id].context,
-        strokes: [...strokeHistory[layer.id].strokes, stroke],
+        context: history[layer.id].context,
+        strokes: [...history[layer.id].strokes, stroke],
       };
     } else {
       newStrokeHistory = {
@@ -284,7 +285,10 @@ function Workspace(props) {
         strokes: [stroke],
       };
     }
-    setStrokeHistory({ ...strokeHistory, [layer.id]: newStrokeHistory });
+    strokeHistory.current = { ...history, [layer.id]: newStrokeHistory };
+    console.log("history", strokeHistory.current);
+    brushStroke.color = activeColor;
+    brushStroke.points = [];
   };
 
   const saveFile = () => {
@@ -352,8 +356,20 @@ function Workspace(props) {
         onPointerMove={
           panning ? null : (e) => draw(e, layers[activeLayer].context)
         }
-        onPointerUp={() => saveStroke(stroke, layers[activeLayer])}
-        onPointerLeave={() => saveStroke(stroke, layers[activeLayer])}
+        onPointerUp={() =>
+          saveStroke(
+            { ...brushStroke },
+            layers[activeLayer],
+            strokeHistory.current
+          )
+        }
+        onPointerLeave={() =>
+          saveStroke(
+            { ...brushStroke },
+            layers[activeLayer],
+            strokeHistory.current
+          )
+        }
       >
         {layerDisplay}
       </div>
@@ -381,14 +397,16 @@ function Workspace(props) {
         <ToolButton
           buttonText={"undo"}
           Icon={UndoIcon}
-          clickFunction={() => undo(layers[activeLayer].id)}
+          clickFunction={() =>
+            undo(layers[activeLayer].id, strokeHistory.current)
+          }
           shortcutText={"ctrl + z"}
           showTools={showTools}
         />
         <ToolButton
           buttonText={"redo"}
           Icon={RedoIcon}
-          clickFunction={() => redo(redoCache)}
+          clickFunction={() => redo(redoCache, strokeHistory.current)}
           shortcutText={"ctrl + shift + Z"}
           showTools={showTools}
         />
@@ -451,6 +469,7 @@ function Workspace(props) {
         />
         <Brushes
           brushes={brushes}
+          setBrushes={setBrushes}
           activeBrush={activeBrush}
           dispatch={dispatch}
           brushSample={brushSample}
@@ -468,7 +487,7 @@ function Workspace(props) {
           dispatch={dispatch}
           layers={layers}
           activeLayer={activeLayer}
-          stroke={stroke}
+          stroke={brushStroke}
           showTools={showLayers}
         />
         <button onClick={() => console.log(state)}> log state </button>

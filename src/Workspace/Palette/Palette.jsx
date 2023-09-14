@@ -15,7 +15,7 @@ function Palette({
   showSettings,
   max = 16,
 }) {
-  console.log("Palette Renders");
+  // console.log("Palette Renders");
 
   const [cacheColor, setCacheColor] = useState(colors[activeColor]);
 

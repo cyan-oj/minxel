@@ -2,7 +2,6 @@ import { createLayer, redraw } from "../../utils/glHelpers";
 
 export const workSpaceReducer = (state, action) => {
   const { type, payload } = action;
-  console.log(state);
   switch (type) {
     // case "saveStroke": {
     //   const { stroke, layer } = payload;
