@@ -110,7 +110,7 @@ function Workspace(props) {
   );
 
   const strokeHistory = useRef({});
-  const [redoCache, setRedoCache] = useState([]);
+  const redoCache = useRef([]);
 
   const clientPosition = useRef({ x: 0, y: 0 });
   const brushStroke = {
@@ -216,14 +216,15 @@ function Workspace(props) {
     }
   };
 
-  const undo = (layer, history) => {
+  const undo = (layer, history, cache) => {
     // debugger;
+    console.log(cache);
     if (Object.keys(history).length < 1) return;
     const newLayer = { ...history[layer] };
     if (newLayer.strokes.length < 1) return;
 
     const newLayerHistory = [...newLayer.strokes];
-    const newCache = [...redoCache];
+    const newCache = [...cache];
     const stroke = newLayerHistory.pop();
 
     stroke.layer = newLayer;
@@ -244,10 +245,10 @@ function Workspace(props) {
     const gl = newLayer.context;
     redraw(gl, colors, newLayerHistory);
     strokeHistory.current = newStrokeHistory;
-    setRedoCache(newCache);
+    redoCache.current = newCache;
   };
 
-  const redo = (cache, history) => {
+  const redo = (history, cache) => {
     if (cache.length < 1) return;
 
     const newCache = [...cache];
@@ -261,7 +262,7 @@ function Workspace(props) {
     };
 
     strokeHistory.current = { ...history, [layer.id]: newStrokeHistory };
-    setRedoCache(newCache);
+    redoCache.current = newCache;
 
     const gl = nextStroke.layer.context;
     const glAttributes = getAttributes(gl);
@@ -398,7 +399,11 @@ function Workspace(props) {
           buttonText={"undo"}
           Icon={UndoIcon}
           clickFunction={() =>
-            undo(layers[activeLayer].id, strokeHistory.current)
+            undo(
+              layers[activeLayer].id,
+              strokeHistory.current,
+              redoCache.current
+            )
           }
           shortcutText={"ctrl + z"}
           showTools={showTools}
@@ -406,7 +411,7 @@ function Workspace(props) {
         <ToolButton
           buttonText={"redo"}
           Icon={RedoIcon}
-          clickFunction={() => redo(redoCache, strokeHistory.current)}
+          clickFunction={() => redo(strokeHistory.current, redoCache.current)}
           shortcutText={"ctrl + shift + Z"}
           showTools={showTools}
         />
