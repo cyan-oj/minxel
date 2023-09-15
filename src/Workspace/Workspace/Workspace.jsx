@@ -190,15 +190,11 @@ function Workspace(props) {
     const lastPoint = { ...position };
     const currentPoint = setPosition(evt);
     if (evt.buttons !== 1) return;
-
     const [dist, angle, deltaP] = getStroke(lastPoint, currentPoint);
-
     const glAttributes = getAttributes(gl);
-
     brushStroke.color = activeColor;
     brushStroke.brush = brushes[activeBrush];
     const drawColor = erasing ? [0] : rgbToGL(colors[brushStroke.color]);
-
     for (let i = 0; i < dist; i += brushStroke.brush.spacing) {
       const x = lastPoint.x + Math.sin(angle) * i;
       const y = lastPoint.y + Math.cos(angle) * i;
@@ -216,23 +212,18 @@ function Workspace(props) {
   };
 
   const undo = (layer, history, cache) => {
-    // debugger;
     console.log(cache);
     if (Object.keys(history).length < 1) return;
     const newLayer = { ...history[layer] };
     if (newLayer.strokes.length < 1) return;
-
     const newLayerHistory = [...newLayer.strokes];
     const newCache = [...cache];
     const stroke = newLayerHistory.pop();
-
     stroke.layer = newLayer;
     newCache.push({
       layer: layers[layer],
       stroke,
     });
-    console.log("redo cache", newCache);
-
     const newStrokeHistory = {
       ...history,
       [layer]: {
@@ -240,7 +231,6 @@ function Workspace(props) {
         strokes: [...newLayerHistory],
       },
     };
-
     const gl = newLayer.context;
     redraw(gl, colors, newLayerHistory);
     strokeHistory.current = newStrokeHistory;
@@ -271,7 +261,6 @@ function Workspace(props) {
 
   const saveStroke = (stroke, layer, history) => {
     if (stroke.points.length < 1) return;
-    // const history = { ...strokeHistory.current };
     const layerHistory = history[layer.id];
     let newStrokeHistory = {};
     if (layerHistory) {
@@ -340,6 +329,94 @@ function Workspace(props) {
       onPointerMove={panning ? pan : null}
       onPointerDown={panning ? setClientPosition : null}
     >
+      <div className="tools-right">
+        <div className="toolbox">
+          <MenuToggle
+            menuText="tools"
+            Icon={SettingsIcon}
+            show={showTools}
+            setShow={setShowTools}
+          />
+          <ToolButton
+            buttonText={"eraser"}
+            Icon={EraserIcon}
+            clickFunction={() => dispatch({ type: "toggleEraser" })}
+            shortcutText={"e"}
+            active={erasing}
+            showTools={showTools}
+          />
+          <ToolButton
+            buttonText={"undo"}
+            Icon={UndoIcon}
+            clickFunction={() =>
+              undo(
+                layers[activeLayer].id,
+                strokeHistory.current,
+                redoCache.current
+              )
+            }
+            shortcutText={"ctrl + z"}
+            showTools={showTools}
+          />
+          <ToolButton
+            buttonText={"redo"}
+            Icon={RedoIcon}
+            clickFunction={() => redo(strokeHistory.current, redoCache.current)}
+            shortcutText={"ctrl + shift + Z"}
+            showTools={showTools}
+          />
+          <ToolButton
+            buttonText={"zoom in"}
+            Icon={ZoomInIcon}
+            clickFunction={() => dispatch({ type: "zoomIn" })}
+            shortcutText="ctrl + ="
+            showTools={showTools}
+          />
+          <ToolButton
+            buttonText={"zoom out"}
+            Icon={ZoomOutIcon}
+            clickFunction={() => dispatch({ type: "zoomOut" })}
+            shortcutText="ctrl + -"
+            showTools={showTools}
+          />
+          <ToolButton
+            buttonText={"pan canvas"}
+            Icon={PanIcon}
+            clickFunction={() => dispatch({ type: "togglePanning" })}
+            active={panning}
+            shortcutText="hold spacebar"
+            showTools={showTools}
+          />
+          <ToolButton
+            buttonText={"pen pressure"}
+            Icon={PenIcon}
+            clickFunction={() => dispatch({ type: "togglePressure" })}
+            active={pressure}
+            showTools={showTools}
+          />
+          <ToolButton
+            buttonText={"download image"}
+            Icon={DownloadIcon}
+            clickFunction={saveFile}
+            showTools={showTools}
+          />
+        </div>
+        <div className="toolbox">
+          <MenuToggle
+            menuText="layers"
+            Icon={LayersIcon}
+            show={showLayers}
+            setShow={setShowLayers}
+          />
+          <Layers
+            dispatch={dispatch}
+            layers={layers}
+            activeLayer={activeLayer}
+            stroke={brushStroke}
+            showTools={showLayers}
+          />
+        </div>
+      </div>
       <div
         className="layers"
         id="layers"
@@ -375,82 +452,13 @@ function Workspace(props) {
       >
         {layerDisplay}
       </div>
-      <div className="tools">
+      <div className="tools-left">
         {/* <div className='header'>
           <h1>minxel.</h1>
           <a href="https://github.com/cyan-oj/minxel">
             <img src={ mark } alt="github-logo" className='header-icon'/>
           </a>
         </div> */}
-        <MenuToggle
-          menuText="tools"
-          Icon={SettingsIcon}
-          show={showTools}
-          setShow={setShowTools}
-        />
-        <ToolButton
-          buttonText={"eraser"}
-          Icon={EraserIcon}
-          clickFunction={() => dispatch({ type: "toggleEraser" })}
-          shortcutText={"e"}
-          active={erasing}
-          showTools={showTools}
-        />
-        <ToolButton
-          buttonText={"undo"}
-          Icon={UndoIcon}
-          clickFunction={() =>
-            undo(
-              layers[activeLayer].id,
-              strokeHistory.current,
-              redoCache.current
-            )
-          }
-          shortcutText={"ctrl + z"}
-          showTools={showTools}
-        />
-        <ToolButton
-          buttonText={"redo"}
-          Icon={RedoIcon}
-          clickFunction={() => redo(strokeHistory.current, redoCache.current)}
-          shortcutText={"ctrl + shift + Z"}
-          showTools={showTools}
-        />
-        <ToolButton
-          buttonText={"zoom in"}
-          Icon={ZoomInIcon}
-          clickFunction={() => dispatch({ type: "zoomIn" })}
-          shortcutText="ctrl + ="
-          showTools={showTools}
-        />
-        <ToolButton
-          buttonText={"zoom out"}
-          Icon={ZoomOutIcon}
-          clickFunction={() => dispatch({ type: "zoomOut" })}
-          shortcutText="ctrl + -"
-          showTools={showTools}
-        />
-        <ToolButton
-          buttonText={"pan canvas"}
-          Icon={PanIcon}
-          clickFunction={() => dispatch({ type: "togglePanning" })}
-          active={panning}
-          shortcutText="hold spacebar"
-          showTools={showTools}
-        />
-        <ToolButton
-          buttonText={"pen pressure"}
-          Icon={PenIcon}
-          clickFunction={() => dispatch({ type: "togglePressure" })}
-          active={pressure}
-          showTools={showTools}
-        />
-        <ToolButton
-          buttonText={"download image"}
-          Icon={DownloadIcon}
-          clickFunction={saveFile}
-          showTools={showTools}
-        />
         <div className="break" />
         <MenuToggle
           menuText="color menu"
@@ -483,19 +491,6 @@ function Workspace(props) {
           showSettings={brushSettings}
         />
         <div className="break" />
-        <MenuToggle
-          menuText="layers"
-          Icon={LayersIcon}
-          show={showLayers}
-          setShow={setShowLayers}
-        />
-        <Layers
-          dispatch={dispatch}
-          layers={layers}
-          activeLayer={activeLayer}
-          stroke={brushStroke}
-          showTools={showLayers}
-        />
         <button onClick={() => console.log(state)}> log state </button>
       </div>
       <a id={"save-link"} href="#" style={{ display: "none" }} />

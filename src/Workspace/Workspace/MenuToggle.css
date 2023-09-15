@@ -1,15 +1,12 @@
 .menu-toggle {
   background-color: var(--base);
-}
-.menu-open {
-  background-color: var(--highlight);
-  border-radius: 0;
-}
-.menu-wide {
   width: 100%;
-  height: 28px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 4px 0;
+}
+.menu-open {
+  background-color: var(--highlight);
 }

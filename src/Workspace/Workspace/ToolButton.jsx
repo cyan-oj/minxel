@@ -1,36 +1,48 @@
-import { useEffect, useState } from 'react'
-import { ReactComponent as PinnedIcon } from '../../assets/icons/outline-icons/pin-sharp.svg'
-import { ReactComponent as UnPinnedIcon } from '../../assets/icons/outline-icons/pin-outline.svg'
+import clsx from "clsx";
+import { useEffect, useState } from "react";
+import { ReactComponent as PinnedIcon } from "../../assets/icons/outline-icons/pin-sharp.svg";
+import { ReactComponent as UnPinnedIcon } from "../../assets/icons/outline-icons/pin-outline.svg";
 
-function ToolButton({ buttonText, Icon, showTools, active = false, clickFunction, shortcutText = '' }) {
-  const [ pinned, setPinned ] = useState( true );
+function ToolButton({
+  buttonText,
+  Icon,
+  showTools,
+  active = false,
+  clickFunction,
+  shortcutText = "",
+}) {
+  const [pinned, setPinned] = useState(true);
 
-  useEffect(() => {}, [ pinned, active ])
+  useEffect(() => {}, [pinned, active]);
+
+  const toggleStyle = clsx("tool-button", {
+    "tool-button-expanded": showTools,
+  });
 
   return (
-    <div className='tool-button'>
-      { showTools && 
-      <>
-        <div onClick={() => setPinned( !pinned )}>
-          { pinned ? <PinnedIcon className='pin' /> : <UnPinnedIcon className='unpin' /> }
-        </div>
-        <div className='tool-details'>
-          <div className='tool-name'>
-            { buttonText }
+    <div className={toggleStyle}>
+      {showTools && (
+        <>
+          <div onClick={() => setPinned(!pinned)}>
+            {pinned ? (
+              <PinnedIcon className="pin" />
+            ) : (
+              <UnPinnedIcon className="unpin" />
+            )}
           </div>
-          <div className='shortcut'>
-            { shortcutText }
+          <div className="tool-details">
+            <div className="tool-name">{buttonText}</div>
+            <div className="shortcut">{shortcutText}</div>
+          </div>
+        </>
+      )}
+      {(showTools || pinned) && (
+        <div id={buttonText} onClick={clickFunction}>
+          <Icon className={active ? "icon-active" : "icon"} />
         </div>
-        </div>
-      </>
-      }
-      { (showTools || pinned) && 
-        <div id={ buttonText } onClick={ clickFunction } >
-          <Icon className={ active ? 'icon-active' : 'icon' }/>
-        </div>
-      }
+      )}
     </div>
-  )
+  );
 }
 
 export default ToolButton;
