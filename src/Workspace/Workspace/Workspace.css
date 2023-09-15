@@ -8,36 +8,42 @@ canvas {
   -ms-interpolation-mode: nearest-neighbor;
 }
 
-.tools, .tools-right {
-  height: 100%;
+.tools-left,
+.tools-right {
+  max-height: 100%;
   overflow: auto;
   position: absolute;
-  left: 12px;
-  top: 24px;
   text-align: center;
-  width: 256px;
-  filter: drop-shadow(0 0 1.4mm var(--shadow));
-}
-.tools-right {
-  left: auto;
-  right: 12px;
-}
-.toolbox{
+  width: 200px;
   display: flex;
   flex-wrap: wrap;
-  background-color: var(--transluscent);
-  margin: 8px;
-  margin-bottom: 16px;
-  box-sizing: border-box;
+  align-content: flex-start;
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
 }
-.toolbar, .toolbar-clear {
+.tools-left {
+  left: 12px;
+  top: 24px;
+}
+.tools-right {
+  position: absolute;
+  right: 12px;
+  top: 24px;
+}
+.toolbox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  width: 100%;
+}
+.toolbar,
+.toolbar-clear {
   box-sizing: border-box;
+  width: 100%;
   background-color: var(--alt);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
   cursor: pointer;
 }
 .toolbar-clear {
@@ -46,21 +52,6 @@ canvas {
 }
 .toolbar-clear:hover {
   background-color: var(--alt);
-}
-.tool-sample {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.layers {
-  position: relative;
-  background-color: var(--transluscent);
-  filter: drop-shadow(0 0 1.4mm var(--shadow));
-}
-.layers > * {
-  position: absolute;
-  margin: auto
 }
 
 .tool-toggles {
@@ -73,12 +64,33 @@ canvas {
 .tool-button {
   display: flex;
   align-items: center;
-  justify-content: space-between;;
+  justify-content: space-between;
   cursor: pointer;
+}
+.tool-button-expanded {
+  background-color: var(--transluscent);
+  flex-grow: 1;
+  margin: 2px;
+  padding: 0px 2px;
+  border-radius: 2px;
 }
 .tool-details {
   margin: 4px 0px;
 }
 .shortcut {
   font-size: 12px;
+}
+.layers {
+  position: relative;
+  background-color: var(--transluscent);
+  filter: drop-shadow(0 0 1.4mm var(--shadow));
+}
+.layers > * {
+  position: absolute;
+  margin: auto;
+}
+
+.break {
+  height: 1px;
+  width: 100%;
 }

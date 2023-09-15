@@ -1,26 +1,33 @@
-#brushes {
+/* #brushes {
   margin-bottom: 12px;
 }
 .brush {
-  aspect-ratio: 1/1;
-  width: 23%;
-  padding-bottom: 24%;
-  margin: 1%;
+  width: 50px;
+  height: 50px;
+  margin: 0;
   padding: 0;
-  border: none;
-  font-size: 24px;
 }
 .brush:hover {
-  width: 27%;
-  margin: -1%;
+
 }
 .brush#addBrush {
-  border: solid 1px var(--base);
+  border: solid 1px var(--dark);
 }
-
-#active-brush {
-  width: 29%;
-  margin: -2%;
+.brush-thumb{
+  box-sizing: border-box;
+  border: solid 2px var(--base);
+  width: inherit;
+  height: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brush-thumb:hover {
+  border: solid 2px var(--dark);
+  z-index: 11;
+}
+#active-brush > * {
   z-index: 10;
+  border: solid 2px var(--dark);
   filter: drop-shadow(0 0 1.4mm var(--shadow));
-}
+} */
